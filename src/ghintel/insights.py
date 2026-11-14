@@ -84,7 +84,7 @@ def build_insights(T, repos, daily, sources, last, today):
                 f"({round(top[1] * 100 / tot)}%).")
             g = T["google_14d"]
             add("sources", "Google search",
-                f"Google referred {g:,} visits in the latest 14-day window ({round(g * 100 / tot)}% of referrals)."
+                f"Google referred {g:,} {'visit' if g == 1 else 'visits'} in the latest 14-day window ({round(g * 100 / tot)}% of referrals)."
                 if g else "No visits attributed to Google in the latest 14-day window.")
     # weekday pattern (last 90 days)
     wd = [0] * 7
