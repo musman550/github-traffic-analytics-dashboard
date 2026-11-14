@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src &#x27;none&#x27;; script-src &#x27;self&#x27; https://giscus.app; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27; https://giscus.app; img-src &#x27;self&#x27; data: https://avatars.githubusercontent.com; font-src &#x27;self&#x27;; connect-src &#x27;self&#x27;; frame-src https://giscus.app; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;; manifest-src &#x27;self&#x27;">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>GitHub Traffic Analytics Dashboard: Views, Clones &amp; Referrers History</title>
+<meta name="description" content="Free, open-source GitHub traffic analytics. Daily history of views, clones, referrers and stars for 265 public repositories, beyond GitHub&#x27;s 14-day limit. No login.">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="theme-color" content="#0b5fff">
+<link rel="canonical" href="https://musman550.github.io/github-traffic-analytics-dashboard/">
+<link rel="icon" href="https://musman550.github.io/github-traffic-analytics-dashboard/assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="https://musman550.github.io/github-traffic-analytics-dashboard/manifest.webmanifest">
+<link rel="alternate" type="text/plain" href="https://musman550.github.io/github-traffic-analytics-dashboard/llms.txt" title="llms.txt">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="GitHub Traffic Analytics Dashboard">
+<meta property="og:title" content="GitHub Traffic Analytics Dashboard: Views, Clones &amp; Referrers History">
+<meta property="og:description" content="Free, open-source GitHub traffic analytics. Daily history of views, clones, referrers and stars for 265 public repositories, beyond GitHub&#x27;s 14-day limit. No login.">
+<meta property="og:url" content="https://musman550.github.io/github-traffic-analytics-dashboard/">
+<meta property="og:image" content="https://musman550.github.io/github-traffic-analytics-dashboard/assets/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="GitHub Traffic Analytics Dashboard">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GitHub Traffic Analytics Dashboard: Views, Clones &amp; Referrers History">
+<meta name="twitter:description" content="Free, open-source GitHub traffic analytics. Daily history of views, clones, referrers and stars for 265 public repositories, beyond GitHub&#x27;s 14-day limit. No login.">
+<meta name="twitter:image" content="https://musman550.github.io/github-traffic-analytics-dashboard/assets/og-image.png">
+<link rel="stylesheet" href="https://musman550.github.io/github-traffic-analytics-dashboard/assets/style.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher", "name": "MUSFIRAAI", "url": "https://musfiraai.com", "sameAs": ["https://musfiraai.com", "https://www.youtube.com/@automatewithmusfiraai", "https://www.linkedin.com/in/musfira-ai-b3218b39b", "https://instagram.com/musma_n55", "https://github.com/musman550"], "logo": "https://avatars.githubusercontent.com/u/211268452?v=4"}, {"@type": "WebSite", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#website", "url": "https://musman550.github.io/github-traffic-analytics-dashboard/", "name": "GitHub Traffic Analytics Dashboard", "publisher": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher"}, "inLanguage": "en"}, {"@type": "WebApplication", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#app", "name": "GitHub Traffic Analytics Dashboard", "url": "https://musman550.github.io/github-traffic-analytics-dashboard/", "applicationCategory": "DeveloperApplication", "operatingSystem": "Any (web browser)", "isAccessibleForFree": true, "license": "https://opensource.org/license/mit", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher"}, "dateModified": "2026-11-14T11:22:43+00:00", "description": "Open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently."}, {"@type": "Dataset", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#dataset", "name": "GitHub traffic history for public repositories", "description": "Daily views, clones, referrers and stars for public repositories, collected from the GitHub REST API.", "dateModified": "2026-11-14T11:22:43+00:00", "temporalCoverage": "2026-10-30/2026-11-13", "license": "https://opensource.org/license/mit", "creator": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher"}, "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://musman550.github.io/github-traffic-analytics-dashboard/data/summary.json"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How long does GitHub keep repository traffic data?", "acceptedAnswer": {"@type": "Answer", "text": "GitHub keeps only the last 14 days of views and clones, and only the top 10 referrers and popular paths. Older days are discarded, so this dashboard stores a snapshot every day to keep a permanent history."}}, {"@type": "Question", "name": "How often is the dashboard updated?", "acceptedAnswer": {"@type": "Answer", "text": "A scheduled GitHub Actions workflow runs once a day. GitHub can take 24-48 hours to finalise a day's numbers, so the most recent days may still increase."}}, {"@type": "Question", "name": "Does it show private repositories?", "acceptedAnswer": {"@type": "Answer", "text": "No. Private repositories are never read, stored or published. Only public repositories appear here."}}, {"@type": "Question", "name": "Why are clones much higher than views?", "acceptedAnswer": {"@type": "Answer", "text": "Clones include automated traffic such as CI systems, mirrors and crawlers, so they are a weaker signal of human interest than views. Views and unique visitors are the better indicators."}}, {"@type": "Question", "name": "What are unique visitors and why are they not added up over months?", "acceptedAnswer": {"@type": "Answer", "text": "GitHub reports a deduplicated unique-visitor estimate for its 14-day window only. Adding daily uniques would count the same person repeatedly, so longer periods show views and clones, not summed uniques."}}, {"@type": "Question", "name": "How is the repository score calculated?", "acceptedAnswer": {"@type": "Answer", "text": "score = views in 30 days + 0.5 x clones in 30 days + 2 x unique visitors (14 days) + 3 x stars + 4 x forks. The top 20% of public, non-fork, non-archived repositories are marked top and the bottom 20% low."}}, {"@type": "Question", "name": "How are API rate limits avoided?", "acceptedAnswer": {"@type": "Answer", "text": "Active repositories are fetched daily, idle ones every 3 days and dormant ones weekly. Because GitHub returns a 14-day window on every call, no data is lost. Calls are sequential, and the run stops safely if the remaining hourly budget gets low."}}, {"@type": "Question", "name": "Can I run this for my own GitHub account?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It is open source under the MIT license: fork github.com/musman550/github-traffic-analytics-dashboard, add a GH_PAT secret with the repo scope, enable GitHub Pages on the main branch /docs folder and run the workflow."}}, {"@type": "Question", "name": "Who can change this dashboard?", "acceptedAnswer": {"@type": "Answer", "text": "Only the repository owner can change the code and data. The main branch is protected, forks cannot write to it, and the site runs under a strict content-security policy."}}, {"@type": "Question", "name": "How many repositories are tracked right now?", "acceptedAnswer": {"@type": "Answer", "text": "265 public repositories, with data through 2026-11-13."}}]}]}</script>
+</head>
+<body>
+<script src="https://musman550.github.io/github-traffic-analytics-dashboard/assets/boot.js"></script>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+<div class="wrap hdr">
+<a class="brand" href="https://musman550.github.io/github-traffic-analytics-dashboard/"><svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#0b5fff"/><path d="M6 22l6-7 5 4 9-11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Traffic Analytics<small>by MUSFIRAAI</small></span></a>
+<nav id="tabs" aria-label="Dashboard sections"><a href="#overview" data-tab="overview">Overview</a><a href="#trends" data-tab="trends">Trends</a><a href="#sources" data-tab="sources">Sources</a><a href="#repos" data-tab="repos">Repositories</a><a href="#insights" data-tab="insights">Insights</a><a href="#about" data-tab="about">About &amp; links</a><a href="#comments" data-tab="comments">Comments</a></nav>
+<div class="actions"><button id="theme" class="icon" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">&#9680;</button>
+<a class="btn small" href="https://github.com/musman550/github-traffic-analytics-dashboard" rel="noopener">Star on GitHub</a></div>
+</div>
+</header>
+<main id="main" class="wrap">
+<section class="hero">
+<div><h1>GitHub traffic analytics for every public repository</h1>
+<p class="lead">Views, clones, referrers and stars with permanent daily history, because GitHub itself keeps only 14 days. Open to everyone, no login.</p></div>
+<div class="fresh" id="fresh"><span class="dot"></span><span id="fresh-text">Data through 2026-11-13</span></div>
+</section>
+
+<section class="tab" id="tab-overview" data-title="Overview">
+<div class="grid kpis" id="kpis" aria-live="polite"></div>
+<div class="grid two">
+<div class="card"><div class="bar"><h2>Views and clones, last 30 days</h2></div><div class="chartbox"><canvas id="c-overview" role="img" aria-label="Views and clones for the last 30 days"></canvas></div></div>
+<div class="card"><h2>Highlights</h2><div id="highlights"></div><a class="more" href="#insights">All insights &rarr;</a></div>
+</div>
+<div class="grid two">
+<div class="card"><h2>Top performers</h2><div class="wrapx"><table id="t-top"></table></div></div>
+<div class="card"><h2>Needs attention</h2><div class="wrapx"><table id="t-low"></table></div></div>
+</div>
+<!--STATIC_START--><section class="card" id="static-facts"><h2>Key facts</h2><p>As of 2026-11-13, this dashboard tracks 265 public GitHub repositories. In the last 30 days they received 252 views and 6,140 clones, and together hold 1 stars and 0 forks. Data comes directly from the GitHub REST API and is stored every day, beyond GitHub&rsquo;s own 14-day window.</p><div class="wrapx"><table><caption>Top repositories by score</caption><thead><tr><th>Repository</th><th>Views 30d</th><th>Clones 30d</th><th>Stars</th></tr></thead><tbody><tr><td><a href="https://github.com/musman550/musfiraai-mcp-server" rel="noopener">musfiraai-mcp-server</a></td><td>1</td><td>590</td><td>0</td></tr><tr><td><a href="https://github.com/musman550/musfira-ai-repo-bot" rel="noopener">musfira-ai-repo-bot</a></td><td>7</td><td>336</td><td>0</td></tr><tr><td><a href="https://github.com/musman550/musfiraai-free-tools" rel="noopener">musfiraai-free-tools</a></td><td>0</td><td>224</td><td>0</td></tr><tr><td><a href="https://github.com/musman550/musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs" rel="noopener">musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs</a></td><td>13</td><td>71</td><td>0</td></tr><tr><td><a href="https://github.com/musman550/musfira-ai-copilot-code-review-api-management-and-review-overview-updat" rel="noopener">musfira-ai-copilot-code-review-api-management-and-review-overview-updat</a></td><td>0</td><td>121</td><td>0</td></tr><tr><td><a href="https://github.com/musman550/musfira-ai-github-in-slack-and-teams-is-generally-available-and-more" rel="noopener">musfira-ai-github-in-slack-and-teams-is-generally-available-and-more</a></td><td>6</td><td>83</td><td>0</td></tr><tr><td><a href="https://github.com/musman550/musfira-ai-fable-5gguf-when" rel="noopener">musfira-ai-fable-5gguf-when</a></td><td>11</td><td>83</td><td>0</td></tr><tr><td><a href="https://github.com/musman550/musfira-ai-granite-switch-411-update-models-like-you-update-software" rel="noopener">musfira-ai-granite-switch-411-update-models-like-you-update-software</a></td><td>0</td><td>112</td><td>0</td></tr><tr><td><a href="https://github.com/musman550/musfira-ai-github-copilot-weekly-releases-november-2" rel="noopener">musfira-ai-github-copilot-weekly-releases-november-2</a></td><td>0</td><td>110</td><td>0</td></tr><tr><td><a href="https://github.com/musman550/musfira-ai-meituan-longcatlongcat-25-hugging-face" rel="noopener">musfira-ai-meituan-longcatlongcat-25-hugging-face</a></td><td>0</td><td>110</td><td>0</td></tr></tbody></table></div></section><!--STATIC_END-->
+</section>
+
+<section class="tab" id="tab-trends" data-title="Trends">
+<div class="card"><div class="bar"><h2>Traffic trend</h2>
+<div class="seg" id="seg-period" role="group" aria-label="Granularity"><button data-p="daily" class="on">Daily</button><button data-p="weekly">Weekly</button><button data-p="monthly">Monthly</button><button data-p="yearly">Yearly</button></div>
+<div class="seg" id="seg-range" role="group" aria-label="Range"><button data-r="30">30d</button><button data-r="90" class="on">90d</button><button data-r="365">1y</button><button data-r="0">All</button></div></div>
+<div class="chartbox tall"><canvas id="c-trend" role="img" aria-label="Views and clones over time"></canvas></div>
+<p class="note">GitHub finalises each day after 24-48 hours, so the newest days can still rise. Unique visitors are not summed over time (see methodology).</p></div>
+<div class="grid two">
+<div class="card"><h2>Views by weekday (90 days)</h2><div class="chartbox"><canvas id="c-weekday"></canvas></div></div>
+<div class="card"><h2>Stars and forks over time</h2><div class="chartbox"><canvas id="c-stars"></canvas></div><p class="note" id="stars-note"></p></div>
+</div>
+<div class="card"><h2>New repositories per day (30 days)</h2><div class="chartbox"><canvas id="c-created"></canvas></div></div>
+</section>
+
+<section class="tab" id="tab-sources" data-title="Sources">
+<div class="grid two">
+<div class="card"><h2>Where visitors come from (latest 14 days)</h2><div class="chartbox tall"><canvas id="c-sources"></canvas></div><p class="note">GitHub reports the top 10 referrers per repository; they are summed across repositories.</p></div>
+<div class="card"><h2>Google share over time</h2><div class="chartbox"><canvas id="c-google"></canvas></div><p class="note" id="google-note"></p>
+<h2 class="sp">Most viewed pages</h2><div class="wrapx"><table id="t-paths"></table></div></div>
+</div>
+</section>
+
+<section class="tab" id="tab-repos" data-title="Repositories">
+<div class="card">
+<div class="bar filters"><h2>All repositories</h2>
+<input id="q" type="search" placeholder="Search name, topic or description (press /)" aria-label="Search repositories">
+<select id="f-tier" aria-label="Tier"><option value="all">All tiers</option><option value="top">Top 20%</option><option value="mid">Middle</option><option value="low">Bottom 20%</option></select>
+<select id="f-lang" aria-label="Language"><option value="">Any language</option></select>
+<select id="f-sort" aria-label="Sort by"><option value="score">Score</option><option value="v30">Views 30d</option><option value="v7">Views 7d</option><option value="vall">Views all time</option><option value="c30">Clones 30d</option><option value="stars">Stars</option><option value="pushed">Last push</option><option value="created">Newest</option><option value="audit">Metadata score</option><option value="name">Name</option></select>
+<button id="b-compare" type="button" class="btn small" disabled>Compare (0)</button>
+<button id="b-csv" type="button" class="btn small ghost">Export CSV</button></div>
+<div class="meta"><span id="cnt" class="mut"></span><span class="mut">Click a repository to open its details. Tick up to 4 to compare.</span></div>
+<div class="wrapx"><table id="t-repos"></table></div>
+<div class="pager" id="pager"></div>
+</div>
+</section>
+
+<section class="tab" id="tab-insights" data-title="Insights">
+<div class="card"><h2>Automatic insights</h2><p class="note">Generated from the collected numbers on every update. A sentence only appears when the data supports it.</p><div class="grid three" id="insights"></div></div>
+<div class="grid two">
+<div class="card"><h2>Languages (repos and 30-day views)</h2><div class="chartbox"><canvas id="c-lang"></canvas></div></div>
+<div class="card"><h2>Top topics</h2><div class="chartbox"><canvas id="c-topics"></canvas></div></div>
+</div>
+<div class="card"><h2>Repository metadata audit</h2>
+<p class="note">A transparent checklist, not a ranking guarantee: description, topics, license, homepage and recent activity. Average across repositories: <b id="audit-avg"></b>/100. Lowest scores first.</p>
+<div class="wrapx"><table id="t-audit"></table></div></div>
+</section>
+
+<section class="tab" id="tab-about" data-title="About &amp; links">
+<div class="grid two">
+<div class="card"><h2>About the publisher</h2><div class="profile"><img src="https://avatars.githubusercontent.com/u/211268452?v=4" alt="MUSFIRAAI avatar" width="72" height="72" loading="lazy"><div><h3>MUSFIRAAI</h3><p class="mut">MUSFIRA AI</p><p>Building AI automation systems — YouTube automation, LinkedIn automation, and daily open-source tooling.</p><p class="mut">On GitHub since 2025-05-12 &middot; 265 public repositories</p></div></div><h3>Links</h3><ul class="links"><li><a href="https://musfiraai.com" rel="me noopener"><b>musfiraai.com</b><span class="mut">musfiraai.com</span></a></li><li><a href="https://www.youtube.com/@automatewithmusfiraai" rel="me noopener"><b>YouTube</b><span class="mut">www.youtube.com/@automatewithmusfiraai</span></a></li><li><a href="https://www.linkedin.com/in/musfira-ai-b3218b39b" rel="me noopener"><b>LinkedIn</b><span class="mut">www.linkedin.com/in/musfira-ai-b3218b39b</span></a></li><li><a href="https://instagram.com/musma_n55" rel="me noopener"><b>Instagram</b><span class="mut">instagram.com/musma_n55</span></a></li><li><a href="https://github.com/musman550" rel="me noopener"><b>GitHub</b><span class="mut">github.com/musman550</span></a></li></ul><h3>Featured project</h3><ul class="plain"><li><a href="https://github.com/musman550/musfira-ai-repo-bot" rel="noopener">Musfira AI — Daily Repo Bot</a></li></ul><p class="note">Profile and links are fetched automatically from the public GitHub profile and its README every day.</p></div>
+<div class="card"><h2>Frequently asked questions</h2><details><summary>How long does GitHub keep repository traffic data?</summary><p>GitHub keeps only the last 14 days of views and clones, and only the top 10 referrers and popular paths. Older days are discarded, so this dashboard stores a snapshot every day to keep a permanent history.</p></details><details><summary>How often is the dashboard updated?</summary><p>A scheduled GitHub Actions workflow runs once a day. GitHub can take 24-48 hours to finalise a day&#x27;s numbers, so the most recent days may still increase.</p></details><details><summary>Does it show private repositories?</summary><p>No. Private repositories are never read, stored or published. Only public repositories appear here.</p></details><details><summary>Why are clones much higher than views?</summary><p>Clones include automated traffic such as CI systems, mirrors and crawlers, so they are a weaker signal of human interest than views. Views and unique visitors are the better indicators.</p></details><details><summary>What are unique visitors and why are they not added up over months?</summary><p>GitHub reports a deduplicated unique-visitor estimate for its 14-day window only. Adding daily uniques would count the same person repeatedly, so longer periods show views and clones, not summed uniques.</p></details><details><summary>How is the repository score calculated?</summary><p>score = views in 30 days + 0.5 x clones in 30 days + 2 x unique visitors (14 days) + 3 x stars + 4 x forks. The top 20% of public, non-fork, non-archived repositories are marked top and the bottom 20% low.</p></details><details><summary>How are API rate limits avoided?</summary><p>Active repositories are fetched daily, idle ones every 3 days and dormant ones weekly. Because GitHub returns a 14-day window on every call, no data is lost. Calls are sequential, and the run stops safely if the remaining hourly budget gets low.</p></details><details><summary>Can I run this for my own GitHub account?</summary><p>Yes. It is open source under the MIT license: fork github.com/musman550/github-traffic-analytics-dashboard, add a GH_PAT secret with the repo scope, enable GitHub Pages on the main branch /docs folder and run the workflow.</p></details><details><summary>Who can change this dashboard?</summary><p>Only the repository owner can change the code and data. The main branch is protected, forks cannot write to it, and the site runs under a strict content-security policy.</p></details><details><summary>How many repositories are tracked right now?</summary><p>265 public repositories, with data through 2026-11-13.</p></details>
+<p><a href="https://musman550.github.io/github-traffic-analytics-dashboard/methodology/">Full methodology</a> &middot; <a href="https://musman550.github.io/github-traffic-analytics-dashboard/privacy/">Privacy</a> &middot; <a href="https://musman550.github.io/github-traffic-analytics-dashboard/data/summary.json">Open data</a></p></div>
+</div>
+</section>
+
+<section class="tab" id="tab-comments" data-title="Comments">
+<div class="card"><h2>Comments</h2><p class="note">Questions, feedback or ideas are welcome and links are allowed. Comments are stored in GitHub Discussions and need a free GitHub account to post. Reading is open to everyone.</p>
+<div id="comments" data-repo="musman550/github-traffic-analytics-dashboard"></div>
+<p class="note"><a href="https://github.com/musman550/github-traffic-analytics-dashboard/discussions" rel="noopener">Open the discussion board on GitHub</a></p></div>
+</section>
+</main>
+<dialog id="repo-dialog" aria-labelledby="rd-title"><div id="rd"></div></dialog>
+<button id="totop" class="totop" type="button" aria-label="Back to top" hidden>&uarr;</button>
+<footer class="site-footer">
+<div class="wrap fgrid">
+<div><strong>GitHub Traffic Analytics Dashboard</strong>
+<p>Permanent history of GitHub views, clones, referrers and stars for public repositories. Open source, free and login-free.</p>
+<p class="mut">Built and maintained by MUSFIRAAI &middot; MUSFIRA AI.</p></div>
+<div><h3>Dashboard</h3><ul><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#overview">Overview</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#trends">Trends</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#sources">Sources</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#repos">Repositories</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#insights">Insights</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#about">About &amp; links</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#comments">Comments</a></li></ul></div>
+<div><h3>Resources</h3><ul>
+<li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/about/">About</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/methodology/">Methodology</a></li>
+<li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/privacy/">Privacy</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/data/summary.json">Open data (JSON)</a></li>
+<li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/llms.txt">llms.txt</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/sitemap.xml">Sitemap</a></li>
+<li><a href="https://github.com/musman550/github-traffic-analytics-dashboard" rel="noopener">Source code</a></li>
+<li><a href="https://github.com/musman550/github-traffic-analytics-dashboard/discussions" rel="noopener">Discussions</a></li></ul></div>
+<div><h3>Connect</h3><ul><li><a href="https://github.com/musman550" rel="me noopener">GitHub profile</a></li><li><a href="https://musfiraai.com" rel="me noopener">musfiraai.com</a></li><li><a href="https://www.youtube.com/@automatewithmusfiraai" rel="me noopener">YouTube</a></li><li><a href="https://www.linkedin.com/in/musfira-ai-b3218b39b" rel="me noopener">LinkedIn</a></li><li><a href="https://instagram.com/musma_n55" rel="me noopener">Instagram</a></li></ul></div>
+</div>
+<div class="wrap fbar"><span>&copy; 2026 MUSFIRAAI. MIT licensed.</span>
+<span>Data through 2026-11-13 &middot; updated 2026-11-14 UTC</span>
+<span class="mut">Not affiliated with, endorsed by or sponsored by GitHub, Inc. GitHub is a trademark of GitHub, Inc.</span></div>
+</footer>
+<script src="https://musman550.github.io/github-traffic-analytics-dashboard/assets/vendor/chart.umd.js"></script>
+<script src="https://musman550.github.io/github-traffic-analytics-dashboard/assets/app.js"></script>
+</body>
+</html>

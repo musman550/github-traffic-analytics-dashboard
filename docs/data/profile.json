@@ -1,0 +1,49 @@
+{
+ "avatar": "https://avatars.githubusercontent.com/u/211268452?v=4",
+ "bio": null,
+ "company": "MUSFIRA AI",
+ "created": "2025-05-12",
+ "featured": [
+  {
+   "label": "Musfira AI — Daily Repo Bot",
+   "repo": "musfira-ai-repo-bot"
+  }
+ ],
+ "followers": 0,
+ "links": [
+  {
+   "kind": "website",
+   "label": "musfiraai.com",
+   "provider": null,
+   "source": "profile website",
+   "url": "https://musfiraai.com"
+  },
+  {
+   "kind": "social",
+   "label": "YouTube",
+   "provider": "YouTube",
+   "source": "profile README",
+   "url": "https://www.youtube.com/@automatewithmusfiraai"
+  },
+  {
+   "kind": "social",
+   "label": "LinkedIn",
+   "provider": "LinkedIn",
+   "source": "profile README",
+   "url": "https://www.linkedin.com/in/musfira-ai-b3218b39b"
+  },
+  {
+   "kind": "social",
+   "label": "Instagram",
+   "provider": "Instagram",
+   "source": "profile README",
+   "url": "https://instagram.com/musma_n55"
+  }
+ ],
+ "location": null,
+ "login": "musman550",
+ "name": "MUSFIRAAI",
+ "public_repos": 265,
+ "tagline": "Building AI automation systems — YouTube automation, LinkedIn automation, and daily open-source tooling.",
+ "url": "https://github.com/musman550"
+}

@@ -1,0 +1,13 @@
+{
+  "include_forks": false,
+  "include_archived": false,
+  "exclude": [],
+  "min_rate_remaining": 400,
+  "sleep_between_calls": 0.1,
+  "keep_source_days": 90,
+  "cadence": {"active_days": 1, "idle_days": 3, "dormant_days": 7, "dormant_after_idle_days": 45},
+  "site_url": "https://musman550.github.io/github-traffic-analytics-dashboard/",
+  "site_name": "GitHub Traffic Analytics Dashboard",
+  "repo_full_name": "musman550/github-traffic-analytics-dashboard",
+  "extra_links": []
+}

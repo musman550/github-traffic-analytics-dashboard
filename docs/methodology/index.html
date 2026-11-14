@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src &#x27;none&#x27;; script-src &#x27;self&#x27; https://giscus.app; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27; https://giscus.app; img-src &#x27;self&#x27; data: https://avatars.githubusercontent.com; font-src &#x27;self&#x27;; connect-src &#x27;self&#x27;; frame-src https://giscus.app; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;; manifest-src &#x27;self&#x27;">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Methodology: how GitHub traffic data is collected and calculated</title>
+<meta name="description" content="How views, clones, referrers, scores and insights are collected from the GitHub API, stored beyond the 14-day limit and calculated.">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="theme-color" content="#0b5fff">
+<link rel="canonical" href="https://musman550.github.io/github-traffic-analytics-dashboard/methodology/">
+<link rel="icon" href="https://musman550.github.io/github-traffic-analytics-dashboard/assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="https://musman550.github.io/github-traffic-analytics-dashboard/manifest.webmanifest">
+<link rel="alternate" type="text/plain" href="https://musman550.github.io/github-traffic-analytics-dashboard/llms.txt" title="llms.txt">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="GitHub Traffic Analytics Dashboard">
+<meta property="og:title" content="Methodology: how GitHub traffic data is collected and calculated">
+<meta property="og:description" content="How views, clones, referrers, scores and insights are collected from the GitHub API, stored beyond the 14-day limit and calculated.">
+<meta property="og:url" content="https://musman550.github.io/github-traffic-analytics-dashboard/methodology/">
+<meta property="og:image" content="https://musman550.github.io/github-traffic-analytics-dashboard/assets/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="GitHub Traffic Analytics Dashboard">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Methodology: how GitHub traffic data is collected and calculated">
+<meta name="twitter:description" content="How views, clones, referrers, scores and insights are collected from the GitHub API, stored beyond the 14-day limit and calculated.">
+<meta name="twitter:image" content="https://musman550.github.io/github-traffic-analytics-dashboard/assets/og-image.png">
+<link rel="stylesheet" href="https://musman550.github.io/github-traffic-analytics-dashboard/assets/style.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher", "name": "MUSFIRAAI", "url": "https://musfiraai.com", "sameAs": ["https://musfiraai.com", "https://www.youtube.com/@automatewithmusfiraai", "https://www.linkedin.com/in/musfira-ai-b3218b39b", "https://instagram.com/musma_n55", "https://github.com/musman550"], "logo": "https://avatars.githubusercontent.com/u/211268452?v=4"}, {"@type": "WebSite", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#website", "url": "https://musman550.github.io/github-traffic-analytics-dashboard/", "name": "GitHub Traffic Analytics Dashboard", "publisher": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher"}, "inLanguage": "en"}, {"@type": "WebApplication", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#app", "name": "GitHub Traffic Analytics Dashboard", "url": "https://musman550.github.io/github-traffic-analytics-dashboard/", "applicationCategory": "DeveloperApplication", "operatingSystem": "Any (web browser)", "isAccessibleForFree": true, "license": "https://opensource.org/license/mit", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher"}, "dateModified": "2026-11-14T11:22:43+00:00", "description": "Open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently."}, {"@type": "Dataset", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#dataset", "name": "GitHub traffic history for public repositories", "description": "Daily views, clones, referrers and stars for public repositories, collected from the GitHub REST API.", "dateModified": "2026-11-14T11:22:43+00:00", "temporalCoverage": "2026-10-30/2026-11-13", "license": "https://opensource.org/license/mit", "creator": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher"}, "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://musman550.github.io/github-traffic-analytics-dashboard/data/summary.json"}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dashboard", "item": "https://musman550.github.io/github-traffic-analytics-dashboard/"}, {"@type": "ListItem", "position": 2, "name": "Methodology", "item": "https://musman550.github.io/github-traffic-analytics-dashboard/methodology/"}]}</script>
+</head>
+<body><script src="https://musman550.github.io/github-traffic-analytics-dashboard/assets/boot.js"></script>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+<div class="wrap hdr">
+<a class="brand" href="https://musman550.github.io/github-traffic-analytics-dashboard/"><svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#0b5fff"/><path d="M6 22l6-7 5 4 9-11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Traffic Analytics<small>by MUSFIRAAI</small></span></a>
+<nav id="tabs" aria-label="Dashboard sections"><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#overview" data-tab="overview">Overview</a><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#trends" data-tab="trends">Trends</a><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#sources" data-tab="sources">Sources</a><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#repos" data-tab="repos">Repositories</a><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#insights" data-tab="insights">Insights</a><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#about" data-tab="about">About &amp; links</a><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#comments" data-tab="comments">Comments</a></nav>
+<div class="actions"><button id="theme" class="icon" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">&#9680;</button>
+<a class="btn small" href="https://github.com/musman550/github-traffic-analytics-dashboard" rel="noopener">Star on GitHub</a></div>
+</div>
+</header>
+<main id="main" class="wrap prose"><nav class="crumbs" aria-label="Breadcrumb"><a href="https://musman550.github.io/github-traffic-analytics-dashboard/">Dashboard</a> / Methodology</nav><h1>Methodology</h1><p class="lead">How every number on this dashboard is collected, stored and calculated. Last reviewed with data through 2026-11-13.</p>
+<h2>Data source</h2>
+<p>All traffic numbers come from the official GitHub REST API <a href="https://docs.github.com/rest/metrics/traffic" rel="noopener">repository traffic endpoints</a>: views, clones, popular referrers and popular paths. Repository metadata (stars, forks, topics, language, license, description, dates) comes from the repositories endpoint. Profile links come from the public GitHub profile, its social accounts and the profile README. Nothing is estimated, purchased or generated.</p>
+<h2>Why history has to be stored</h2>
+<p>GitHub keeps only the most recent 14 days of views and clones, and only the top 10 referrers and paths. This project saves what GitHub returns and merges it by date, so days that later fall out of GitHub's window remain available here. History starts on 2026-10-30, the first day of collection; earlier traffic cannot be recovered.</p>
+<h2>Update schedule and rate limits</h2>
+<p>A GitHub Actions workflow runs daily. Each API call returns a rolling 14-day window, so active repositories are fetched every day, idle ones every 3 days and dormant ones (no traffic for 45+ days) weekly, staggered by a stable hash of the repository name. Calls are sequential with a short delay, with retry and back-off, and the run stops and saves its progress if the remaining hourly budget falls below a safety floor. See GitHub's <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api" rel="noopener">rate limit documentation</a>. Visitors of this site never call the GitHub API: the page reads static JSON files.</p>
+<h2>Definitions</h2>
+<ul><li><b>Views:</b> page views of a repository on GitHub, as reported by GitHub.</li>
+<li><b>Unique visitors:</b> GitHub's deduplicated estimate for its 14-day window. It is shown per repository and summed across repositories on the overview, so a person who visits several repositories is counted more than once. It is not added across days.</li>
+<li><b>Clones:</b> git clone operations, including automation such as CI, mirrors and crawlers.</li>
+<li><b>Referrers:</b> the sites that sent visitors, limited by GitHub to the top 10 per repository.</li>
+<li><b>Latest complete day:</b> the most recent UTC day before today. GitHub can take 24-48 hours to finalise a day, so it may increase.</li></ul>
+<h2>Score and tiers</h2>
+<p><code>score = views(30d) + 0.5 &times; clones(30d) + 2 &times; unique visitors(14d) + 3 &times; stars + 4 &times; forks</code>. Clones have a lower weight because they include automation. Among public, non-fork, non-archived repositories the top 20% are labelled <i>top</i> and the bottom 20% <i>low</i>. The weights are a transparent heuristic, not an official metric.</p>
+<h2>Metadata audit</h2>
+<p>Each repository receives a 0-100 checklist score: description present (25) and 40-160 characters (10), topics (2.5 points each up to 20; 8+ recommended), license (10), homepage URL (10) and a push within 90 days (15). It highlights gaps in public metadata; it does not predict search ranking.</p>
+<h2>Insights</h2>
+<p>Insight sentences are produced by fixed rules from the stored numbers (for example momentum, concentration, busiest weekday, spikes above 2.5 standard deviations). A rule stays silent when there is not enough data.</p>
+<h2>Limitations</h2>
+<ul><li>Traffic shown is what GitHub reports; bots and the owner's own visits may be included.</li>
+<li>Only repositories owned by the publisher's account are tracked, and only public ones are published.</li>
+<li>Referrer data is a rolling top-10 snapshot, so source totals are not exact lifetime sums.</li>
+<li>New repositories appear after the next daily run.</li></ul>
+<h2>Integrity and changes</h2>
+<p>The code is open source under the MIT license at <a href="https://github.com/musman550/github-traffic-analytics-dashboard" rel="noopener">github.com/musman550/github-traffic-analytics-dashboard</a>. Only the owner can change it; every data update is a visible commit. Raw data is available as <a href="https://musman550.github.io/github-traffic-analytics-dashboard/data/summary.json">JSON</a>.</p></main>
+<footer class="site-footer">
+<div class="wrap fgrid">
+<div><strong>GitHub Traffic Analytics Dashboard</strong>
+<p>Permanent history of GitHub views, clones, referrers and stars for public repositories. Open source, free and login-free.</p>
+<p class="mut">Built and maintained by MUSFIRAAI &middot; MUSFIRA AI.</p></div>
+<div><h3>Dashboard</h3><ul><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#overview">Overview</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#trends">Trends</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#sources">Sources</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#repos">Repositories</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#insights">Insights</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#about">About &amp; links</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#comments">Comments</a></li></ul></div>
+<div><h3>Resources</h3><ul>
+<li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/about/">About</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/methodology/">Methodology</a></li>
+<li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/privacy/">Privacy</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/data/summary.json">Open data (JSON)</a></li>
+<li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/llms.txt">llms.txt</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/sitemap.xml">Sitemap</a></li>
+<li><a href="https://github.com/musman550/github-traffic-analytics-dashboard" rel="noopener">Source code</a></li>
+<li><a href="https://github.com/musman550/github-traffic-analytics-dashboard/discussions" rel="noopener">Discussions</a></li></ul></div>
+<div><h3>Connect</h3><ul><li><a href="https://github.com/musman550" rel="me noopener">GitHub profile</a></li><li><a href="https://musfiraai.com" rel="me noopener">musfiraai.com</a></li><li><a href="https://www.youtube.com/@automatewithmusfiraai" rel="me noopener">YouTube</a></li><li><a href="https://www.linkedin.com/in/musfira-ai-b3218b39b" rel="me noopener">LinkedIn</a></li><li><a href="https://instagram.com/musma_n55" rel="me noopener">Instagram</a></li></ul></div>
+</div>
+<div class="wrap fbar"><span>&copy; 2026 MUSFIRAAI. MIT licensed.</span>
+<span>Data through 2026-11-13 &middot; updated 2026-11-14 UTC</span>
+<span class="mut">Not affiliated with, endorsed by or sponsored by GitHub, Inc. GitHub is a trademark of GitHub, Inc.</span></div>
+</footer>
+<script src="https://musman550.github.io/github-traffic-analytics-dashboard/assets/page.js"></script></body></html>
