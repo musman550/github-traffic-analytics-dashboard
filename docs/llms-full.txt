@@ -16,19 +16,19 @@
 
 ## Key facts
 - Tracked public repositories: 265
-- Views, last 30 days: 252; clones: 6140; stars: 1; forks: 0
+- Views, last 30 days: 266; clones: 6909; stars: 1; forks: 0
 - Source of data: GitHub REST API traffic endpoints (https://docs.github.com/rest/metrics/traffic)
 
 ## Top repositories by score
-- musfiraai-mcp-server: 1 views, 590 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-mcp-server
-- musfira-ai-repo-bot: 7 views, 336 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-repo-bot
-- musfiraai-free-tools: 0 views, 224 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-free-tools
+- musfiraai-mcp-server: 1 views, 629 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-mcp-server
+- musfira-ai-repo-bot: 7 views, 351 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-repo-bot
+- musfiraai-free-tools: 0 views, 232 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-free-tools
 - musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs: 13 views, 71 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs
-- musfira-ai-copilot-code-review-api-management-and-review-overview-updat: 0 views, 121 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-copilot-code-review-api-management-and-review-overview-updat
-- musfira-ai-github-in-slack-and-teams-is-generally-available-and-more: 6 views, 83 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-github-in-slack-and-teams-is-generally-available-and-more
-- musfira-ai-fable-5gguf-when: 11 views, 83 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-fable-5gguf-when
+- musfira-ai-copilot-code-review-api-management-and-review-overview-updat: 0 views, 122 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-copilot-code-review-api-management-and-review-overview-updat
+- musfira-ai-github-in-slack-and-teams-is-generally-available-and-more: 6 views, 85 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-github-in-slack-and-teams-is-generally-available-and-more
+- musfira-ai-fable-5gguf-when: 11 views, 84 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-fable-5gguf-when
+- musfira-ai-github-copilot-weekly-releases-november-2: 0 views, 112 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-github-copilot-weekly-releases-november-2
 - musfira-ai-granite-switch-411-update-models-like-you-update-software: 0 views, 112 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-granite-switch-411-update-models-like-you-update-software
-- musfira-ai-github-copilot-weekly-releases-november-2: 0 views, 110 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-github-copilot-weekly-releases-november-2
 - musfira-ai-meituan-longcatlongcat-25-hugging-face: 0 views, 110 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-meituan-longcatlongcat-25-hugging-face
 
 ## FAQ
