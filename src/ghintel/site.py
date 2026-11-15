@@ -1,7 +1,8 @@
 """Generate every public file of the site from collected data: HTML pages (SEO / GEO / AEO
 structured data, llms.txt, sitemap, robots, security.txt, manifest). All text is derived from
 real collected data or from the documented methodology; nothing is placeholder content."""
-import datetime as dt, html, json, os
+import csv, datetime as dt, hashlib, html, io, json, os
+from . import content as C
 from .store import load
 
 NAV = [("overview", "Overview"), ("trends", "Trends"), ("sources", "Sources"),
@@ -38,7 +39,7 @@ def faq(cfg, s):
          "score = views in 30 days + 0.5 x clones in 30 days + 2 x unique visitors (14 days) + 3 x stars + 4 x forks. "
          "The top 20% of public, non-fork, non-archived repositories are marked top and the bottom 20% low."),
         ("How are API rate limits avoided?",
-         "Active repositories are fetched daily, idle ones every 3 days and dormant ones weekly. Because GitHub returns "
+         "Repositories with recent views are fetched daily, others every 3 days and dormant ones weekly. Because GitHub returns "
          "a 14-day window on every call, no data is lost. Calls are sequential, and the run stops safely if the "
          "remaining hourly budget gets low."),
         ("Can I run this for my own GitHub account?",
@@ -52,8 +53,9 @@ def faq(cfg, s):
     ]
 
 
-def jsonld(cfg, prof, s, f, page="index"):
+def jsonld(cfg, prof, s, f, page="index", path="", title="", desc="", article=None):
     base = cfg["site_url"]
+    url = base + path
     same = [l["url"] for l in (prof or {}).get("links", [])] + ([prof["url"]] if prof else [])
     org = {"@type": "Organization", "@id": base + "#publisher", "name": (prof or {}).get("name", "Publisher"),
            "url": next((l["url"] for l in (prof or {}).get("links", []) if l["kind"] == "website"), (prof or {}).get("url", base)),
@@ -77,13 +79,23 @@ def jsonld(cfg, prof, s, f, page="index"):
          "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json",
                            "contentUrl": base + "data/summary.json"}]},
     ]
-    if page == "index":
+    graph.append({"@type": "WebPage", "@id": url + "#webpage", "url": url, "name": title or cfg["site_name"],
+                  "description": desc, "isPartOf": {"@id": base + "#website"}, "inLanguage": "en",
+                  "dateModified": s["generated"],
+                  "primaryImageOfPage": {"@type": "ImageObject", "url": base + "assets/og-image.png", "width": 1200, "height": 630}})
+    if article:
+        graph.append({"@type": article.get("type", "TechArticle"), "headline": title, "description": desc,
+                      "author": {"@id": base + "#publisher"}, "publisher": {"@id": base + "#publisher"},
+                      "datePublished": article["published"], "dateModified": article.get("modified", s["generated"]),
+                      "mainEntityOfPage": {"@id": url + "#webpage"}, "inLanguage": "en",
+                      "image": base + "assets/og-image.png"})
+    if page in ("index", "faq"):
         graph.append({"@type": "FAQPage", "mainEntity": [
             {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in f]})
     return json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False)
 
 
-def head(cfg, title, desc, path, ld, extra=""):
+def head(cfg, title, desc, path, ld, extra="", author="", modified=""):
     base = cfg["site_url"]
     url = base + path
     return f"""<!doctype html>
@@ -95,12 +107,15 @@ def head(cfg, title, desc, path, ld, extra=""):
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>{e(title)}</title>
 <meta name="description" content="{e(desc)}">
+<meta name="author" content="{e(author)}">
+<meta property="article:modified_time" content="{e(modified)}">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <meta name="theme-color" content="#0b5fff">
 <link rel="canonical" href="{e(url)}">
 <link rel="icon" href="{base}assets/favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="{base}manifest.webmanifest">
 <link rel="alternate" type="text/plain" href="{base}llms.txt" title="llms.txt">
+<link rel="alternate" type="application/atom+xml" href="{base}feed.xml" title="Weekly traffic reports">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="{e(cfg['site_name'])}">
 <meta property="og:title" content="{e(title)}">
@@ -128,7 +143,7 @@ def header(cfg, prof, tabs=True, index=False):
 <div class="wrap hdr">
 <a class="brand" href="{base}"><svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#0b5fff"/><path d="M6 22l6-7 5 4 9-11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Traffic Analytics{by}</span></a>
 <nav id="tabs" aria-label="Dashboard sections">{nav}</nav>
-<div class="actions"><button id="theme" class="icon" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">&#9680;</button>
+<div class="actions">{'<button id="settings-btn" class="icon" type="button" aria-label="Settings" title="Settings">&#9881;</button>' if index else ''}<button id="theme" class="icon" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">&#9680;</button>
 <a class="btn small" href="https://github.com/{cfg['repo_full_name']}" rel="noopener">Star on GitHub</a></div>
 </div>
 </header>"""
@@ -149,8 +164,9 @@ def footer(cfg, prof, s):
 <div><h3>Dashboard</h3><ul>{''.join(f'<li><a href="{base}#{k}">{v}</a></li>' for k, v in NAV)}</ul></div>
 <div><h3>Resources</h3><ul>
 <li><a href="{base}about/">About</a></li><li><a href="{base}methodology/">Methodology</a></li>
-<li><a href="{base}privacy/">Privacy</a></li><li><a href="{base}data/summary.json">Open data (JSON)</a></li>
-<li><a href="{base}llms.txt">llms.txt</a></li><li><a href="{base}sitemap.xml">Sitemap</a></li>
+<li><a href="{base}faq/">FAQ</a></li><li><a href="{base}guides/">Guides</a></li><li><a href="{base}reports/">Weekly reports</a></li>
+<li><a href="{base}data/">Open data</a></li><li><a href="{base}privacy/">Privacy</a></li>
+<li><a href="{base}feed.xml">Atom feed</a></li><li><a href="{base}llms.txt">llms.txt</a></li><li><a href="{base}sitemap.xml">Sitemap</a></li>
 <li><a href="https://github.com/{cfg['repo_full_name']}" rel="noopener">Source code</a></li>
 <li><a href="https://github.com/{cfg['repo_full_name']}/discussions" rel="noopener">Discussions</a></li></ul></div>
 <div><h3>Connect</h3><ul>{gh}{links}</ul></div>
@@ -199,17 +215,18 @@ def build_index(cfg, prof, s):
     f = faq(cfg, s)
     t = s["totals"]
     title = "GitHub Traffic Analytics Dashboard: Views, Clones & Referrers History"
-    desc = (f"Free, open-source GitHub traffic analytics. Daily history of views, clones, referrers and stars "
-            f"for {t['repos']} public repositories, beyond GitHub's 14-day limit. No login.")
+    desc = (f"Free, open-source GitHub traffic analytics: daily history of views, clones, referrers and stars "
+            f"for {t['repos']} public repos, beyond GitHub's 14-day limit.")
     faq_html = "".join(f"<details><summary>{e(q)}</summary><p>{e(a)}</p></details>" for q, a in f)
     body = f"""<body>
 <script src="{base}assets/boot.js"></script>
 {header(cfg, prof, index=True)}
+<div id="stale" class="banner" role="status" hidden>The data looks out of date: the last update was more than 3 days ago. The daily workflow may need attention.</div>
 <main id="main" class="wrap">
 <section class="hero">
 <div><h1>GitHub traffic analytics for every public repository</h1>
 <p class="lead">Views, clones, referrers and stars with permanent daily history, because GitHub itself keeps only 14 days. Open to everyone, no login.</p></div>
-<div class="fresh" id="fresh"><span class="dot"></span><span id="fresh-text">Data through {e(s['last_data_day'])}</span></div>
+<div class="fresh" id="fresh"><span class="dot"></span><span id="fresh-text">Data through <time datetime="{e(s['last_data_day'])}">{e(s['last_data_day'])}</time></span></div>
 </section>
 
 <section class="tab" id="tab-overview" data-title="Overview">
@@ -235,6 +252,7 @@ def build_index(cfg, prof, s):
 <div class="card"><h2>Views by weekday (90 days)</h2><div class="chartbox"><canvas id="c-weekday"></canvas></div></div>
 <div class="card"><h2>Stars and forks over time</h2><div class="chartbox"><canvas id="c-stars"></canvas></div><p class="note" id="stars-note"></p></div>
 </div>
+<div class="card"><h2>Daily views calendar</h2><div class="heatwrap"><div id="heat" class="heat" role="img" aria-label="Calendar heatmap of daily views"></div></div><p class="note" id="heat-note"></p></div>
 <div class="card"><h2>New repositories per day (30 days)</h2><div class="chartbox"><canvas id="c-created"></canvas></div></div>
 </section>
 
@@ -267,6 +285,10 @@ def build_index(cfg, prof, s):
 <div class="card"><h2>Languages (repos and 30-day views)</h2><div class="chartbox"><canvas id="c-lang"></canvas></div></div>
 <div class="card"><h2>Top topics</h2><div class="chartbox"><canvas id="c-topics"></canvas></div></div>
 </div>
+<div class="grid two">
+<div class="card"><h2>Biggest gainers (7 days vs previous 7)</h2><div class="wrapx"><table id="t-up"></table></div></div>
+<div class="card"><h2>Biggest decliners</h2><div class="wrapx"><table id="t-down"></table></div></div>
+</div>
 <div class="card"><h2>Repository metadata audit</h2>
 <p class="note">A transparent checklist, not a ranking guarantee: description, topics, license, homepage and recent activity. Average across repositories: <b id="audit-avg"></b>/100. Lowest scores first.</p>
 <div class="wrapx"><table id="t-audit"></table></div></div>
@@ -276,8 +298,13 @@ def build_index(cfg, prof, s):
 <div class="grid two">
 <div class="card"><h2>About the publisher</h2>{profile_card(prof)}<p class="note">Profile and links are fetched automatically from the public GitHub profile and its README every day.</p></div>
 <div class="card"><h2>Frequently asked questions</h2>{faq_html}
-<p><a href="{base}methodology/">Full methodology</a> &middot; <a href="{base}privacy/">Privacy</a> &middot; <a href="{base}data/summary.json">Open data</a></p></div>
+<p><a href="{base}faq/">All questions</a> &middot; <a href="{base}methodology/">Methodology</a> &middot; <a href="{base}privacy/">Privacy</a></p></div>
 </div>
+<div class="card"><h2>Guides, reports and data</h2><ul class="links">
+<li><a href="{base}guides/keep-github-traffic-history/"><b>Keep GitHub traffic beyond 14 days</b><span class="mut">Step-by-step guide with code</span></a></li>
+<li><a href="{base}guides/github-traffic-api-reference/"><b>GitHub traffic API reference</b><span class="mut">Endpoints, fields, limits</span></a></li>
+<li><a href="{base}reports/"><b>Weekly reports</b><span class="mut">One page per completed week</span></a></li>
+<li><a href="{base}data/"><b>Open data</b><span class="mut">JSON, CSV and badge files</span></a></li></ul></div>
 </section>
 
 <section class="tab" id="tab-comments" data-title="Comments">
@@ -287,26 +314,40 @@ def build_index(cfg, prof, s):
 </section>
 </main>
 <dialog id="repo-dialog" aria-labelledby="rd-title"><div id="rd"></div></dialog>
+<dialog id="settings-dialog" aria-labelledby="st-title"><div class="sd">
+<div class="rd-h"><h2 id="st-title">Settings</h2><button class="rd-x" type="button" data-close aria-label="Close">&times;</button></div>
+<p class="note">Saved in this browser only. Nothing is sent anywhere.</p>
+<label>Theme <select id="p-theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+<label>Start tab <select id="p-tab"><option value="overview">Overview</option><option value="trends">Trends</option><option value="sources">Sources</option><option value="repos">Repositories</option><option value="insights">Insights</option></select></label>
+<label>Rows per page <select id="p-rows"><option>10</option><option>25</option><option>50</option><option>100</option></select></label>
+<label class="chk"><input type="checkbox" id="p-compact"> Compact density</label>
+<label class="chk"><input type="checkbox" id="p-forks"> Hide forks and archived repositories</label>
+<label class="chk"><input type="checkbox" id="p-motion"> Reduce motion</label>
+<div class="bar"><button class="btn small ghost" type="button" id="p-reset">Reset to defaults</button></div>
+<h3>Keyboard shortcuts</h3><p class="note"><kbd>/</kbd> search repositories &middot; <kbd>?</kbd> open settings &middot; <kbd>Esc</kbd> close dialogs</p>
+</div></dialog>
 <button id="totop" class="totop" type="button" aria-label="Back to top" hidden>&uarr;</button>
 {footer(cfg, prof, s)}
 <script src="{base}assets/vendor/chart.umd.js"></script>
 <script src="{base}assets/app.js"></script>
 </body>
 </html>"""
-    return head(cfg, title, desc, "", jsonld(cfg, prof, s, f)) + "\n" + body
+    return head(cfg, title, desc, "", jsonld(cfg, prof, s, f, "index", "", title, desc),
+                author=(prof or {}).get("name", ""), modified=s["generated"]) + "\n" + body
 
 
-def subpage(cfg, prof, s, path, title, desc, h1, inner, page):
+def subpage(cfg, prof, s, path, title, desc, h1, inner, page, article=None, trail=None, faqs=None):
     base = cfg["site_url"]
-    f = faq(cfg, s)
+    f = faqs or faq(cfg, s)
+    steps = [("Dashboard", base)] + list(trail or []) + [(h1, base + path)]
     crumbs = json.dumps({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
-        {"@type": "ListItem", "position": 1, "name": "Dashboard", "item": base},
-        {"@type": "ListItem", "position": 2, "name": h1, "item": base + path}]})
-    ld = jsonld(cfg, prof, s, f, page=page)
+        {"@type": "ListItem", "position": i + 1, "name": n, "item": u} for i, (n, u) in enumerate(steps)]})
+    ld = jsonld(cfg, prof, s, f, page, path, title, desc, article)
+    trail_html = "".join(f'<a href="{e(u)}">{e(n)}</a> / ' for n, u in steps[:-1])
     extra = f'\n<script type="application/ld+json">{crumbs}</script>'
-    return (head(cfg, title, desc, path, ld, extra) +
+    return (head(cfg, title, desc, path, ld, extra, (prof or {}).get("name", ""), s["generated"]) +
             f'\n<body><script src="{base}assets/boot.js"></script>\n{header(cfg, prof)}\n<main id="main" class="wrap prose">'
-            f'<nav class="crumbs" aria-label="Breadcrumb"><a href="{base}">Dashboard</a> / {e(h1)}</nav>'
+            f'<nav class="crumbs" aria-label="Breadcrumb">{trail_html}{e(h1)}</nav>'
             f'<h1>{e(h1)}</h1>{inner}</main>\n{footer(cfg, prof, s)}\n<script src="{base}assets/page.js"></script></body></html>')
 
 
@@ -317,13 +358,13 @@ def page_methodology(cfg, s):
 <h2>Why history has to be stored</h2>
 <p>GitHub keeps only the most recent 14 days of views and clones, and only the top 10 referrers and paths. This project saves what GitHub returns and merges it by date, so days that later fall out of GitHub's window remain available here. History starts on {e(s['first_data_day'])}, the first day of collection; earlier traffic cannot be recovered.</p>
 <h2>Update schedule and rate limits</h2>
-<p>A GitHub Actions workflow runs daily. Each API call returns a rolling 14-day window, so active repositories are fetched every day, idle ones every 3 days and dormant ones (no traffic for 45+ days) weekly, staggered by a stable hash of the repository name. Calls are sequential with a short delay, with retry and back-off, and the run stops and saves its progress if the remaining hourly budget falls below a safety floor. See GitHub's <a href="{DOCS_RATE}" rel="noopener">rate limit documentation</a>. Visitors of this site never call the GitHub API: the page reads static JSON files.</p>
+<p>A GitHub Actions workflow runs daily, plus a full refresh of every repository once a week. Each API call returns a rolling 14-day window, so repositories with views in the last 14 days are fetched every day, others every 3 days and dormant ones (no views for 45+ days) weekly, staggered by a stable hash of the repository name. Calls are sequential with a short delay, with retry and back-off, and the run stops and saves its progress if the remaining hourly budget falls below a safety floor. See GitHub's <a href="{DOCS_RATE}" rel="noopener">rate limit documentation</a>. Visitors of this site never call the GitHub API: the page reads static JSON files.</p>
 <h2>Definitions</h2>
 <ul><li><b>Views:</b> page views of a repository on GitHub, as reported by GitHub.</li>
 <li><b>Unique visitors:</b> GitHub's deduplicated estimate for its 14-day window. It is shown per repository and summed across repositories on the overview, so a person who visits several repositories is counted more than once. It is not added across days.</li>
 <li><b>Clones:</b> git clone operations, including automation such as CI, mirrors and crawlers.</li>
 <li><b>Referrers:</b> the sites that sent visitors, limited by GitHub to the top 10 per repository.</li>
-<li><b>Latest complete day:</b> the most recent UTC day before today. GitHub can take 24-48 hours to finalise a day, so it may increase.</li></ul>
+<li><b>Latest finalised day:</b> statistics end two UTC days before today, because GitHub can take 24-48 hours to finalise a day. The newest days are therefore left out until they settle.</li></ul>
 <h2>Score and tiers</h2>
 <p><code>score = views(30d) + 0.5 &times; clones(30d) + 2 &times; unique visitors(14d) + 3 &times; stars + 4 &times; forks</code>. Clones have a lower weight because they include automation. Among public, non-fork, non-archived repositories the top 20% are labelled <i>top</i> and the bottom 20% <i>low</i>. The weights are a transparent heuristic, not an official metric.</p>
 <h2>Metadata audit</h2>
@@ -334,7 +375,8 @@ def page_methodology(cfg, s):
 <ul><li>Traffic shown is what GitHub reports; bots and the owner's own visits may be included.</li>
 <li>Only repositories owned by the publisher's account are tracked, and only public ones are published.</li>
 <li>Referrer data is a rolling top-10 snapshot, so source totals are not exact lifetime sums.</li>
-<li>New repositories appear after the next daily run.</li></ul>
+<li>New repositories appear after the next daily run.</li>
+<li>Clones are not used to decide how often a repository is fetched, because automation clones almost every repository.</li></ul>
 <h2>Integrity and changes</h2>
 <p>The code is open source under the MIT license at <a href="https://github.com/{e(cfg['repo_full_name'])}" rel="noopener">github.com/{e(cfg['repo_full_name'])}</a>. Only the owner can change it; every data update is a visible commit. Raw data is available as <a href="{cfg['site_url']}data/summary.json">JSON</a>.</p>"""
 
@@ -373,61 +415,149 @@ def page_about(cfg, prof, s):
 <li>Corrections and questions are welcome through <a href="https://github.com/{e(cfg['repo_full_name'])}/discussions" rel="noopener">GitHub Discussions</a>.</li></ul>"""
 
 
+def _w(path, text):
+    full = "docs/" + path
+    os.makedirs(os.path.dirname(full) or "docs", exist_ok=True)
+    with open(full, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(text)
+
+
+def indexnow_key(cfg):
+    return hashlib.sha256((cfg["repo_full_name"] + ":indexnow").encode()).hexdigest()[:32]
+
+
 def build_all(cfg):
     s = load("docs/data/summary.json")
     prof = load("docs/data/profile.json")
     base = cfg["site_url"]
-    w = lambda p, t: (os.makedirs(os.path.dirname("docs/" + p) or "docs", exist_ok=True), open("docs/" + p, "w", encoding="utf-8").write(t))
-    w("index.html", build_index(cfg, prof, s))
-    w("methodology/index.html", subpage(cfg, prof, s, "methodology/", "Methodology: how GitHub traffic data is collected and calculated",
-        "How views, clones, referrers, scores and insights are collected from the GitHub API, stored beyond the 14-day limit and calculated.",
-        "Methodology", page_methodology(cfg, s), "methodology"))
-    w("privacy/index.html", subpage(cfg, prof, s, "privacy/", "Privacy policy: no tracking, no cookies",
-        "This dashboard sets no cookies and runs no analytics. Private repositories are never collected. Details on hosting and comments.",
-        "Privacy", page_privacy(cfg, s), "privacy"))
-    w("about/index.html", subpage(cfg, prof, s, "about/", "About the GitHub Traffic Analytics Dashboard and its maintainer",
-        "Who maintains the dashboard, why it exists and the editorial and data policy behind every number.",
-        "About", page_about(cfg, prof, s), "about"))
-    nf = subpage(cfg, prof, s, "404.html", "Page not found", "This page does not exist.", "Page not found",
-        f'<p>The page you requested was not found. Go to the <a href="{base}">dashboard</a>.</p>', "404")
-    w("404.html", nf.replace('content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"', 'content="noindex"'))
-
     t = s["totals"]
+    gen = s["generated"]
+    reports = C.weekly_reports(s)
+    urls = []  # (path, lastmod, changefreq)
+
+    def page(path, title, desc, h1, inner, kind, freq="monthly", lastmod=None, **kw):
+        _w(path + "index.html", subpage(cfg, prof, s, path, title, desc, h1, inner, kind, **kw))
+        urls.append((path, lastmod or gen[:10], freq))
+
+    _w("index.html", build_index(cfg, prof, s))
+    urls.append(("", gen[:10], "daily"))
+    page("about/", "About the GitHub Traffic Analytics Dashboard and its maintainer",
+         "Who maintains the dashboard, why it exists and the editorial and data policy behind every number it shows.",
+         "About", page_about(cfg, prof, s), "about")
+    page("methodology/", "Methodology: how GitHub traffic data is collected and calculated",
+         "How views, clones, referrers, scores and insights are collected from the GitHub API, stored beyond 14 days and calculated.",
+         "Methodology", page_methodology(cfg, s), "methodology")
+    page("privacy/", "Privacy policy: no tracking, no cookies",
+         "This dashboard sets no cookies and runs no analytics. Private repositories are never collected. Hosting and comments explained.",
+         "Privacy", page_privacy(cfg, s), "privacy", freq="yearly")
+
+    full_faq = faq(cfg, s) + C.faq_extra()
+    faq_html = "".join(f"<details open><summary>{e(q)}</summary><p>{e(a)}</p></details>" for q, a in full_faq)
+    page("faq/", "FAQ: GitHub traffic data, history, clones and unique visitors",
+         "Answers about GitHub traffic analytics: the 14-day limit, unique visitors, clones, referrers, rate limits and exporting data.",
+         "Frequently asked questions", f'<p class="lead">Short, factual answers about GitHub repository traffic and this dashboard.</p>{faq_html}', "faq", faqs=full_faq)
+
+    g1, g2 = "keep-github-traffic-history", "github-traffic-api-reference"
+    guides = [(g1, "How to keep GitHub traffic data longer than 14 days",
+               "Step-by-step guide with tested Python and GitHub Actions code to save GitHub repository views and clones permanently.",
+               C.guide_14_days(cfg, base)),
+              (g2, "GitHub traffic API reference: endpoints, fields and limits",
+               "Reference for GitHub's repository traffic REST endpoints: views, clones, referrers and paths, access rules and limits.",
+               C.guide_api(cfg, base))]
+    for slug, title, desc, inner in guides:
+        page(f"guides/{slug}/", title, desc, title, inner, "guide", freq="monthly", lastmod=C.PUBLISHED,
+             article={"type": "TechArticle", "published": C.PUBLISHED, "modified": C.PUBLISHED},
+             trail=[("Guides", base + "guides/")])
+    gl = "".join(f'<li><a href="{base}guides/{sl}/"><b>{e(ti)}</b><span class="mut">{e(de)}</span></a></li>' for sl, ti, de, _ in guides)
+    page("guides/", "Guides: GitHub traffic analytics and data retention",
+         "Practical guides on GitHub repository traffic: keeping history beyond 14 days and using the traffic API.",
+         "Guides", f'<p class="lead">Practical, tested guides.</p><ul class="links">{gl}</ul>', "guides")
+
+    page("data/", "Open data: GitHub traffic history as JSON and CSV",
+         "Download daily GitHub repository traffic history, repository metadata and badges as JSON and CSV. Updated every day.",
+         "Open data", C.data_page(cfg, s, base), "data", freq="daily")
+
+    for w in reports:
+        sl = C.report_slug(w)
+        end = (w["start"] + dt.timedelta(days=6)).isoformat()
+        title = C.report_title(w)
+        page(f"reports/{sl}/", title, C.report_summary(w)[:152].rstrip() + ("..." if len(C.report_summary(w)) > 152 else ""),
+             title, C.report_body(cfg, s, w, base), "report", freq="yearly", lastmod=end,
+             article={"type": "Article", "published": end, "modified": end}, trail=[("Weekly reports", base + "reports/")])
+    page("reports/", "Weekly GitHub traffic reports",
+         "Automatically generated weekly reports of GitHub repository views and clones with top repositories and daily breakdown.",
+         "Weekly reports", C.reports_index_body(cfg, reports, base), "reports", freq="weekly")
+    _w("feed.xml", C.atom_feed(cfg, prof, reports, base, gen))
+
+    nf = subpage(cfg, prof, s, "404.html", "Page not found", "This page does not exist.", "Page not found",
+                 f'<p>The page you requested was not found. Go to the <a href="{base}">dashboard</a>.</p>', "404")
+    _w("404.html", nf.replace('content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"', 'content="noindex"'))
+
+    # ---- machine-readable files
+    out = io.StringIO()
+    wr = csv.writer(out, lineterminator="\n")
+    wr.writerow(["name", "url", "views_7d", "views_30d", "views_since_tracking", "clones_30d", "unique_visitors_14d",
+                 "stars", "forks", "language", "license", "last_push", "score", "tier"])
+    for r in s["repos"]:
+        wr.writerow([r["name"], r["url"], r["v7"], r["v30"], r["vall"], r["c30"], r["vu14"], r["stars"], r["forks"],
+                     r["lang"] or "", r["license"] or "", r["pushed"], r["score"], r["tier"]])
+    _w("data/repos.csv", out.getvalue())
+    out = io.StringIO()
+    wr = csv.writer(out, lineterminator="\n")
+    wr.writerow(["date", "views", "clones"])
+    for d, v, _vu, c, _cu in s["daily"]:
+        wr.writerow([d, v, c])
+    _w("data/daily.csv", out.getvalue())
+    for name, label, val, color in (("views-30d", "views (30d)", t["views_30d"], "blue"), ("clones-30d", "clones (30d)", t["clones_30d"], "lightgrey"),
+                                    ("stars", "stars", t["stars"], "yellow"), ("repos", "public repos", t["repos"], "brightgreen")):
+        _w(f"badges/{name}.json", json.dumps({"schemaVersion": 1, "label": label, "message": f"{val:,}", "color": color}))
+
+    # ---- discovery files
     top = [r for r in s["repos"] if r["tier"] == "top"][:10]
+    pages_md = "\n".join(f"- [{n}]({base}{p}): {d}" for p, n, d in (
+        ("", "Dashboard", "overview, trends, sources, repositories, insights, links, comments"),
+        ("methodology/", "Methodology", "data source, definitions, formulas, limitations"),
+        ("faq/", "FAQ", "answers about GitHub traffic data, clones, unique visitors, limits"),
+        ("guides/keep-github-traffic-history/", "Guide: keep GitHub traffic beyond 14 days", "step-by-step with code"),
+        ("guides/github-traffic-api-reference/", "Guide: GitHub traffic API reference", "endpoints, fields, limits"),
+        ("reports/", "Weekly reports", f"{len(reports)} completed weeks"),
+        ("data/", "Open data", "JSON, CSV and badge files"),
+        ("about/", "About", "maintainer, purpose, editorial policy"),
+        ("privacy/", "Privacy", "no cookies or tracking")))
     llms = f"""# {cfg['site_name']}
 
-> Free, open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently, beyond GitHub's 14-day limit. Open to everyone, no login. Public repositories only. Data through {s['last_data_day']}, updated {s['generated'][:10]}.
+> Free, open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently, beyond GitHub's 14-day limit. Public repositories only, no login. Data through {s['last_data_day']}, updated {gen[:10]}.
 
 ## Pages
-- [Dashboard]({base}): overview, trends, sources, repositories, insights, links, comments
-- [Methodology]({base}methodology/): data source, definitions, formulas, limitations
-- [About]({base}about/): maintainer, purpose, editorial and data policy
-- [Privacy]({base}privacy/): no cookies or tracking
+{pages_md}
 - [Source code](https://github.com/{cfg['repo_full_name']}): MIT licensed
 
 ## Data
 - [summary.json]({base}data/summary.json): aggregated statistics, repository table, insights
-- [series.json]({base}data/series.json): daily views and clones per repository (sparse)
-- [profile.json]({base}data/profile.json): publisher profile and public links
+- [series.json]({base}data/series.json): daily views and clones per repository
+- [repos.csv]({base}data/repos.csv) and [daily.csv]({base}data/daily.csv)
+- [Atom feed]({base}feed.xml): weekly reports
 
 ## Key facts
 - Tracked public repositories: {t['repos']}
-- Views, last 30 days: {t['views_30d']}; clones: {t['clones_30d']}; stars: {t['stars']}; forks: {t['forks']}
-- Source of data: GitHub REST API traffic endpoints ({DOCS_TRAFFIC})
+- Last 30 days: {t['views_30d']} views, {t['clones_30d']} clones. Stars: {t['stars']}. Forks: {t['forks']}.
+- Source of data: GitHub REST API traffic endpoints ({C.DOCS_TRAFFIC})
+- GitHub keeps only 14 days of traffic and the top 10 referrers/paths; this project stores every day.
 """
-    w("llms.txt", llms)
+    _w("llms.txt", llms)
     rows = "\n".join(f"- {r['name']}: {r['v30']} views, {r['c30']} clones, {r['stars']} stars (30 days) - {r['url']}" for r in top)
-    qa = "\n\n".join(f"### {q}\n{a}" for q, a in faq(cfg, s))
-    w("llms-full.txt", llms + f"\n## Top repositories by score\n{rows}\n\n## FAQ\n\n{qa}\n")
+    qa = "\n\n".join(f"### {q}\n{a}" for q, a in full_faq)
+    _w("llms-full.txt", llms + f"\n## Top repositories by score\n{rows}\n\n## FAQ\n\n{qa}\n")
     bots = "".join(f"User-agent: {b}\nAllow: /\n\n" for b in AI_BOTS)
-    w("robots.txt", f"User-agent: *\nAllow: /\n\n{bots}Sitemap: {base}sitemap.xml\n")
-    d = s["generated"][:10]
-    urls = "".join(f"<url><loc>{base}{p}</loc><lastmod>{d}</lastmod><changefreq>{c}</changefreq></url>"
-                   for p, c in (("", "daily"), ("about/", "monthly"), ("methodology/", "monthly"), ("privacy/", "yearly")))
-    w("sitemap.xml", f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')
+    _w("robots.txt", f"User-agent: *\nAllow: /\n\n{bots}Sitemap: {base}sitemap.xml\n")
+    body = "".join(f"<url><loc>{base}{p}</loc><lastmod>{m}</lastmod><changefreq>{c}</changefreq></url>" for p, m, c in urls)
+    _w("sitemap.xml", f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{body}</urlset>\n')
     exp = (dt.date.today() + dt.timedelta(days=365)).isoformat()
-    w(".well-known/security.txt", f"Contact: https://github.com/{cfg['repo_full_name']}/security/advisories/new\nExpires: {exp}T00:00:00.000Z\nPreferred-Languages: en\nCanonical: {base}.well-known/security.txt\n")
-    w("manifest.webmanifest", json.dumps({"name": cfg["site_name"], "short_name": "Traffic Analytics", "start_url": base,
+    _w(".well-known/security.txt", f"Contact: https://github.com/{cfg['repo_full_name']}/security/advisories/new\nExpires: {exp}T00:00:00.000Z\nPreferred-Languages: en\nCanonical: {base}.well-known/security.txt\n")
+    _w("manifest.webmanifest", json.dumps({"name": cfg["site_name"], "short_name": "Traffic Analytics", "start_url": base,
         "display": "standalone", "background_color": "#ffffff", "theme_color": "#0b5fff",
         "icons": [{"src": base + "assets/favicon.svg", "sizes": "any", "type": "image/svg+xml"}]}))
-    w(".nojekyll", "")
+    key = indexnow_key(cfg)
+    _w(f"{key}.txt", key)
+    _w("indexnow-urls.json", json.dumps([base + p for p, _m, _c in urls]))
+    _w(".nojekyll", "")

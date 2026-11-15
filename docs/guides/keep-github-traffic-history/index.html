@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src &#x27;none&#x27;; script-src &#x27;self&#x27; https://giscus.app; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27; https://giscus.app; img-src &#x27;self&#x27; data: https://avatars.githubusercontent.com; font-src &#x27;self&#x27;; connect-src &#x27;self&#x27;; frame-src https://giscus.app; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;; manifest-src &#x27;self&#x27;">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>How to keep GitHub traffic data longer than 14 days</title>
+<meta name="description" content="Step-by-step guide with tested Python and GitHub Actions code to save GitHub repository views and clones permanently.">
+<meta name="author" content="MUSFIRAAI">
+<meta property="article:modified_time" content="2026-11-15T02:56:37+00:00">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="theme-color" content="#0b5fff">
+<link rel="canonical" href="https://musman550.github.io/github-traffic-analytics-dashboard/guides/keep-github-traffic-history/">
+<link rel="icon" href="https://musman550.github.io/github-traffic-analytics-dashboard/assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="https://musman550.github.io/github-traffic-analytics-dashboard/manifest.webmanifest">
+<link rel="alternate" type="text/plain" href="https://musman550.github.io/github-traffic-analytics-dashboard/llms.txt" title="llms.txt">
+<link rel="alternate" type="application/atom+xml" href="https://musman550.github.io/github-traffic-analytics-dashboard/feed.xml" title="Weekly traffic reports">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="GitHub Traffic Analytics Dashboard">
+<meta property="og:title" content="How to keep GitHub traffic data longer than 14 days">
+<meta property="og:description" content="Step-by-step guide with tested Python and GitHub Actions code to save GitHub repository views and clones permanently.">
+<meta property="og:url" content="https://musman550.github.io/github-traffic-analytics-dashboard/guides/keep-github-traffic-history/">
+<meta property="og:image" content="https://musman550.github.io/github-traffic-analytics-dashboard/assets/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="GitHub Traffic Analytics Dashboard">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to keep GitHub traffic data longer than 14 days">
+<meta name="twitter:description" content="Step-by-step guide with tested Python and GitHub Actions code to save GitHub repository views and clones permanently.">
+<meta name="twitter:image" content="https://musman550.github.io/github-traffic-analytics-dashboard/assets/og-image.png">
+<link rel="stylesheet" href="https://musman550.github.io/github-traffic-analytics-dashboard/assets/style.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher", "name": "MUSFIRAAI", "url": "https://musfiraai.com", "sameAs": ["https://musfiraai.com", "https://www.youtube.com/@automatewithmusfiraai", "https://www.linkedin.com/in/musfira-ai-b3218b39b", "https://instagram.com/musma_n55", "https://github.com/musman550"], "logo": "https://avatars.githubusercontent.com/u/211268452?v=4"}, {"@type": "WebSite", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#website", "url": "https://musman550.github.io/github-traffic-analytics-dashboard/", "name": "GitHub Traffic Analytics Dashboard", "publisher": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher"}, "inLanguage": "en"}, {"@type": "WebApplication", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#app", "name": "GitHub Traffic Analytics Dashboard", "url": "https://musman550.github.io/github-traffic-analytics-dashboard/", "applicationCategory": "DeveloperApplication", "operatingSystem": "Any (web browser)", "isAccessibleForFree": true, "license": "https://opensource.org/license/mit", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher"}, "dateModified": "2026-11-15T02:56:37+00:00", "description": "Open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently."}, {"@type": "Dataset", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#dataset", "name": "GitHub traffic history for public repositories", "description": "Daily views, clones, referrers and stars for public repositories, collected from the GitHub REST API.", "dateModified": "2026-11-15T02:56:37+00:00", "temporalCoverage": "2026-10-30/2026-11-13", "license": "https://opensource.org/license/mit", "creator": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher"}, "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://musman550.github.io/github-traffic-analytics-dashboard/data/summary.json"}]}, {"@type": "WebPage", "@id": "https://musman550.github.io/github-traffic-analytics-dashboard/guides/keep-github-traffic-history/#webpage", "url": "https://musman550.github.io/github-traffic-analytics-dashboard/guides/keep-github-traffic-history/", "name": "How to keep GitHub traffic data longer than 14 days", "description": "Step-by-step guide with tested Python and GitHub Actions code to save GitHub repository views and clones permanently.", "isPartOf": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#website"}, "inLanguage": "en", "dateModified": "2026-11-15T02:56:37+00:00", "primaryImageOfPage": {"@type": "ImageObject", "url": "https://musman550.github.io/github-traffic-analytics-dashboard/assets/og-image.png", "width": 1200, "height": 630}}, {"@type": "TechArticle", "headline": "How to keep GitHub traffic data longer than 14 days", "description": "Step-by-step guide with tested Python and GitHub Actions code to save GitHub repository views and clones permanently.", "author": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher"}, "publisher": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/#publisher"}, "datePublished": "2026-11-14", "dateModified": "2026-11-14", "mainEntityOfPage": {"@id": "https://musman550.github.io/github-traffic-analytics-dashboard/guides/keep-github-traffic-history/#webpage"}, "inLanguage": "en", "image": "https://musman550.github.io/github-traffic-analytics-dashboard/assets/og-image.png"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dashboard", "item": "https://musman550.github.io/github-traffic-analytics-dashboard/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://musman550.github.io/github-traffic-analytics-dashboard/guides/"}, {"@type": "ListItem", "position": 3, "name": "How to keep GitHub traffic data longer than 14 days", "item": "https://musman550.github.io/github-traffic-analytics-dashboard/guides/keep-github-traffic-history/"}]}</script>
+</head>
+<body><script src="https://musman550.github.io/github-traffic-analytics-dashboard/assets/boot.js"></script>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+<div class="wrap hdr">
+<a class="brand" href="https://musman550.github.io/github-traffic-analytics-dashboard/"><svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#0b5fff"/><path d="M6 22l6-7 5 4 9-11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Traffic Analytics<small>by MUSFIRAAI</small></span></a>
+<nav id="tabs" aria-label="Dashboard sections"><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#overview" data-tab="overview">Overview</a><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#trends" data-tab="trends">Trends</a><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#sources" data-tab="sources">Sources</a><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#repos" data-tab="repos">Repositories</a><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#insights" data-tab="insights">Insights</a><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#about" data-tab="about">About &amp; links</a><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#comments" data-tab="comments">Comments</a></nav>
+<div class="actions"><button id="theme" class="icon" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">&#9680;</button>
+<a class="btn small" href="https://github.com/musman550/github-traffic-analytics-dashboard" rel="noopener">Star on GitHub</a></div>
+</div>
+</header>
+<main id="main" class="wrap prose"><nav class="crumbs" aria-label="Breadcrumb"><a href="https://musman550.github.io/github-traffic-analytics-dashboard/">Dashboard</a> / <a href="https://musman550.github.io/github-traffic-analytics-dashboard/guides/">Guides</a> / How to keep GitHub traffic data longer than 14 days</nav><h1>How to keep GitHub traffic data longer than 14 days</h1><p class="lead">GitHub shows repository views and clones for the last 14 days only. This guide explains how to keep them for as long as you want, with free tools.</p>
+<h2>What GitHub keeps</h2>
+<p>The Insights &rarr; Traffic page and the <a href="https://docs.github.com/rest/metrics/traffic" rel="noopener">traffic REST endpoints</a> return the previous 14 days of views and clones, plus the top 10 referring sites and the top 10 popular paths. Anything older is no longer available, so history has to be saved by you.</p>
+<h2>Step 1: get a token</h2>
+<p>Only people with push access can read traffic. A classic personal access token with the <code>repo</code> scope works; for a fine-grained token, GitHub documents read access to the repository's <i>Administration</i> permission for these endpoints. Store it as a secret (for Actions: <code>GH_PAT</code>), never in a web page or in code.</p>
+<h2>Step 2: read the endpoints</h2>
+<ul><li><code>GET /repos/{owner}/{repo}/traffic/views</code>: total and unique views per day</li>
+<li><code>GET /repos/{owner}/{repo}/traffic/clones</code>: total and unique clones per day</li>
+<li><code>GET /repos/{owner}/{repo}/traffic/popular/referrers</code>: top 10 referring sites</li>
+<li><code>GET /repos/{owner}/{repo}/traffic/popular/paths</code>: top 10 popular paths</li></ul>
+<h2>Step 3: merge by day, do not append</h2>
+<p>Each call returns a rolling window, and GitHub can revise recent days for 24-48 hours. Save each day under its date and overwrite it on the next run (an upsert). This keeps history correct and lets you fetch less often than daily without losing data, as long as you run at least every 14 days.</p>
+<pre><code>import json, os, requests
+
+TOKEN = os.environ[&quot;GH_PAT&quot;]               # token with push access to the repository
+REPO = &quot;owner/repo&quot;
+H = {&quot;Authorization&quot;: f&quot;Bearer {TOKEN}&quot;, &quot;Accept&quot;: &quot;application/vnd.github+json&quot;}
+
+def fetch(kind):                           # kind: &quot;views&quot; or &quot;clones&quot;
+    r = requests.get(f&quot;https://api.github.com/repos/{REPO}/traffic/{kind}&quot;, headers=H, timeout=30)
+    r.raise_for_status()
+    return r.json()[kind]                  # [{&quot;timestamp&quot;, &quot;count&quot;, &quot;uniques&quot;}, ...]
+
+history = json.load(open(&quot;traffic.json&quot;)) if os.path.exists(&quot;traffic.json&quot;) else {&quot;views&quot;: {}, &quot;clones&quot;: {}}
+for kind in (&quot;views&quot;, &quot;clones&quot;):
+    for row in fetch(kind):
+        history[kind][row[&quot;timestamp&quot;][:10]] = [row[&quot;count&quot;], row[&quot;uniques&quot;]]   # upsert by day
+json.dump(history, open(&quot;traffic.json&quot;, &quot;w&quot;), indent=1, sort_keys=True)</code></pre>
+<h2>Step 4: run it on a schedule</h2>
+<p>A <a href="https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#schedule" rel="noopener">scheduled GitHub Actions workflow</a> can run the script daily and commit the JSON file back to the repository.</p>
+<pre><code>name: Save traffic
+on:
+  schedule:
+    - cron: &quot;17 2 * * *&quot;
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  save:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: &quot;3.12&quot;}
+      - run: pip install requests &amp;&amp; python save_traffic.py
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+      - run: |
+          git config user.name &quot;traffic-bot&quot;
+          git config user.email &quot;traffic-bot@users.noreply.github.com&quot;
+          git add traffic.json
+          git diff --cached --quiet || git commit -m &quot;traffic: $(date -u +%F)&quot;
+          git push</code></pre>
+<h2>Step 5: stay inside rate limits</h2>
+<p>Authenticated REST requests have an hourly allowance (see GitHub's <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api" rel="noopener">rate limit documentation</a>). Four calls per repository per run is small for a handful of repositories, but hundreds of repositories need care: call sequentially, check the <code>x-ratelimit-remaining</code> header, and fetch idle repositories less often.</p>
+<h2>Skip the work: use this dashboard</h2>
+<p>This open-source project does all of the above for every public repository of an account and adds charts, rankings and exports. Fork <a href="https://github.com/musman550/github-traffic-analytics-dashboard" rel="noopener">musman550/github-traffic-analytics-dashboard</a>, add the <code>GH_PAT</code> secret, enable GitHub Pages on the <code>docs</code> folder and run the workflow. See the <a href="https://musman550.github.io/github-traffic-analytics-dashboard/methodology/">methodology</a> for details.</p></main>
+<footer class="site-footer">
+<div class="wrap fgrid">
+<div><strong>GitHub Traffic Analytics Dashboard</strong>
+<p>Permanent history of GitHub views, clones, referrers and stars for public repositories. Open source, free and login-free.</p>
+<p class="mut">Built and maintained by MUSFIRAAI &middot; MUSFIRA AI.</p></div>
+<div><h3>Dashboard</h3><ul><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#overview">Overview</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#trends">Trends</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#sources">Sources</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#repos">Repositories</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#insights">Insights</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#about">About &amp; links</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/#comments">Comments</a></li></ul></div>
+<div><h3>Resources</h3><ul>
+<li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/about/">About</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/methodology/">Methodology</a></li>
+<li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/faq/">FAQ</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/guides/">Guides</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/reports/">Weekly reports</a></li>
+<li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/data/">Open data</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/privacy/">Privacy</a></li>
+<li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/feed.xml">Atom feed</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/llms.txt">llms.txt</a></li><li><a href="https://musman550.github.io/github-traffic-analytics-dashboard/sitemap.xml">Sitemap</a></li>
+<li><a href="https://github.com/musman550/github-traffic-analytics-dashboard" rel="noopener">Source code</a></li>
+<li><a href="https://github.com/musman550/github-traffic-analytics-dashboard/discussions" rel="noopener">Discussions</a></li></ul></div>
+<div><h3>Connect</h3><ul><li><a href="https://github.com/musman550" rel="me noopener">GitHub profile</a></li><li><a href="https://musfiraai.com" rel="me noopener">musfiraai.com</a></li><li><a href="https://www.youtube.com/@automatewithmusfiraai" rel="me noopener">YouTube</a></li><li><a href="https://www.linkedin.com/in/musfira-ai-b3218b39b" rel="me noopener">LinkedIn</a></li><li><a href="https://instagram.com/musma_n55" rel="me noopener">Instagram</a></li></ul></div>
+</div>
+<div class="wrap fbar"><span>&copy; 2026 MUSFIRAAI. MIT licensed.</span>
+<span>Data through 2026-11-13 &middot; updated 2026-11-15 UTC</span>
+<span class="mut">Not affiliated with, endorsed by or sponsored by GitHub, Inc. GitHub is a trademark of GitHub, Inc.</span></div>
+</footer>
+<script src="https://musman550.github.io/github-traffic-analytics-dashboard/assets/page.js"></script></body></html>

@@ -16,7 +16,17 @@
 - **Profile links added automatically** from your GitHub profile, social accounts and profile README, refreshed daily
 - **Search / AI visibility:** server-rendered facts, JSON-LD (WebSite, WebApplication, Dataset, FAQPage, Organization), `llms.txt` and `llms-full.txt`, sitemap, robots rules for AI crawlers, open Graph image, methodology, about and privacy pages
 - **Private repositories are never read, stored or shown**
+- **Settings panel:** theme, start tab, rows per page, compact density, hide forks, reduce motion (saved only in your browser); shareable filter URLs such as `#repos?q=ai&tier=top`
+- **Also:** 7-day moving average, calendar heatmap, biggest gainers and decliners, stale-data warning
+- **Crawlable content:** weekly report pages (`/reports/`) with an Atom feed, FAQ, two guides, open-data page, CSV downloads and Shields.io badge endpoints
 - **Comments** via GitHub Discussions (giscus), loaded only when the Comments tab is opened
+
+## Badges
+
+```
+![views](https://img.shields.io/endpoint?url=https://musman550.github.io/github-traffic-analytics-dashboard/badges/views-30d.json)
+```
+Also available: `clones-30d.json`, `stars.json`, `repos.json`.
 
 ## How it works
 
@@ -28,7 +38,7 @@
 
 ## Rate limits
 
-GitHub returns a rolling 14-day window per call, so repositories do not all need a daily fetch: active repositories are fetched daily, idle ones every 3 days and dormant ones weekly, staggered by a stable hash. Calls are sequential with retry and back-off, and the run stops and saves progress if the remaining hourly budget drops below a safety floor.
+GitHub returns a rolling 14-day window per call, so repositories do not all need a daily fetch: repositories with views in the last 14 days are fetched daily (with referrers and paths), others every 3 days and dormant ones weekly. First fetches are spread over the cadence window. A typical day uses about 250-350 calls; a full weekly refresh about 700 of the 5,000 hourly allowance. Calls are sequential with retry and back-off, and the run stops and saves progress if the remaining hourly budget drops below a safety floor.
 
 ## Security
 
@@ -46,7 +56,7 @@ Content-Security-Policy with no inline scripts, all repository text escaped befo
 4. Enable GitHub Pages: Settings → Pages → Deploy from branch → `main` / `docs`.
 5. Run **Collect GitHub traffic** once from the Actions tab (tick *force_full*).
 
-Tests: `PYTHONPATH=src python -m unittest discover -s tests`
+Tests: `PYTHONPATH=src python -m unittest discover -s tests`. Before publishing, the workflow runs `scripts/audit_site.py` (strict HTML parse, duplicate ids, internal links, JSON-LD, sitemap targets, private-data markers); a failure blocks the commit.
 
 ## FAQ
 

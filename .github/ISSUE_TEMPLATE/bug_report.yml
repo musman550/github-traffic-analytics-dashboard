@@ -1,0 +1,14 @@
+name: Bug report
+description: Something on the dashboard or in the collector is wrong
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes: {label: What happened?, description: What did you expect and what did you see?}
+    validations: {required: true}
+  - type: input
+    id: where
+    attributes: {label: Page or file, placeholder: "e.g. #repos tab, docs/data/summary.json"}
+  - type: input
+    id: browser
+    attributes: {label: Browser and device}

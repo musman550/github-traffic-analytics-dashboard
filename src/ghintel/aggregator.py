@@ -2,7 +2,7 @@
 import datetime as dt, math
 from collections import Counter
 from .insights import build_insights, seo_audit
-from .store import load, save
+from .store import load, save, today_utc
 
 D = "docs/data"
 
@@ -80,7 +80,7 @@ def build_summary(cfg):
             "vall": sum(x[0] for x in s["views"].values()),
             "c7": c7, "c30": c30, "call": sum(x[0] for x in s["clones"].values()),
             "vu14": vu, "cu14": w.get("cu", 0),
-            "trend": round((v7 - pv7) * 100 / pv7) if pv7 else None,
+            "pv7": pv7, "trend": round((v7 - pv7) * 100 / pv7) if pv7 else None,
             "score": round(v30 + 0.5 * c30 + 2 * vu + 3 * m["stars"] + 4 * m["forks"], 1),
             "spark": [s["views"].get(d, [0, 0])[0] for d in reversed(rng(14))],
             "audit": seo_audit(m, today),

@@ -11,7 +11,7 @@ Private repositories are never read, stored or published.
 import datetime as dt, hashlib, os, re, time
 from .github_client import GH, RateGuard
 from .profile import fetch_profile
-from .store import load, save
+from .store import load, save, today_utc
 
 D = "docs/data"
 
@@ -52,7 +52,7 @@ def collect(cfg):
     t0 = time.time()
     gh = GH(min_remaining=cfg["min_rate_remaining"], sleep=cfg["sleep_between_calls"])
     now = dt.datetime.now(dt.timezone.utc)
-    today = now.date()
+    today = today_utc()
     force = os.environ.get("FORCE_FULL", "").lower() in ("1", "true", "yes")
     limit = int(os.environ.get("GHINTEL_LIMIT", "0") or 0)
 
@@ -72,6 +72,15 @@ def collect(cfg):
         for kind in ("views", "clones"):
             for day in [d for d, v in s[kind].items() if not v[0] and not v[1]]:
                 del s[kind][day]
+
+    # activity for scheduling = last day with human-visible views. Clones are excluded on purpose:
+    # almost every repository is cloned by automation daily, which would make all repos "active".
+    for name, s in series["repos"].items():
+        st = state.setdefault(name, {"s": today.isoformat()})
+        if s["views"]:
+            st["a"] = max(s["views"])
+        else:
+            st.pop("a", None)
 
     raw = gh.paginate("/user/repos", {"per_page": 100, "affiliation": "owner", "sort": "full_name"})
     public = [r for r in raw if not r["private"]]
@@ -117,9 +126,8 @@ def collect(cfg):
             s["win"] = {"d": today.isoformat(), "vc": views["count"], "vu": views["uniques"],
                         "cc": clones["count"], "cu": clones["uniques"]}
             st = state.setdefault(name, {"s": today.isoformat()})
-            active = bool(views["count"] or clones["count"])
-            if active:
-                st["a"] = today.isoformat()
+            if views["count"]:  # referrers and paths only describe views
+                st["a"] = max(max(s["views"]), st.get("a", ""))
                 refs, _ = gh.get(f"/repos/{r['full_name']}/traffic/popular/referrers")
                 paths, _ = gh.get(f"/repos/{r['full_name']}/traffic/popular/paths")
                 for x in refs or []:
@@ -131,9 +139,11 @@ def collect(cfg):
                 }
             else:
                 per_repo.pop(name, None)
-            # stagger next fetch so idle repos do not all fall due on the same day
+            # spread first-time fetches over the cadence window so idle repos do not all fall due on the
+            # same day; afterwards the period stays exactly `cad` days
             cad = cadence_for(st, today, cfg)
-            st["f"] = (today - dt.timedelta(days=_h(name) % cad if cad > 1 else 0)).isoformat()
+            first = "f" not in st
+            st["f"] = (today - dt.timedelta(days=_h(name) % cad if (first and cad > 1) else 0)).isoformat()
             fetched += 1
         except RateGuard as e:
             partial = True

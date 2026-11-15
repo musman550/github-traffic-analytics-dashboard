@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and ideas
+    url: https://github.com/musman550/github-traffic-analytics-dashboard/discussions
+    about: Ask questions or share feedback in Discussions
+  - name: Report a security vulnerability
+    url: https://github.com/musman550/github-traffic-analytics-dashboard/security/advisories/new
+    about: Please report vulnerabilities privately

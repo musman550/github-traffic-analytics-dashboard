@@ -43,6 +43,9 @@ class GH:
             time.sleep(self.sleep)
             if r.status_code == 200:
                 return r.json(), r
+            if r.status_code == 401:
+                raise SystemExit("GitHub rejected the token (401). Create a new token with the 'repo' scope "
+                                 "and update the GH_PAT secret.")
             if r.status_code in (403, 429):
                 text = r.text.lower()
                 if self.remaining == 0:

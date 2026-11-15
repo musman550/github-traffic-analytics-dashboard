@@ -51,7 +51,7 @@ def build_insights(T, repos, daily, sources, last, today):
         if p7:
             ch = round((v7 - p7) * 100 / p7)
             add("trend", "Weekly momentum",
-                f"Views over the last 7 complete days were {v7:,} versus {p7:,} the week before "
+                f"Views over the last 7 finalised days were {v7:,} versus {p7:,} the week before "
                 f"({'+' if ch >= 0 else ''}{ch}%).")
     # concentration
     tot30 = sum(r["v30"] for r in repos)

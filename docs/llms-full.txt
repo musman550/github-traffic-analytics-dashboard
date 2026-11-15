@@ -1,23 +1,30 @@
 # GitHub Traffic Analytics Dashboard
 
-> Free, open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently, beyond GitHub's 14-day limit. Open to everyone, no login. Public repositories only. Data through 2026-11-13, updated 2026-11-14.
+> Free, open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently, beyond GitHub's 14-day limit. Public repositories only, no login. Data through 2026-11-13, updated 2026-11-15.
 
 ## Pages
 - [Dashboard](https://musman550.github.io/github-traffic-analytics-dashboard/): overview, trends, sources, repositories, insights, links, comments
 - [Methodology](https://musman550.github.io/github-traffic-analytics-dashboard/methodology/): data source, definitions, formulas, limitations
-- [About](https://musman550.github.io/github-traffic-analytics-dashboard/about/): maintainer, purpose, editorial and data policy
+- [FAQ](https://musman550.github.io/github-traffic-analytics-dashboard/faq/): answers about GitHub traffic data, clones, unique visitors, limits
+- [Guide: keep GitHub traffic beyond 14 days](https://musman550.github.io/github-traffic-analytics-dashboard/guides/keep-github-traffic-history/): step-by-step with code
+- [Guide: GitHub traffic API reference](https://musman550.github.io/github-traffic-analytics-dashboard/guides/github-traffic-api-reference/): endpoints, fields, limits
+- [Weekly reports](https://musman550.github.io/github-traffic-analytics-dashboard/reports/): 1 completed weeks
+- [Open data](https://musman550.github.io/github-traffic-analytics-dashboard/data/): JSON, CSV and badge files
+- [About](https://musman550.github.io/github-traffic-analytics-dashboard/about/): maintainer, purpose, editorial policy
 - [Privacy](https://musman550.github.io/github-traffic-analytics-dashboard/privacy/): no cookies or tracking
 - [Source code](https://github.com/musman550/github-traffic-analytics-dashboard): MIT licensed
 
 ## Data
 - [summary.json](https://musman550.github.io/github-traffic-analytics-dashboard/data/summary.json): aggregated statistics, repository table, insights
-- [series.json](https://musman550.github.io/github-traffic-analytics-dashboard/data/series.json): daily views and clones per repository (sparse)
-- [profile.json](https://musman550.github.io/github-traffic-analytics-dashboard/data/profile.json): publisher profile and public links
+- [series.json](https://musman550.github.io/github-traffic-analytics-dashboard/data/series.json): daily views and clones per repository
+- [repos.csv](https://musman550.github.io/github-traffic-analytics-dashboard/data/repos.csv) and [daily.csv](https://musman550.github.io/github-traffic-analytics-dashboard/data/daily.csv)
+- [Atom feed](https://musman550.github.io/github-traffic-analytics-dashboard/feed.xml): weekly reports
 
 ## Key facts
 - Tracked public repositories: 265
-- Views, last 30 days: 266; clones: 6909; stars: 1; forks: 0
+- Last 30 days: 266 views, 6909 clones. Stars: 1. Forks: 0.
 - Source of data: GitHub REST API traffic endpoints (https://docs.github.com/rest/metrics/traffic)
+- GitHub keeps only 14 days of traffic and the top 10 referrers/paths; this project stores every day.
 
 ## Top repositories by score
 - musfiraai-mcp-server: 1 views, 629 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-mcp-server
@@ -52,7 +59,7 @@ GitHub reports a deduplicated unique-visitor estimate for its 14-day window only
 score = views in 30 days + 0.5 x clones in 30 days + 2 x unique visitors (14 days) + 3 x stars + 4 x forks. The top 20% of public, non-fork, non-archived repositories are marked top and the bottom 20% low.
 
 ### How are API rate limits avoided?
-Active repositories are fetched daily, idle ones every 3 days and dormant ones weekly. Because GitHub returns a 14-day window on every call, no data is lost. Calls are sequential, and the run stops safely if the remaining hourly budget gets low.
+Repositories with recent views are fetched daily, others every 3 days and dormant ones weekly. Because GitHub returns a 14-day window on every call, no data is lost. Calls are sequential, and the run stops safely if the remaining hourly budget gets low.
 
 ### Can I run this for my own GitHub account?
 Yes. It is open source under the MIT license: fork github.com/musman550/github-traffic-analytics-dashboard, add a GH_PAT secret with the repo scope, enable GitHub Pages on the main branch /docs folder and run the workflow.
@@ -62,3 +69,21 @@ Only the repository owner can change the code and data. The main branch is prote
 
 ### How many repositories are tracked right now?
 265 public repositories, with data through 2026-11-13.
+
+### Can I see who visited my GitHub repository?
+No. GitHub's traffic data is aggregate only: counts of views and clones, unique-visitor estimates and referrer sites. It does not identify individual visitors.
+
+### Who can see repository traffic on GitHub?
+Only people with push access to a repository can read its traffic data, in the Insights tab or through the REST API.
+
+### Why does github.com appear as a referrer?
+It usually means visitors arrived from another page on GitHub, such as a profile, search results or a different repository.
+
+### How is this different from GitHub's Insights tab?
+Insights shows only the last 14 days for one repository at a time. This dashboard stores every day, combines all your public repositories and adds trends, sources, rankings and exports.
+
+### How do I export the data?
+Download repos.csv and daily.csv, or the JSON files, from the data page. They are static files that update daily.
+
+### Is this affiliated with GitHub?
+No. It is an independent open-source project that uses the public GitHub REST API.

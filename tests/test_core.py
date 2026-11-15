@@ -71,3 +71,101 @@ class PrivacyAggregate(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FakeGH:
+    """Stands in for the GitHub client; records every endpoint that is called."""
+    def __init__(self, *a, **k):
+        FakeGH.calls = []
+        self.remaining, self.calls_n = 4000, 0
+
+    @property
+    def calls(self):
+        return self.calls_n
+
+    def paginate(self, path, params=None):
+        return [{"name": n, "full_name": f"o/{n}", "owner": {"login": "o"}, "private": False, "fork": False,
+                 "archived": False, "html_url": f"https://github.com/o/{n}", "description": "d", "topics": [],
+                 "language": None, "license": None, "homepage": "", "stargazers_count": 0, "forks_count": 0,
+                 "watchers_count": 0, "open_issues_count": 0, "pushed_at": "2026-11-10T00:00:00Z",
+                 "created_at": "2026-10-01T00:00:00Z", "size": 1, "has_pages": False, "default_branch": "main"}
+                for n in ("viewed", "cloneonly", "quiet")] + [{
+                 "name": "secret", "full_name": "o/secret", "owner": {"login": "o"}, "private": True, "fork": False,
+                 "archived": False, "html_url": "x", "stargazers_count": 0, "forks_count": 0, "watchers_count": 0,
+                 "open_issues_count": 0}]
+
+    def get(self, path, params=None, retries=3):
+        FakeGH.calls.append(path)
+        self.calls_n += 1
+        day = "2026-11-10T00:00:00Z"
+        if path.endswith("/traffic/views"):
+            n = 5 if "/viewed/" in path else 0
+            return {"count": n, "uniques": n, "views": [{"timestamp": day, "count": n, "uniques": n}] if n else []}, None
+        if path.endswith("/traffic/clones"):
+            n = 0 if "/quiet/" in path else 9
+            return {"count": n, "uniques": n, "clones": [{"timestamp": day, "count": n, "uniques": n}] if n else []}, None
+        if path.endswith("/popular/referrers"):
+            return [{"referrer": "google.com", "count": 3, "uniques": 2}], None
+        if path.endswith("/popular/paths"):
+            return [{"path": "/o/viewed", "title": "t", "count": 3, "uniques": 2}], None
+        return None, None
+
+    def text(self, *a, **k):
+        return None
+
+
+class CollectorBehaviour(unittest.TestCase):
+    def run_collect(self, today):
+        from ghintel import collector
+        collector.GH = FakeGH
+        os.environ["GHINTEL_TODAY"] = today
+        cfg = {"include_forks": False, "include_archived": False, "exclude": [], "min_rate_remaining": 100,
+               "sleep_between_calls": 0, "keep_source_days": 90, "cadence": CFG["cadence"]}
+        collector.collect(cfg)
+        return list(FakeGH.calls)
+
+    def test_private_skipped_referrers_only_for_viewed_and_idle_repos_rest(self):
+        cwd = os.getcwd()
+        with tempfile.TemporaryDirectory() as tmp:
+            os.chdir(tmp)
+            try:
+                c1 = self.run_collect("2026-11-14")
+                self.assertFalse(any("secret" in c for c in c1), "private repo must never be requested")
+                self.assertTrue(any("/viewed/traffic/popular/referrers" in c for c in c1))
+                self.assertFalse(any("/cloneonly/traffic/popular" in c for c in c1), "clone-only repos need no referrer calls")
+                repos = json.load(open("docs/data/repos.json"))
+                self.assertEqual({r["id"] for r in repos}, {"viewed", "cloneonly", "quiet"})
+                # next day: the viewed repo is fetched again, idle repos wait (staggered up to 3 days)
+                c2 = self.run_collect("2026-11-15")
+                self.assertTrue(any("/viewed/traffic/views" in c for c in c2))
+                idle_calls = [c for c in c2 if "/cloneonly/" in c or "/quiet/" in c]
+                self.assertLessEqual(len(idle_calls), 4)
+                self.assertNotIn("secret", open("docs/data/series.json").read())
+            finally:
+                os.environ.pop("GHINTEL_TODAY", None)
+                os.chdir(cwd)
+
+
+class CadencePeriod(unittest.TestCase):
+    def test_idle_repo_period_is_stable_three_days(self):
+        from ghintel import collector
+        cwd = os.getcwd()
+        days = []
+        with tempfile.TemporaryDirectory() as tmp:
+            os.chdir(tmp)
+            try:
+                collector.GH = FakeGH
+                cfg = {"include_forks": False, "include_archived": False, "exclude": [], "min_rate_remaining": 100,
+                       "sleep_between_calls": 0, "keep_source_days": 90, "cadence": CFG["cadence"]}
+                for i in range(12):
+                    d = (dt.date(2026, 11, 14) + dt.timedelta(days=i)).isoformat()
+                    os.environ["GHINTEL_TODAY"] = d
+                    collector.collect(cfg)
+                    if any("/quiet/traffic/views" in c for c in FakeGH.calls):
+                        days.append(dt.date.fromisoformat(d))
+            finally:
+                os.environ.pop("GHINTEL_TODAY", None)
+                os.chdir(cwd)
+        gaps = [(b - a).days for a, b in zip(days, days[1:])]
+        self.assertLessEqual(max(gaps), 3, gaps)           # never longer than 3 days (safe: window is 14)
+        self.assertTrue(all(g == 3 for g in gaps[1:]), gaps)  # stable period after the first spread-out fetch
