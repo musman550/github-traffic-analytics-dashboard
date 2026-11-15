@@ -22,6 +22,6 @@
 
 ## Key facts
 - Tracked public repositories: 269
-- Last 30 days: 266 views, 6909 clones. Stars: 1. Forks: 0.
+- Last 30 days: 266 views, 6909 clones. Stars: 2. Forks: 0.
 - Source of data: GitHub REST API traffic endpoints (https://docs.github.com/rest/metrics/traffic)
 - GitHub keeps only 14 days of traffic and the top 10 referrers/paths; this project stores every day.
