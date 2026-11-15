@@ -1,6 +1,6 @@
 name,url,views_7d,views_30d,views_since_tracking,clones_30d,unique_visitors_14d,stars,forks,language,license,last_push,score,tier
-musfiraai-mcp-server,https://github.com/musman550/musfiraai-mcp-server,0,1,1,629,1,0,0,Python,,2026-11-14,317.5,top
-musfira-ai-repo-bot,https://github.com/musman550/musfira-ai-repo-bot,0,7,7,351,1,0,0,Python,MIT,2026-11-13,184.5,top
+musfiraai-mcp-server,https://github.com/musman550/musfiraai-mcp-server,0,1,1,629,1,0,0,Python,,2026-11-15,317.5,top
+musfira-ai-repo-bot,https://github.com/musman550/musfira-ai-repo-bot,0,7,7,351,1,0,0,Python,MIT,2026-11-14,184.5,top
 musfiraai-free-tools,https://github.com/musman550/musfiraai-free-tools,0,0,0,232,0,0,0,HTML,MIT,2026-11-13,116.0,top
 musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs,https://github.com/musman550/musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs,1,13,13,71,12,0,0,HTML,MIT,2026-11-02,72.5,top
 musfira-ai-copilot-code-review-api-management-and-review-overview-updat,https://github.com/musman550/musfira-ai-copilot-code-review-api-management-and-review-overview-updat,0,0,0,122,0,0,0,HTML,MIT,2026-11-08,61.0,top
@@ -52,7 +52,7 @@ musfiraai-mcp,https://github.com/musman550/musfiraai-mcp,0,0,0,54,0,0,0,JavaScri
 musfira-ai-github-intelligence-puts-your-code-context-and-history-to-wo,https://github.com/musman550/musfira-ai-github-intelligence-puts-your-code-context-and-history-to-wo,0,1,1,47,1,0,0,HTML,MIT,2026-10-29,26.5,top
 musfira-ai-stories-coming-out-about-jensen,https://github.com/musman550/musfira-ai-stories-coming-out-about-jensen,0,0,0,53,0,0,0,HTML,MIT,2026-11-13,26.5,top
 musfira-oracle-status,https://github.com/musman550/musfira-oracle-status,2,2,2,44,1,0,0,,,2026-11-13,26.0,top
-musfira-ai-dependabot-now-supports-python-315,https://github.com/musman550/musfira-ai-dependabot-now-supports-python-315,0,0,0,51,0,0,0,HTML,MIT,2026-11-03,25.5,mid
+musfira-ai-dependabot-now-supports-python-315,https://github.com/musman550/musfira-ai-dependabot-now-supports-python-315,0,0,0,51,0,0,0,HTML,MIT,2026-11-03,25.5,top
 musfira-ai-qwen4-27b-pr-found,https://github.com/musman550/musfira-ai-qwen4-27b-pr-found,7,7,7,12,6,0,0,HTML,MIT,2026-10-24,25.0,mid
 musfira-ai-upcoming-deprecation-of-selected-github-copilot-models-in-mi,https://github.com/musman550/musfira-ai-upcoming-deprecation-of-selected-github-copilot-models-in-mi,7,16,16,5,3,0,0,HTML,MIT,2026-10-16,24.5,mid
 musfira-ai-deepseek-aideepseek-v41-flash-1017-hugging-face,https://github.com/musman550/musfira-ai-deepseek-aideepseek-v41-flash-1017-hugging-face,0,9,9,13,4,0,0,HTML,MIT,2026-10-17,23.5,mid
@@ -211,9 +211,9 @@ musfira-ai-new-benchmark-the-struggle-bench,https://github.com/musman550/musfira
 musfira-ai-new-features-and-improvements-in-copilot-for-jetbrains,https://github.com/musman550/musfira-ai-new-features-and-improvements-in-copilot-for-jetbrains,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,mid
 musfira-ai-new-qwen3827b-on-a-39k-line-c-to-single-file-html-threejs-po,https://github.com/musman550/musfira-ai-new-qwen3827b-on-a-39k-line-c-to-single-file-html-threejs-po,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,mid
 musfira-ai-pinning-saved-views-to-the-repository-issues-sidebar-is-gene,https://github.com/musman550/musfira-ai-pinning-saved-views-to-the-repository-issues-sidebar-is-gene,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,mid
-musfira-ai-qwen-38-flash-next-max-is-impressive-just-to-talk-with,https://github.com/musman550/musfira-ai-qwen-38-flash-next-max-is-impressive-just-to-talk-with,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,low
-musfira-ai-qwen-will-be-the-king,https://github.com/musman550/musfira-ai-qwen-will-be-the-king,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,low
-musfira-ai-stage-only-npm-tokens-for-safer-automation,https://github.com/musman550/musfira-ai-stage-only-npm-tokens-for-safer-automation,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,low
+musfira-ai-qwen-38-flash-next-max-is-impressive-just-to-talk-with,https://github.com/musman550/musfira-ai-qwen-38-flash-next-max-is-impressive-just-to-talk-with,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,mid
+musfira-ai-qwen-will-be-the-king,https://github.com/musman550/musfira-ai-qwen-will-be-the-king,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,mid
+musfira-ai-stage-only-npm-tokens-for-safer-automation,https://github.com/musman550/musfira-ai-stage-only-npm-tokens-for-safer-automation,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,mid
 musfiraai-tool-assets,https://github.com/musman550/musfiraai-tool-assets,0,0,0,7,0,0,0,,MIT,2026-10-27,3.5,low
 musfira-ai-ai-scan-for-pull-request-apis-in-public-preview,https://github.com/musman550/musfira-ai-ai-scan-for-pull-request-apis-in-public-preview,0,0,0,6,0,0,0,HTML,MIT,2026-10-04,3.0,low
 musfira-ai-better-label-management-on-issues-is-generally-available,https://github.com/musman550/musfira-ai-better-label-management-on-issues-is-generally-available,0,0,0,6,0,0,0,HTML,MIT,2026-10-04,3.0,low
@@ -263,4 +263,8 @@ musfira-ai-best-local-vision-language-models---august-2026,https://github.com/mu
 musfira-ai-new-100b-liquid-ai-model-coming-soon,https://github.com/musman550/musfira-ai-new-100b-liquid-ai-model-coming-soon,0,0,0,2,0,0,0,HTML,MIT,2026-10-04,1.0,low
 musfira-ai-the-new-github-copilot-experience-in-slack,https://github.com/musman550/musfira-ai-the-new-github-copilot-experience-in-slack,0,0,0,1,0,0,0,HTML,MIT,2026-10-04,0.5,low
 musman550,https://github.com/musman550/musman550,0,0,0,1,0,0,0,,,2026-08-23,0.5,low
-github-traffic-analytics-dashboard,https://github.com/musman550/github-traffic-analytics-dashboard,0,0,0,0,0,0,0,Python,MIT,2026-11-14,0.0,low
+github-traffic-analytics-dashboard,https://github.com/musman550/github-traffic-analytics-dashboard,0,0,0,0,0,0,0,Python,MIT,2026-11-15,0.0,low
+musfira-ai-actions-for-arm32-linux-windows-retirement,https://github.com/musman550/musfira-ai-actions-for-arm32-linux-windows-retirement,0,0,0,0,0,0,0,HTML,MIT,2026-11-14,0.0,low
+musfira-ai-how-long-are-we-gonna-depend-bunch-of-model-creators-like-qw,https://github.com/musman550/musfira-ai-how-long-are-we-gonna-depend-bunch-of-model-creators-like-qw,0,0,0,0,0,0,0,HTML,MIT,2026-11-14,0.0,low
+musfira-ai-llamacpp-v100-a-stronger-foundation-for-the-local-ai-ecosyst,https://github.com/musman550/musfira-ai-llamacpp-v100-a-stronger-foundation-for-the-local-ai-ecosyst,0,0,0,0,0,0,0,HTML,MIT,2026-11-14,0.0,low
+talashly,https://github.com/musman550/talashly,0,0,0,0,0,0,0,Python,MIT,2026-11-15,0.0,low
