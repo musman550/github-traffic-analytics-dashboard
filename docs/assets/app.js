@@ -83,6 +83,7 @@ function trends() {
     { label: 'Views', data: v, borderColor: css('--ac'), backgroundColor: css('--ac'), pointRadius: 0, tension: .2 },
     { label: 'Clones', data: c, borderColor: '#12a150', backgroundColor: '#12a150', pointRadius: 0, tension: .2, yAxisID: 'y1' }].concat(ma ? [{ label: 'Views, 7-day average', data: ma, borderColor: '#f5a524', backgroundColor: '#f5a524', borderDash: [5, 4], pointRadius: 0, tension: .3 }] : []) },
     options: { interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Views' } }, y1: { position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, title: { display: true, text: 'Clones' } }, x: { ticks: { maxTicksLimit: 12 } } } } });
+  trendTable(rows, daily);
   heat();
   var names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   mk('#c-weekday', { type: 'bar', data: { labels: names, datasets: [{ label: 'Views', data: S.weekday, backgroundColor: css('--ac') }] }, options: { plugins: { legend: { display: false } } } });
@@ -107,6 +108,11 @@ function heat() {
   for (var d2 = new Date(start); d2 <= last; d2 = new Date(d2.getTime() + 864e5)) { var iso = d2.toISOString().slice(0, 10), n = map[iso] || 0, l = n === 0 ? 0 : n <= t1 ? 1 : n <= t2 ? 2 : n <= t3 ? 3 : 4; h += '<i class="l' + l + '" title="' + iso + ': ' + n + ' views"></i>'; }
   el.innerHTML = h;
   $('#heat-note').textContent = 'Each square is one day; columns are weeks (Monday at the top). Darker means more views. Showing ' + S.first_data_day.slice(0, 10) + ' onward, up to 26 weeks.';
+}
+
+function trendTable(rows, daily) {
+  var take = rows.slice(-60);
+  $('#t-trend').innerHTML = '<thead><tr><th>' + (daily ? 'Date' : 'Period') + '</th><th>Views</th><th>Clones</th></tr></thead><tbody>' + take.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + fmt(r[1]) + '</td><td>' + fmt(daily ? r[3] : r[2]) + '</td></tr>'; }).join('') + '</tbody>';
 }
 
 /* ---------- Sources ---------- */
@@ -254,6 +260,31 @@ function openCompare() {
 }
 function closeDialog() { var d = $('#repo-dialog'); if (d.open) d.close(); }
 
+/* ---------- Command palette ---------- */
+var PAGES = [['Overview', '#overview'], ['Trends', '#trends'], ['Sources', '#sources'], ['Repositories (interactive)', '#repos'], ['Insights', '#insights'], ['About & links', '#about'], ['Comments', '#comments'],
+  ['FAQ', 'faq/'], ['Guides', 'guides/'], ['Weekly reports', 'reports/'], ['All repositories (list)', 'repositories/'], ['Open data', 'data/'], ['Status', 'status/'], ['Methodology', 'methodology/'], ['Changelog', 'changelog/'], ['About', 'about/'], ['Privacy', 'privacy/']];
+var palIdx = 0, palItems = [];
+function palRender() {
+  var q = $('#pal-q').value.trim().toLowerCase();
+  var items = PAGES.filter(function (p) { return !q || p[0].toLowerCase().indexOf(q) > -1; }).map(function (p) { return { label: p[0], kind: p[1].charAt(0) === '#' ? 'tab' : 'page', href: p[1] }; });
+  if (q && S) S.repos.filter(function (r) { return r.name.toLowerCase().indexOf(q) > -1 || r.topics.join(' ').toLowerCase().indexOf(q) > -1; }).slice(0, 8).forEach(function (r) { items.push({ label: r.name, kind: 'repo', href: '#repo/' + encodeURIComponent(r.name) }); });
+  palItems = items.slice(0, 14); palIdx = Math.min(palIdx, Math.max(0, palItems.length - 1));
+  $('#pal-list').innerHTML = palItems.length ? palItems.map(function (i, n) { return '<li data-i="' + n + '" class="' + (n === palIdx ? 'on' : '') + '"><span>' + esc(i.label) + '</span><small>' + i.kind + '</small></li>'; }).join('') : '<li class="mut">No matches</li>';
+}
+function palGo(n) { var i = palItems[n]; if (!i) return; $('#palette').close(); if (i.href.charAt(0) === '#') location.hash = i.href; else location.href = i.href; }
+function openPalette() { var d = $('#palette'); if (!d.open) d.showModal(); $('#pal-q').value = ''; palIdx = 0; palRender(); $('#pal-q').focus(); }
+function bindPalette() {
+  $('#palette-btn').addEventListener('click', openPalette);
+  $('#pal-q').addEventListener('input', function () { palIdx = 0; palRender(); });
+  $('#pal-q').addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowDown') { e.preventDefault(); palIdx = Math.min(palItems.length - 1, palIdx + 1); palRender(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); palIdx = Math.max(0, palIdx - 1); palRender(); }
+    else if (e.key === 'Enter') { e.preventDefault(); palGo(palIdx); }
+  });
+  $('#pal-list').addEventListener('click', function (e) { var li = e.target.closest('li[data-i]'); if (li) palGo(+li.getAttribute('data-i')); });
+  $('#palette').addEventListener('click', function (e) { if (e.target === this) this.close(); });
+}
+
 /* ---------- Comments (lazy) ---------- */
 var giscusLoaded = false;
 function loadComments() {
@@ -327,10 +358,13 @@ function bind() {
   $('#repo-dialog').addEventListener('close', function () { if (/^#repo\//.test(location.hash)) history.replaceState(null, '', state.tab === 'repos' ? '#repos' : hashFor(state.tab)); });
   window.addEventListener('hashchange', route);
   document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openPalette(); return; }
     if (e.key === '?' && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) { e.preventDefault(); openSettings(); return; }
     if (e.key === '/' && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) { e.preventDefault(); location.hash = '#repos'; setTimeout(function () { $('#q').focus(); }, 30); }
   });
   $('#settings-btn').addEventListener('click', openSettings);
+  bindPalette();
+  $('#b-png').addEventListener('click', function () { var c = charts['#c-trend']; if (!c || !c.toBase64Image) return; var a = document.createElement('a'); a.href = c.toBase64Image('image/png', 1); a.download = 'github-traffic-' + state.period + '.png'; document.body.appendChild(a); a.click(); a.remove(); });
   $('#settings-dialog').addEventListener('click', function (e) { if (e.target === this || e.target.closest('[data-close]')) this.close(); });
   [['#p-theme', 'theme', 's'], ['#p-tab', 'tab', 's'], ['#p-rows', 'rows', 'n'], ['#p-compact', 'compact', 'b'], ['#p-forks', 'hideForks', 'b'], ['#p-motion', 'motion', 'b']].forEach(function (x) {
     $(x[0]).addEventListener('change', function () { prefs[x[1]] = x[2] === 'b' ? this.checked : x[2] === 'n' ? +this.value : this.value; savePrefs(); applyPrefs(); if (x[1] === 'theme') rerender(); if (x[1] === 'rows' || x[1] === 'hideForks') { state.page = 1; if (S && state.tab === 'repos') repoTable(); } });
@@ -349,6 +383,7 @@ function init(data) {
   rendered = {}; route();
 }
 applyPrefs(); bind(); route();
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(function () {});
 $('#kpis').innerHTML = '<div class="card skel"></div><div class="card skel"></div><div class="card skel"></div><div class="card skel"></div>';
 fetch('data/summary.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(init).catch(function () { $('#kpis').innerHTML = '<div class="card empty">Data could not be loaded. Please refresh in a moment.</div>'; });
 })();

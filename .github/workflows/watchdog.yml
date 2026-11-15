@@ -1,0 +1,41 @@
+name: Watchdog
+
+on:
+  schedule:
+    - cron: "7 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check that the published data is fresh
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PYTHONPATH: src
+        run: |
+          URL=$(python3 -c "import json;print(json.load(open('config/config.json'))['site_url'])")data/summary.json
+          if ! curl -fsS --max-time 30 "$URL" -o /tmp/s.json; then
+            MSG="The published dashboard data could not be fetched from $URL"
+            AGE=-1
+          else
+            AGE=$(python3 -c "
+          import json,datetime as d
+          g=json.load(open('/tmp/s.json'))['generated']
+          print(int((d.datetime.now(d.timezone.utc)-d.datetime.fromisoformat(g)).total_seconds()//3600))")
+            MSG="The published data is $AGE hours old (expected under 40)."
+          fi
+          echo "$MSG"
+          if [ "$AGE" -lt 0 ] || [ "$AGE" -gt 40 ]; then
+            gh issue create --repo "${{ github.repository }}" --label alert \
+              --title "Stale dashboard data on $(date -u +%F)" --body "$MSG Check the Collect GitHub traffic workflow and the GH_PAT token." || true
+            python3 -m ghintel.notify "Dashboard alert: $MSG" || true
+          fi

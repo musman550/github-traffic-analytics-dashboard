@@ -169,3 +169,40 @@ class CadencePeriod(unittest.TestCase):
         gaps = [(b - a).days for a, b in zip(days, days[1:])]
         self.assertLessEqual(max(gaps), 3, gaps)           # never longer than 3 days (safe: window is 14)
         self.assertTrue(all(g == 3 for g in gaps[1:]), gaps)  # stable period after the first spread-out fetch
+
+
+class Alerts(unittest.TestCase):
+    def test_compute_flags_problems_spike_and_digest(self):
+        from ghintel import alerts
+        daily = [[(dt.date(2026, 9, 1) + dt.timedelta(days=i)).isoformat(), 10 + (i % 3), 0, 0, 0] for i in range(80)]
+        daily[-1][1] = 300
+        s = {"daily": daily}
+        health = {"partial": True, "errors": ["rate guard stop: remaining=399"], "last_run": "2026-11-20T02:50:00+00:00"}
+        rep = [{"start": dt.date(2026, 11, 9), "days": [(dt.date(2026, 11, 9) + dt.timedelta(days=i)).isoformat() for i in range(7)],
+                "views": 70, "clones": 10, "dv": [10] * 7, "dc": [1] * 7, "repos": {"a": (70, 10)}, "prev": None, "created": 2}]
+        titles = [t for t, _ in alerts.compute(s, health, rep, "https://x.test/")]
+        self.assertTrue(any(t.startswith("Collection run had problems") for t in titles))
+        self.assertTrue(any(t.startswith("Traffic spike on") for t in titles))
+        self.assertTrue(any(t.startswith("Weekly report:") for t in titles))
+
+    def test_quiet_when_all_is_well(self):
+        from ghintel import alerts
+        daily = [[(dt.date(2026, 9, 1) + dt.timedelta(days=i)).isoformat(), 10 + (i % 3), 0, 0, 0] for i in range(80)]
+        self.assertEqual(alerts.compute({"daily": daily}, {"partial": False, "errors": [], "last_run": "2026-11-20"}, [], "https://x.test/"), [])
+
+    def test_delivery_is_deduplicated(self):
+        from ghintel import alerts, notify
+        cwd = os.getcwd()
+        with tempfile.TemporaryDirectory() as tmp:
+            os.chdir(tmp)
+            try:
+                os.makedirs("docs/data")
+                sent = []
+                notify.issue = lambda repo, title, body, labels=("alert",): sent.append(title) or True
+                notify.telegram = lambda text: False
+                cfg = {"repo_full_name": "o/r", "notifications": {"issues": True, "telegram": True}}
+                alerts.deliver(cfg, [("A", "x"), ("B", "y")])
+                alerts.deliver(cfg, [("A", "x"), ("C", "z")])
+                self.assertEqual(sent, ["A", "B", "C"])
+            finally:
+                os.chdir(cwd)

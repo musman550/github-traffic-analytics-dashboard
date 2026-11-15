@@ -9,6 +9,9 @@
 - [Guide: keep GitHub traffic beyond 14 days](https://musman550.github.io/github-traffic-analytics-dashboard/guides/keep-github-traffic-history/): step-by-step with code
 - [Guide: GitHub traffic API reference](https://musman550.github.io/github-traffic-analytics-dashboard/guides/github-traffic-api-reference/): endpoints, fields, limits
 - [Weekly reports](https://musman550.github.io/github-traffic-analytics-dashboard/reports/): 1 completed weeks
+- [All repositories](https://musman550.github.io/github-traffic-analytics-dashboard/repositories/): descriptions, languages, stars, traffic
+- [Status](https://musman550.github.io/github-traffic-analytics-dashboard/status/): data freshness and collection run history
+- [Changelog](https://musman550.github.io/github-traffic-analytics-dashboard/changelog/): release notes
 - [Open data](https://musman550.github.io/github-traffic-analytics-dashboard/data/): JSON, CSV and badge files
 - [About](https://musman550.github.io/github-traffic-analytics-dashboard/about/): maintainer, purpose, editorial policy
 - [Privacy](https://musman550.github.io/github-traffic-analytics-dashboard/privacy/): no cookies or tracking

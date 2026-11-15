@@ -10,12 +10,39 @@ NAV = [("overview", "Overview"), ("trends", "Trends"), ("sources", "Sources"),
        ("comments", "Comments")]
 CSP = ("default-src 'none'; script-src 'self' https://giscus.app; style-src 'self' 'unsafe-inline' https://giscus.app; "
        "img-src 'self' data: https://avatars.githubusercontent.com; font-src 'self'; connect-src 'self'; "
-       "frame-src https://giscus.app; base-uri 'none'; form-action 'none'; manifest-src 'self'")
+       "frame-src https://giscus.app; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'")
 AI_BOTS = ["GPTBot", "ChatGPT-User", "OAI-SearchBot", "ClaudeBot", "Claude-User", "Claude-SearchBot",
            "PerplexityBot", "Google-Extended", "Applebot-Extended", "CCBot", "Bytespider", "Amazonbot", "cohere-ai"]
 DOCS_TRAFFIC = "https://docs.github.com/rest/metrics/traffic"
 DOCS_RATE = "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api"
 e = html.escape
+_CTX = {"prof": None, "reports": []}
+_AV = {}
+
+
+def av(cfg, name):
+    """Asset URL with a content hash, so a changed file is never served from a stale cache."""
+    if name not in _AV:
+        try:
+            _AV[name] = hashlib.sha1(open("docs/assets/" + name, "rb").read()).hexdigest()[:8]
+        except OSError:
+            _AV[name] = "0"
+    return f"{cfg['site_url']}assets/{name}?v={_AV[name]}"
+
+
+def me_links(prof):
+    urls = ([prof["url"]] if prof else []) + [l["url"] for l in (prof or {}).get("links", [])]
+    return "".join(f'<link rel="me" href="{e(u)}">' for u in urls[:8])
+
+
+def verification(cfg):
+    v = cfg.get("verification", {})
+    out = ""
+    if v.get("google"):
+        out += f'<meta name="google-site-verification" content="{e(v["google"])}">'
+    if v.get("bing"):
+        out += f'<meta name="msvalidate.01" content="{e(v["bing"])}">'
+    return out
 
 
 def faq(cfg, s):
@@ -79,6 +106,10 @@ def jsonld(cfg, prof, s, f, page="index", path="", title="", desc="", article=No
          "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json",
                            "contentUrl": base + "data/summary.json"}]},
     ]
+    graph.append({"@type": "SoftwareSourceCode", "@id": base + "#code", "name": cfg["site_name"],
+                  "codeRepository": "https://github.com/" + cfg["repo_full_name"],
+                  "programmingLanguage": ["Python", "JavaScript"], "license": "https://opensource.org/license/mit",
+                  "author": {"@id": base + "#publisher"}, "version": cfg.get("version", "")})
     graph.append({"@type": "WebPage", "@id": url + "#webpage", "url": url, "name": title or cfg["site_name"],
                   "description": desc, "isPartOf": {"@id": base + "#website"}, "inLanguage": "en",
                   "dateModified": s["generated"],
@@ -95,8 +126,9 @@ def jsonld(cfg, prof, s, f, page="index", path="", title="", desc="", article=No
     return json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False)
 
 
-def head(cfg, title, desc, path, ld, extra="", author="", modified=""):
+def head(cfg, title, desc, path, ld, extra="", author="", modified="", og=None):
     base = cfg["site_url"]
+    og = og or base + "assets/og-image.png"
     url = base + path
     return f"""<!doctype html>
 <html lang="en">
@@ -121,14 +153,16 @@ def head(cfg, title, desc, path, ld, extra="", author="", modified=""):
 <meta property="og:title" content="{e(title)}">
 <meta property="og:description" content="{e(desc)}">
 <meta property="og:url" content="{e(url)}">
-<meta property="og:image" content="{base}assets/og-image.png">
+<meta property="og:image" content="{e(og)}">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="{e(cfg['site_name'])}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{e(title)}">
 <meta name="twitter:description" content="{e(desc)}">
-<meta name="twitter:image" content="{base}assets/og-image.png">
-<link rel="stylesheet" href="{base}assets/style.css">
+<meta name="twitter:image" content="{e(og)}">
+<link rel="stylesheet" href="{av(cfg, "style.css")}">
+<link rel="apple-touch-icon" href="{base}assets/apple-touch-icon.png">
+{verification(cfg)}{me_links(_CTX["prof"])}
 <script type="application/ld+json">{ld}</script>{extra}
 </head>"""
 
@@ -143,7 +177,7 @@ def header(cfg, prof, tabs=True, index=False):
 <div class="wrap hdr">
 <a class="brand" href="{base}"><svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#0b5fff"/><path d="M6 22l6-7 5 4 9-11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Traffic Analytics{by}</span></a>
 <nav id="tabs" aria-label="Dashboard sections">{nav}</nav>
-<div class="actions">{'<button id="settings-btn" class="icon" type="button" aria-label="Settings" title="Settings">&#9881;</button>' if index else ''}<button id="theme" class="icon" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">&#9680;</button>
+<div class="actions">{'<button id="palette-btn" class="icon" type="button" aria-label="Quick search (Ctrl K)" title="Quick search (Ctrl/Cmd+K)">&#8981;</button><button id="settings-btn" class="icon" type="button" aria-label="Settings" title="Settings">&#9881;</button>' if index else ''}<button id="theme" class="icon" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">&#9680;</button>
 <a class="btn small" href="https://github.com/{cfg['repo_full_name']}" rel="noopener">Star on GitHub</a></div>
 </div>
 </header>"""
@@ -165,6 +199,7 @@ def footer(cfg, prof, s):
 <div><h3>Resources</h3><ul>
 <li><a href="{base}about/">About</a></li><li><a href="{base}methodology/">Methodology</a></li>
 <li><a href="{base}faq/">FAQ</a></li><li><a href="{base}guides/">Guides</a></li><li><a href="{base}reports/">Weekly reports</a></li>
+<li><a href="{base}repositories/">All repositories</a></li><li><a href="{base}status/">Status</a></li><li><a href="{base}changelog/">Changelog</a></li>
 <li><a href="{base}data/">Open data</a></li><li><a href="{base}privacy/">Privacy</a></li>
 <li><a href="{base}feed.xml">Atom feed</a></li><li><a href="{base}llms.txt">llms.txt</a></li><li><a href="{base}sitemap.xml">Sitemap</a></li>
 <li><a href="https://github.com/{cfg['repo_full_name']}" rel="noopener">Source code</a></li>
@@ -218,8 +253,11 @@ def build_index(cfg, prof, s):
     desc = (f"Free, open-source GitHub traffic analytics: daily history of views, clones, referrers and stars "
             f"for {t['repos']} public repos, beyond GitHub's 14-day limit.")
     faq_html = "".join(f"<details><summary>{e(q)}</summary><p>{e(a)}</p></details>" for q, a in f)
+    rp = _CTX["reports"]
+    teaser = (f'<p class="teaser">Latest weekly report: <a href="{base}reports/{C.report_slug(rp[0])}/">{e(C.report_title(rp[0]))}</a> '
+              f'&middot; <a href="{base}reports/">all reports</a></p>') if rp else ""
     body = f"""<body>
-<script src="{base}assets/boot.js"></script>
+<script src="{av(cfg, "boot.js")}"></script>
 {header(cfg, prof, index=True)}
 <div id="stale" class="banner" role="status" hidden>The data looks out of date: the last update was more than 3 days ago. The daily workflow may need attention.</div>
 <main id="main" class="wrap">
@@ -230,7 +268,7 @@ def build_index(cfg, prof, s):
 </section>
 
 <section class="tab" id="tab-overview" data-title="Overview">
-<div class="grid kpis" id="kpis" aria-live="polite"></div>
+{teaser}<div class="grid kpis" id="kpis" aria-live="polite"></div>
 <div class="grid two">
 <div class="card"><div class="bar"><h2>Views and clones, last 30 days</h2></div><div class="chartbox"><canvas id="c-overview" role="img" aria-label="Views and clones for the last 30 days"></canvas></div></div>
 <div class="card"><h2>Highlights</h2><div id="highlights"></div><a class="more" href="#insights">All insights &rarr;</a></div>
@@ -245,8 +283,10 @@ def build_index(cfg, prof, s):
 <section class="tab" id="tab-trends" data-title="Trends">
 <div class="card"><div class="bar"><h2>Traffic trend</h2>
 <div class="seg" id="seg-period" role="group" aria-label="Granularity"><button data-p="daily" class="on">Daily</button><button data-p="weekly">Weekly</button><button data-p="monthly">Monthly</button><button data-p="yearly">Yearly</button></div>
-<div class="seg" id="seg-range" role="group" aria-label="Range"><button data-r="30">30d</button><button data-r="90" class="on">90d</button><button data-r="365">1y</button><button data-r="0">All</button></div></div>
+<div class="seg" id="seg-range" role="group" aria-label="Range"><button data-r="30">30d</button><button data-r="90" class="on">90d</button><button data-r="365">1y</button><button data-r="0">All</button></div>
+<button id="b-png" class="btn small ghost" type="button">Download PNG</button></div>
 <div class="chartbox tall"><canvas id="c-trend" role="img" aria-label="Views and clones over time"></canvas></div>
+<details class="dt"><summary>View this chart as a table</summary><div class="wrapx"><table id="t-trend"></table></div></details>
 <p class="note">GitHub finalises each day after 24-48 hours, so the newest days can still rise. Unique visitors are not summed over time (see methodology).</p></div>
 <div class="grid two">
 <div class="card"><h2>Views by weekday (90 days)</h2><div class="chartbox"><canvas id="c-weekday"></canvas></div></div>
@@ -314,6 +354,7 @@ def build_index(cfg, prof, s):
 </section>
 </main>
 <dialog id="repo-dialog" aria-labelledby="rd-title"><div id="rd"></div></dialog>
+<dialog id="palette" aria-label="Quick search"><div class="pal"><input id="pal-q" type="search" placeholder="Jump to a tab, page or repository" aria-label="Quick search" autocomplete="off"><ul id="pal-list"></ul><p class="note">Up and down to move, Enter to open, Esc to close</p></div></dialog>
 <dialog id="settings-dialog" aria-labelledby="st-title"><div class="sd">
 <div class="rd-h"><h2 id="st-title">Settings</h2><button class="rd-x" type="button" data-close aria-label="Close">&times;</button></div>
 <p class="note">Saved in this browser only. Nothing is sent anywhere.</p>
@@ -328,15 +369,15 @@ def build_index(cfg, prof, s):
 </div></dialog>
 <button id="totop" class="totop" type="button" aria-label="Back to top" hidden>&uarr;</button>
 {footer(cfg, prof, s)}
-<script src="{base}assets/vendor/chart.umd.js"></script>
-<script src="{base}assets/app.js"></script>
+<script src="{av(cfg, "vendor/chart.umd.js")}" defer></script>
+<script src="{av(cfg, "app.js")}" defer></script>
 </body>
 </html>"""
     return head(cfg, title, desc, "", jsonld(cfg, prof, s, f, "index", "", title, desc),
                 author=(prof or {}).get("name", ""), modified=s["generated"]) + "\n" + body
 
 
-def subpage(cfg, prof, s, path, title, desc, h1, inner, page, article=None, trail=None, faqs=None):
+def subpage(cfg, prof, s, path, title, desc, h1, inner, page, article=None, trail=None, faqs=None, og=None, extra_ld=""):
     base = cfg["site_url"]
     f = faqs or faq(cfg, s)
     steps = [("Dashboard", base)] + list(trail or []) + [(h1, base + path)]
@@ -344,11 +385,11 @@ def subpage(cfg, prof, s, path, title, desc, h1, inner, page, article=None, trai
         {"@type": "ListItem", "position": i + 1, "name": n, "item": u} for i, (n, u) in enumerate(steps)]})
     ld = jsonld(cfg, prof, s, f, page, path, title, desc, article)
     trail_html = "".join(f'<a href="{e(u)}">{e(n)}</a> / ' for n, u in steps[:-1])
-    extra = f'\n<script type="application/ld+json">{crumbs}</script>'
-    return (head(cfg, title, desc, path, ld, extra, (prof or {}).get("name", ""), s["generated"]) +
-            f'\n<body><script src="{base}assets/boot.js"></script>\n{header(cfg, prof)}\n<main id="main" class="wrap prose">'
+    extra = f'\n<script type="application/ld+json">{crumbs}</script>' + (f'\n<script type="application/ld+json">{extra_ld}</script>' if extra_ld else "")
+    return (head(cfg, title, desc, path, ld, extra, (prof or {}).get("name", ""), s["generated"], og) +
+            f'\n<body><script src="{av(cfg, "boot.js")}"></script>\n{header(cfg, prof)}\n<main id="main" class="wrap prose">'
             f'<nav class="crumbs" aria-label="Breadcrumb">{trail_html}{e(h1)}</nav>'
-            f'<h1>{e(h1)}</h1>{inner}</main>\n{footer(cfg, prof, s)}\n<script src="{base}assets/page.js"></script></body></html>')
+            f'<h1>{e(h1)}</h1>{inner}</main>\n{footer(cfg, prof, s)}\n<script src="{av(cfg, "page.js")}" defer></script></body></html>')
 
 
 def page_methodology(cfg, s):
@@ -377,6 +418,8 @@ def page_methodology(cfg, s):
 <li>Referrer data is a rolling top-10 snapshot, so source totals are not exact lifetime sums.</li>
 <li>New repositories appear after the next daily run.</li>
 <li>Clones are not used to decide how often a repository is fetched, because automation clones almost every repository.</li></ul>
+<h2>Monitoring</h2>
+<p>Every run is logged on the <a href="{cfg['site_url']}status/">status page</a>. A failed or partial run, a large traffic spike and each finished weekly report create an alert issue in the repository, and a daily watchdog checks that the published data is fresh.</p>
 <h2>Integrity and changes</h2>
 <p>The code is open source under the MIT license at <a href="https://github.com/{e(cfg['repo_full_name'])}" rel="noopener">github.com/{e(cfg['repo_full_name'])}</a>. Only the owner can change it; every data update is a visible commit. Raw data is available as <a href="{cfg['site_url']}data/summary.json">JSON</a>.</p>"""
 
@@ -433,6 +476,8 @@ def build_all(cfg):
     t = s["totals"]
     gen = s["generated"]
     reports = C.weekly_reports(s)
+    runs = load("docs/data/run_history.json", [])
+    _CTX["prof"], _CTX["reports"] = prof, reports
     urls = []  # (path, lastmod, changefreq)
 
     def page(path, title, desc, h1, inner, kind, freq="monthly", lastmod=None, **kw):
@@ -477,17 +522,38 @@ def build_all(cfg):
          "Download daily GitHub repository traffic history, repository metadata and badges as JSON and CSV. Updated every day.",
          "Open data", C.data_page(cfg, s, base), "data", freq="daily")
 
-    for w in reports:
+    for i, w in enumerate(reports):
         sl = C.report_slug(w)
         end = (w["start"] + dt.timedelta(days=6)).isoformat()
         title = C.report_title(w)
+        og = None
+        if C.report_og(w, s, f"docs/assets/og/report-{sl}.png", cfg["site_name"]):
+            og = f"{base}assets/og/report-{sl}.png"
+        nav = ""
+        if i + 1 < len(reports):
+            nav += f'<a href="{base}reports/{C.report_slug(reports[i + 1])}/">&larr; Previous week</a>'
+        if i > 0:
+            nav += f'<a href="{base}reports/{C.report_slug(reports[i - 1])}/">Next week &rarr;</a>'
         page(f"reports/{sl}/", title, C.report_summary(w)[:152].rstrip() + ("..." if len(C.report_summary(w)) > 152 else ""),
-             title, C.report_body(cfg, s, w, base), "report", freq="yearly", lastmod=end,
-             article={"type": "Article", "published": end, "modified": end}, trail=[("Weekly reports", base + "reports/")])
+             title, C.report_body(cfg, s, w, base) + (f'<nav class="prevnext" aria-label="Report navigation">{nav}</nav>' if nav else ""),
+             "report", freq="yearly", lastmod=end,
+             article={"type": "Article", "published": end, "modified": end}, trail=[("Weekly reports", base + "reports/")], og=og)
     page("reports/", "Weekly GitHub traffic reports",
          "Automatically generated weekly reports of GitHub repository views and clones with top repositories and daily breakdown.",
          "Weekly reports", C.reports_index_body(cfg, reports, base), "reports", freq="weekly")
     _w("feed.xml", C.atom_feed(cfg, prof, reports, base, gen))
+    page("repositories/", "All repositories: descriptions, languages, stars and traffic",
+         f"All {t['repos']} public repositories with description, language, stars and 30-day views. Search and compare in the dashboard.",
+         "All repositories", C.repositories_body(cfg, s, base), "repositories", freq="daily",
+         extra_ld=C.repositories_itemlist(cfg, s, base))
+    page("status/", "Status: data freshness and collection run history",
+         "When the dashboard data last updated, how many GitHub API calls each run used and whether anything failed.",
+         "Status", C.status_body(cfg, s, runs, base), "status", freq="daily")
+    page("changelog/", "Changelog: releases of the GitHub Traffic Analytics Dashboard",
+         "Release notes for every version of the dashboard: features, fixes and changes to data collection.",
+         "Changelog", C.changelog_body(base), "changelog", freq="weekly", lastmod=C.CHANGELOG[0][1])
+    with open("CHANGELOG.md", "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(C.changelog_md())
 
     nf = subpage(cfg, prof, s, "404.html", "Page not found", "This page does not exist.", "Page not found",
                  f'<p>The page you requested was not found. Go to the <a href="{base}">dashboard</a>.</p>', "404")
@@ -521,6 +587,9 @@ def build_all(cfg):
         ("guides/keep-github-traffic-history/", "Guide: keep GitHub traffic beyond 14 days", "step-by-step with code"),
         ("guides/github-traffic-api-reference/", "Guide: GitHub traffic API reference", "endpoints, fields, limits"),
         ("reports/", "Weekly reports", f"{len(reports)} completed weeks"),
+        ("repositories/", "All repositories", "descriptions, languages, stars, traffic"),
+        ("status/", "Status", "data freshness and collection run history"),
+        ("changelog/", "Changelog", "release notes"),
         ("data/", "Open data", "JSON, CSV and badge files"),
         ("about/", "About", "maintainer, purpose, editorial policy"),
         ("privacy/", "Privacy", "no cookies or tracking")))
@@ -556,7 +625,24 @@ def build_all(cfg):
     _w(".well-known/security.txt", f"Contact: https://github.com/{cfg['repo_full_name']}/security/advisories/new\nExpires: {exp}T00:00:00.000Z\nPreferred-Languages: en\nCanonical: {base}.well-known/security.txt\n")
     _w("manifest.webmanifest", json.dumps({"name": cfg["site_name"], "short_name": "Traffic Analytics", "start_url": base,
         "display": "standalone", "background_color": "#ffffff", "theme_color": "#0b5fff",
-        "icons": [{"src": base + "assets/favicon.svg", "sizes": "any", "type": "image/svg+xml"}]}))
+        "icons": [{"src": base + "assets/icon-192.png", "sizes": "192x192", "type": "image/png"},
+                  {"src": base + "assets/icon-512.png", "sizes": "512x512", "type": "image/png"},
+                  {"src": base + "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+                  {"src": base + "assets/favicon.svg", "sizes": "any", "type": "image/svg+xml"}],
+        "categories": ["developer", "productivity"], "lang": "en"}))
+    names = ["style.css", "app.js", "boot.js", "page.js", "vendor/chart.umd.js"]
+    shell = [av(cfg, n) for n in names]
+    ver = hashlib.sha1("".join(shell).encode()).hexdigest()[:10]
+    _w("sw.js", f"""const V='gtad-{ver}';
+const SHELL={json.dumps(shell)};
+self.addEventListener('install',e=>{{e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()));}});
+self.addEventListener('activate',e=>{{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('gtad-')&&k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));}});
+self.addEventListener('fetch',e=>{{
+  const r=e.request; if(r.method!=='GET')return; const u=new URL(r.url); if(u.origin!==location.origin)return;
+  if(u.pathname.includes('/assets/')){{e.respondWith(caches.match(r).then(m=>m||fetch(r).then(res=>{{if(res.ok){{const cp=res.clone();caches.open(V).then(c=>c.put(r,cp));}}return res;}})));return;}}
+  e.respondWith(fetch(r).then(res=>{{if(res.ok){{const cp=res.clone();caches.open(V).then(c=>c.put(r,cp));}}return res;}}).catch(()=>caches.match(r)));
+}});
+""")
     key = indexnow_key(cfg)
     _w(f"{key}.txt", key)
     _w("indexnow-urls.json", json.dumps([base + p for p, _m, _c in urls]))

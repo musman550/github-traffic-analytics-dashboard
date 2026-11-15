@@ -90,3 +90,14 @@ a.chip{color:var(--fg)}a.chip:hover{border-color:var(--ac);text-decoration:none}
 .calm *{animation:none!important;scroll-behavior:auto!important}
 pre{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:12px;overflow-x:auto;font-size:12.5px;line-height:1.5}pre code{background:none;padding:0}
 @media (max-width:640px){.hs{display:none}}
+/* v4 additions */
+.teaser{margin:0 0 12px;padding:8px 12px;border:1px solid var(--bd);border-radius:10px;background:var(--card);font-size:13.5px}
+.prevnext{display:flex;justify-content:space-between;gap:12px;margin-top:22px;padding-top:12px;border-top:1px solid var(--bd)}
+details.dt{margin-top:8px;border:0}details.dt summary{font-weight:500;color:var(--ac);font-size:13px}
+.pal{padding:14px;display:grid;gap:8px;min-width:min(520px,90vw)}.pal input{width:100%}
+#pal-list{list-style:none;margin:0;padding:0;max-height:50vh;overflow:auto}
+#pal-list li{padding:8px 10px;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;gap:10px}
+#pal-list li small{color:var(--mut)}#pal-list li.on,#pal-list li:hover{background:var(--ac2)}
+dialog#palette{margin-top:12vh}
+@media (pointer:coarse){button,.btn,select,input,#tabs a{min-height:42px}}
+.take{margin:0}

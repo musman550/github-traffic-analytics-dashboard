@@ -19,6 +19,7 @@
 - **Settings panel:** theme, start tab, rows per page, compact density, hide forks, reduce motion (saved only in your browser); shareable filter URLs such as `#repos?q=ai&tier=top`
 - **Also:** 7-day moving average, calendar heatmap, biggest gainers and decliners, stale-data warning
 - **Crawlable content:** weekly report pages (`/reports/`) with an Atom feed, FAQ, two guides, open-data page, CSV downloads and Shields.io badge endpoints
+- **v4:** installable web app with offline cache, command palette (Ctrl/Cmd+K), chart PNG download and data tables, crawlable repositories index, public status page with run history, alert issues (failed runs, spikes, weekly reports; optional Telegram) and a daily watchdog, per-report social images, changelog and `CITATION.cff`
 - **Comments** via GitHub Discussions (giscus), loaded only when the Comments tab is opened
 
 ## Badges
@@ -47,6 +48,11 @@ Content-Security-Policy with no inline scripts, all repository text escaped befo
 ## Score
 
 `score = views_30d + 0.5 × clones_30d + 2 × unique_visitors_14d + 3 × stars + 4 × forks`
+
+## Optional settings
+
+- `config/config.json` → `verification`: paste your Google Search Console or Bing Webmaster verification codes
+- `notifications`: turn issue alerts or Telegram messages on or off; Telegram needs the secrets `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
 
 ## Run it for your own account
 

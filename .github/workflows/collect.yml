@@ -41,6 +41,13 @@ jobs:
           PYTHONPATH: src
           FORCE_FULL: ${{ github.event.schedule == '47 3 * * 0' || inputs.force_full }}
         run: python -m ghintel.cli all
+      - name: Alerts (failed runs, spikes, finished weekly reports)
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PYTHONPATH: src
+        run: python -m ghintel.cli alerts || true
       - name: Audit generated site (blocks publishing if broken)
         run: python scripts/audit_site.py docs
       - name: Commit data
@@ -51,6 +58,12 @@ jobs:
           git diff --cached --quiet || git commit -m "data: $(date -u +%F)"
           git pull --rebase -q
           git push
+      - name: Open an alert issue if this workflow failed
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          gh issue create --repo "${{ github.repository }}" --label alert             --title "Collection workflow failed on $(date -u +%F)"             --body "The scheduled collection failed. See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}. A common cause is an expired GH_PAT token." || true
       - name: Notify search engines (IndexNow, best effort)
         run: |
           sleep 90

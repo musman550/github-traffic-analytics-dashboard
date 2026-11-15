@@ -8,6 +8,9 @@ def main():
     if cmd in ("collect", "all"):
         from .collector import collect
         collect(cfg)
+    if cmd == "alerts":
+        from .alerts import run
+        run(cfg)
     if cmd in ("build", "all"):
         from .aggregator import build_summary
         from .site import build_all

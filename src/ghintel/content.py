@@ -1,6 +1,6 @@
 """Long-form, crawlable pages: weekly reports, guides, extended FAQ and data documentation.
 Every figure is computed from stored data; guides contain verified, documented facts only."""
-import datetime as dt, html
+import datetime as dt, html, os
 from .store import load
 
 e = html.escape
@@ -139,6 +139,11 @@ def faq_extra():
          "your public repositories and adds trends, sources, rankings and exports."),
         ("How do I export the data?",
          "Download repos.csv and daily.csv, or the JSON files, from the data page. They are static files that update daily."),
+        ("What happens if an update fails?",
+         "The status page shows every collection run. A failed or partial run creates an alert issue, and a daily watchdog "
+         "checks that the published data is fresh. Because each GitHub call returns 14 days, a missed day is recovered by the next run."),
+        ("Can I install the dashboard as an app?",
+         "Yes. Browsers that support installable web apps offer an install option, and the last loaded data stays available offline."),
         ("Is this affiliated with GitHub?",
          "No. It is an independent open-source project that uses the public GitHub REST API."),
     ]
@@ -190,6 +195,9 @@ jobs:
 def guide_14_days(cfg, base):
     repo = cfg["repo_full_name"]
     return f"""<p class="lead">GitHub shows repository views and clones for the last 14 days only. This guide explains how to keep them for as long as you want, with free tools.</p>
+<div class="card"><h2>Key takeaways</h2><ul><li>GitHub keeps 14 days of views and clones and the top 10 referrers and paths; older data is gone.</li>
+<li>You need push access and a token; save each day by date (upsert), never append.</li>
+<li>A scheduled GitHub Actions workflow plus a JSON file in the repository is enough, at no cost.</li></ul></div>
 <h2>What GitHub keeps</h2>
 <p>The Insights &rarr; Traffic page and the <a href="{DOCS_TRAFFIC}" rel="noopener">traffic REST endpoints</a> return the previous 14 days of views and clones, plus the top 10 referring sites and the top 10 popular paths. Anything older is no longer available, so history has to be saved by you.</p>
 <h2>Step 1: get a token</h2>
@@ -213,6 +221,9 @@ def guide_14_days(cfg, base):
 
 def guide_api(cfg, base):
     return f"""<p class="lead">A compact reference for GitHub's repository traffic endpoints: what each returns, who can call it and what the limits are.</p>
+<div class="card"><h2>Key takeaways</h2><ul><li>Four endpoints: views, clones, popular referrers and popular paths.</li>
+<li>All cover the last 14 days; referrers and paths return only the top 10.</li>
+<li>Uniques are deduplicated within the window only and must not be summed across days.</li></ul></div>
 <h2>Endpoints</h2>
 <div class="wrapx"><table><thead><tr><th>Endpoint</th><th>Returns</th><th>Window</th></tr></thead><tbody>
 <tr><td><code>/repos/{{owner}}/{{repo}}/traffic/views</code></td><td>count, uniques and a list of daily {{timestamp, count, uniques}}</td><td>14 days</td></tr>
@@ -255,4 +266,138 @@ def data_page(cfg, s, base):
 s = requests.get("{base}data/summary.json", timeout=30).json()
 print(s["totals"]["views_30d"], "views in the last 30 days")</code></pre>
 <h2>Badges</h2><p>Endpoint files for <a href="https://shields.io/badges/endpoint-badge" rel="noopener">Shields.io</a> are available at <code>{base}badges/views-30d.json</code>, <code>repos.json</code>, <code>stars.json</code> and <code>clones-30d.json</code>.</p>
+{cite_block(cfg, s, load("docs/data/profile.json"), base)}
 <h2>Notes</h2><ul><li>Only public repositories are included.</li><li>Clones include automation.</li><li>See the <a href="{base}methodology/">methodology</a> for definitions and limits.</li></ul>"""
+
+
+# ---------------------------------------------------------------- changelog
+CHANGELOG = [
+    ("4.0.0", "2026-11-15", [
+        "Faster first paint: scripts load deferred and static assets are versioned, so updates never serve stale files",
+        "Installable web app with offline cache for the last loaded data",
+        "Crawlable repositories index with descriptions, languages, stars and traffic",
+        "Public status page with the history of collection runs, plus alerts for failed runs, traffic spikes and finished weekly reports (GitHub issues, optional Telegram) and a daily watchdog",
+        "Command palette (Ctrl/Cmd+K), chart PNG download and accessible data tables",
+        "Social preview images for weekly reports, previous/next report links, changelog, CITATION.cff and search-engine verification hooks",
+    ]),
+    ("3.0.0", "2026-11-15", [
+        "Fixed charts breaking after a theme change and the wrong tab after closing a repository dialog",
+        "Statistics now end two days back because GitHub finalises days after 24-48 hours",
+        "Fixed fetch scheduling: clones no longer make every repository active; a full refresh dropped from 1,072 to about 680 API calls and normal days use roughly 250-350",
+        "Settings panel, shareable filter URLs, gainers and decliners, 7-day average, calendar heatmap",
+        "Weekly reports with Atom feed, FAQ, two guides, open data page, CSV downloads and badge endpoints",
+        "Pre-publish site audit, CI, pinned GitHub Actions and IndexNow notifications",
+    ]),
+    ("2.0.0", "2026-11-14", [
+        "Tabbed dashboard with repository detail view, compare, filters, pagination and CSV export",
+        "Automatic profile links, insights, metadata audit and richer structured data",
+        "Private repositories removed from collection and publication entirely",
+    ]),
+    ("1.0.0", "2026-11-14", [
+        "First release: daily collection of views, clones, referrers and stars with permanent history on GitHub Pages",
+    ]),
+]
+
+
+def changelog_body(base):
+    out = '<p class="lead">What changed in each release. Newest first.</p>'
+    for v, d, items in CHANGELOG:
+        out += f'<h2>{e(v)} <span class="mut" style="font-weight:400;font-size:14px"><time datetime="{d}">{d}</time></span></h2><ul>' + \
+               "".join(f"<li>{e(i)}</li>" for i in items) + "</ul>"
+    return out + f'<p class="note">Release notes are also published on <a href="https://github.com/musman550/github-traffic-analytics-dashboard/releases" rel="noopener">GitHub Releases</a>.</p>'
+
+
+def changelog_md():
+    out = "# Changelog\n\n"
+    for v, d, items in CHANGELOG:
+        out += f"## {v} - {d}\n" + "".join(f"- {i}\n" for i in items) + "\n"
+    return out
+
+
+# ---------------------------------------------------------------- status
+def status_body(cfg, s, runs, base):
+    h = s.get("health", {})
+    rows = "".join(
+        f'<tr><td>{e(r["d"][:16].replace("T", " "))} UTC</td><td>{"full" if r.get("full") else "incremental"}</td>'
+        f'<td>{r["fetched"]}</td><td>{r["skipped"]}</td><td>{r["calls"]}</td><td>{r.get("left", "–")}</td><td>{r["s"]}s</td>'
+        f'<td>{"partial" if r["partial"] else ("warnings" if r["errors"] else "ok")}</td></tr>' for r in runs[-20:][::-1])
+    last = runs[-1] if runs else None
+    ok = bool(last) and not last["partial"] and not last["errors"]
+    state = "healthy" if ok else ("no run recorded yet" if not last else "needs attention")
+    return (f'<p class="lead">Transparency about the data pipeline: when it last ran, how many API calls it used and whether anything went wrong.</p>'
+            f'<h2>Current state</h2><ul><li>Last collection: {e((h.get("last_run") or "unknown")[:19].replace("T", " "))} UTC ({state})</li>'
+            f'<li>Data through: {e(s["last_data_day"])}; page generated {e(s["generated"][:19].replace("T", " "))} UTC</li>'
+            f'<li>Public repositories tracked: {s["totals"]["repos"]:,}</li></ul>'
+            f'<h2>Recent runs</h2><div class="wrapx"><table><thead><tr><th>Started</th><th>Mode</th><th>Fetched</th><th>Skipped</th><th>API calls</th><th>Budget left</th><th>Duration</th><th>Result</th></tr></thead><tbody>{rows}</tbody></table></div>'
+            f'<p class="note">The hourly GitHub API allowance is 5,000 requests per token. Runs stop safely when the remaining budget gets low.</p>'
+            f'<h2>Monitoring</h2><p>A daily watchdog checks that the published data is fresh. A failed or partial run, a large traffic spike and every finished weekly report create an alert issue in the repository (and an optional Telegram message). '
+            f'See the <a href="{base}methodology/">methodology</a> for how collection works and <a href="{base}changelog/">changelog</a> for releases.</p>')
+
+
+# ---------------------------------------------------------------- repositories index
+def repositories_body(cfg, s, base):
+    rows = ""
+    for r in s["repos"]:
+        rows += (f'<tr><td style="white-space:normal"><a href="{e(r["url"])}" rel="noopener"><b>{e(r["name"])}</b></a>'
+                 f'<div class="mut" style="font-size:12.5px">{e(r["desc"])}</div></td><td>{e(r["lang"] or "–")}</td><td>{r["stars"]}</td>'
+                 f'<td>{r["v30"]:,}</td><td>{e(r["pushed"])}</td><td><a href="{base}#repo/{e(r["name"])}">Stats</a></td></tr>')
+    t = s["totals"]
+    return (f'<p class="lead">All {t["repos"]:,} public repositories with their GitHub description, language, stars and views in the last 30 days. '
+            f'Use the <a href="{base}#repos">interactive table</a> to search, filter and compare.</p>'
+            f'<div class="wrapx"><table><thead><tr><th>Repository</th><th>Language</th><th>Stars</th><th>Views 30d</th><th>Last push</th><th></th></tr></thead><tbody>{rows}</tbody></table></div>'
+            f'<p class="note">Data through {e(s["last_data_day"])}. Private repositories are never included.</p>')
+
+
+def repositories_itemlist(cfg, s, base):
+    import json
+    items = [{"@type": "ListItem", "position": i + 1, "url": r["url"], "name": r["name"]} for i, r in enumerate(s["repos"][:100])]
+    return json.dumps({"@context": "https://schema.org", "@type": "ItemList", "name": "Public repositories by score",
+                       "numberOfItems": len(s["repos"]), "itemListElement": items}, ensure_ascii=False)
+
+
+# ---------------------------------------------------------------- citation block
+def cite_block(cfg, s, prof, base):
+    who = (prof or {}).get("name", "Publisher")
+    return (f'<h2>Cite this dataset</h2><p><code>{e(who)}. GitHub Traffic Analytics Dashboard [data set]. {e(s["generated"][:10])}. '
+            f'{e(base)}data/summary.json</code></p>')
+
+
+# ---------------------------------------------------------------- social image for a weekly report
+def report_og(w, s, outpath, site_name):
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except Exception:
+        return False
+    if os.path.exists(outpath):
+        return True
+    os.makedirs(os.path.dirname(outpath), exist_ok=True)
+
+    def font(sz, bold=False):
+        for p in ("/usr/share/fonts/truetype/dejavu/DejaVuSans%s.ttf" % ("-Bold" if bold else ""),):
+            try:
+                return ImageFont.truetype(p, sz)
+            except Exception:
+                pass
+        return ImageFont.load_default()
+
+    W, H = 1200, 630
+    im = Image.new("RGB", (W, H), "#0b1220")
+    d = ImageDraw.Draw(im)
+    for i in range(H):
+        d.line([(0, i), (W, i)], fill=(8, 18 + int(22 * i / H), 52 + int(40 * i / H)))
+    end = w["start"] + dt.timedelta(days=6)
+    d.text((70, 60), "WEEKLY GITHUB TRAFFIC REPORT", font=font(30, True), fill="#7fb0ff")
+    d.text((70, 110), f"{fmt_d(w['start'])} to {fmt_d(end)}", font=font(54, True), fill="white")
+    d.text((70, 215), f"{w['views']:,}", font=font(96, True), fill="white")
+    d.text((70, 330), "views", font=font(34), fill="#b6c4dc")
+    d.text((420, 215), f"{w['clones']:,}", font=font(96, True), fill="#7fe0a6")
+    d.text((420, 330), "clones", font=font(34), fill="#b6c4dc")
+    mx = max(w["dv"]) or 1
+    for i, v in enumerate(w["dv"]):  # real daily views
+        x = 760 + i * 58
+        h = int(190 * v / mx)
+        d.rounded_rectangle([x, 330 - h, x + 40, 330], radius=6, fill="#0b5fff")
+        d.text((x + 8, 342), _d(w["days"][i]).strftime("%a")[:2], font=font(20), fill="#b6c4dc")
+    d.text((70, 560), site_name, font=font(28), fill="#b6c4dc")
+    im.save(outpath, optimize=True)
+    return True

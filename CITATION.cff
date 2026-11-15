@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software or its data, please cite it as below."
+title: "GitHub Traffic Analytics Dashboard"
+type: software
+authors:
+  - name: "MUSFIRA AI"
+repository-code: "https://github.com/musman550/github-traffic-analytics-dashboard"
+url: "https://musman550.github.io/github-traffic-analytics-dashboard/"
+license: MIT
+version: 4.0.0
+date-released: "2026-11-15"
+keywords:
+  - github
+  - traffic analytics
+  - repository insights
+  - open data

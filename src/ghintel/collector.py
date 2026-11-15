@@ -188,5 +188,10 @@ def collect(cfg):
         "api_calls": gh.calls, "rate_remaining": gh.remaining, "partial": partial,
         "seconds": round(time.time() - t0), "errors": errors[:20],
     }, pretty=True)
+    hist_runs = load(f"{D}/run_history.json", [])
+    hist_runs.append({"d": now.isoformat(timespec="seconds"), "repos": len(metas), "fetched": fetched,
+                      "skipped": skipped, "calls": gh.calls, "left": gh.remaining, "s": round(time.time() - t0),
+                      "partial": partial, "errors": len(errors), "full": bool(force)})
+    save(f"{D}/run_history.json", hist_runs[-60:])
     print(f"public={len(metas)} fetched={fetched} skipped={skipped} calls={gh.calls} "
           f"remaining={gh.remaining} partial={partial} errors={len(errors)}")
