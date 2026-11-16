@@ -1,6 +1,6 @@
 # GitHub Traffic Analytics Dashboard
 
-> Free, open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently, beyond GitHub's 14-day limit. Public repositories only, no login. Data through 2026-11-14, updated 2026-11-15.
+> Free, open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently, beyond GitHub's 14-day limit. Public repositories only, no login. Data through 2026-11-14, updated 2026-11-16.
 
 ## Pages
 - [Dashboard](https://musman550.github.io/github-traffic-analytics-dashboard/): overview, trends, sources, repositories, insights, links, comments
@@ -24,7 +24,7 @@
 - [Atom feed](https://musman550.github.io/github-traffic-analytics-dashboard/feed.xml): weekly reports
 
 ## Key facts
-- Tracked public repositories: 269
+- Tracked public repositories: 273
 - Last 30 days: 280 views, 7432 clones. Stars: 2. Forks: 0.
 - Source of data: GitHub REST API traffic endpoints (https://docs.github.com/rest/metrics/traffic)
 - GitHub keeps only 14 days of traffic and the top 10 referrers/paths; this project stores every day.
@@ -71,7 +71,7 @@ Yes. It is open source under the MIT license: fork github.com/musman550/github-t
 Only the repository owner can change the code and data. The main branch is protected, forks cannot write to it, and the site runs under a strict content-security policy.
 
 ### How many repositories are tracked right now?
-269 public repositories, with data through 2026-11-14.
+273 public repositories, with data through 2026-11-14.
 
 ### Can I see who visited my GitHub repository?
 No. GitHub's traffic data is aggregate only: counts of views and clones, unique-visitor estimates and referrer sites. It does not identify individual visitors.

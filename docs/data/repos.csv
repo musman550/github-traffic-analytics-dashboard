@@ -1,6 +1,6 @@
 name,url,views_7d,views_30d,views_since_tracking,clones_30d,unique_visitors_14d,stars,forks,language,license,last_push,score,tier
-musfiraai-mcp-server,https://github.com/musman550/musfiraai-mcp-server,0,1,1,660,1,0,0,Python,,2026-11-15,333.0,top
-musfira-ai-repo-bot,https://github.com/musman550/musfira-ai-repo-bot,0,7,7,369,1,0,0,Python,MIT,2026-11-14,193.5,top
+musfiraai-mcp-server,https://github.com/musman550/musfiraai-mcp-server,0,1,1,660,1,0,0,Python,,2026-11-16,333.0,top
+musfira-ai-repo-bot,https://github.com/musman550/musfira-ai-repo-bot,0,7,7,369,1,0,0,Python,MIT,2026-11-15,193.5,top
 musfiraai-free-tools,https://github.com/musman550/musfiraai-free-tools,0,0,0,238,0,0,0,HTML,MIT,2026-11-13,119.0,top
 musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs,https://github.com/musman550/musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs,1,13,13,72,12,0,0,HTML,MIT,2026-11-02,73.0,top
 musfira-ai-copilot-code-review-api-management-and-review-overview-updat,https://github.com/musman550/musfira-ai-copilot-code-review-api-management-and-review-overview-updat,0,0,0,129,0,0,0,HTML,MIT,2026-11-08,64.5,top
@@ -53,7 +53,7 @@ musfira-ai-blabbermouth-ai-coding-agents-hate-this-one-weird-trick,https://githu
 musfiraai-mcp,https://github.com/musman550/musfiraai-mcp,0,0,0,56,0,0,0,JavaScript,,2026-10-27,28.0,top
 musfira-ai-hugging-face-ceo-vows-to-keep-fighting-for-open-source-ai-af,https://github.com/musman550/musfira-ai-hugging-face-ceo-vows-to-keep-fighting-for-open-source-ai-af,0,0,0,55,0,0,0,HTML,MIT,2026-11-13,27.5,top
 musfira-ai-upcoming-deprecation-of-selected-github-copilot-models-in-mi,https://github.com/musman550/musfira-ai-upcoming-deprecation-of-selected-github-copilot-models-in-mi,8,18,18,7,3,0,0,HTML,MIT,2026-10-16,27.5,top
-musfira-ai-github-intelligence-puts-your-code-context-and-history-to-wo,https://github.com/musman550/musfira-ai-github-intelligence-puts-your-code-context-and-history-to-wo,0,1,1,47,1,0,0,HTML,MIT,2026-10-29,26.5,mid
+musfira-ai-github-intelligence-puts-your-code-context-and-history-to-wo,https://github.com/musman550/musfira-ai-github-intelligence-puts-your-code-context-and-history-to-wo,0,1,1,47,1,0,0,HTML,MIT,2026-10-29,26.5,top
 musfira-ai-llamacpp-v100-a-stronger-foundation-for-the-local-ai-ecosyst,https://github.com/musman550/musfira-ai-llamacpp-v100-a-stronger-foundation-for-the-local-ai-ecosyst,0,0,0,52,0,0,0,HTML,MIT,2026-11-14,26.0,mid
 musfira-ai-dependabot-now-supports-python-315,https://github.com/musman550/musfira-ai-dependabot-now-supports-python-315,0,0,0,51,0,0,0,HTML,MIT,2026-11-03,25.5,mid
 musfira-ai-qwen4-27b-pr-found,https://github.com/musman550/musfira-ai-qwen4-27b-pr-found,7,7,7,12,6,0,0,HTML,MIT,2026-10-24,25.0,mid
@@ -214,9 +214,9 @@ musfira-ai-give-your-coding-agents-a-memory-you-own,https://github.com/musman550
 musfira-ai-gpt-61-sol-in-github-copilot,https://github.com/musman550/musfira-ai-gpt-61-sol-in-github-copilot,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,mid
 musfira-ai-looks-like-the-era-of-subsidised-compute-is-coming-to-an-end,https://github.com/musman550/musfira-ai-looks-like-the-era-of-subsidised-compute-is-coming-to-an-end,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,mid
 musfira-ai-manage-the-code-coverage-ruleset-condition-with-the-rest-api,https://github.com/musman550/musfira-ai-manage-the-code-coverage-ruleset-condition-with-the-rest-api,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,mid
-musfira-ai-mozilla-report-china-us-ai-model-capability-gap-narrows-to-4,https://github.com/musman550/musfira-ai-mozilla-report-china-us-ai-model-capability-gap-narrows-to-4,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,low
-musfira-ai-multiple-trusted-publishing-configurations-for-npm,https://github.com/musman550/musfira-ai-multiple-trusted-publishing-configurations-for-npm,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,low
-musfira-ai-new-benchmark-the-struggle-bench,https://github.com/musman550/musfira-ai-new-benchmark-the-struggle-bench,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,low
+musfira-ai-mozilla-report-china-us-ai-model-capability-gap-narrows-to-4,https://github.com/musman550/musfira-ai-mozilla-report-china-us-ai-model-capability-gap-narrows-to-4,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,mid
+musfira-ai-multiple-trusted-publishing-configurations-for-npm,https://github.com/musman550/musfira-ai-multiple-trusted-publishing-configurations-for-npm,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,mid
+musfira-ai-new-benchmark-the-struggle-bench,https://github.com/musman550/musfira-ai-new-benchmark-the-struggle-bench,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,mid
 musfira-ai-pinning-saved-views-to-the-repository-issues-sidebar-is-gene,https://github.com/musman550/musfira-ai-pinning-saved-views-to-the-repository-issues-sidebar-is-gene,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,low
 musfira-ai-qwen-38-flash-next-max-is-impressive-just-to-talk-with,https://github.com/musman550/musfira-ai-qwen-38-flash-next-max-is-impressive-just-to-talk-with,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,low
 musfira-ai-qwen-will-be-the-king,https://github.com/musman550/musfira-ai-qwen-will-be-the-king,0,0,0,7,0,0,0,HTML,MIT,2026-10-04,3.5,low
@@ -267,4 +267,8 @@ musfira-ai-best-local-vision-language-models---august-2026,https://github.com/mu
 musfira-ai-new-100b-liquid-ai-model-coming-soon,https://github.com/musman550/musfira-ai-new-100b-liquid-ai-model-coming-soon,0,0,0,2,0,0,0,HTML,MIT,2026-10-04,1.0,low
 musfira-ai-the-new-github-copilot-experience-in-slack,https://github.com/musman550/musfira-ai-the-new-github-copilot-experience-in-slack,0,0,0,2,0,0,0,HTML,MIT,2026-10-04,1.0,low
 musman550,https://github.com/musman550/musman550,0,0,0,1,0,0,0,,,2026-08-23,0.5,low
-talashly,https://github.com/musman550/talashly,0,0,0,0,0,0,0,Python,MIT,2026-11-15,0.0,low
+musfira-ai-gemini-4-hydrogen-in-github-copilot,https://github.com/musman550/musfira-ai-gemini-4-hydrogen-in-github-copilot,0,0,0,0,0,0,0,HTML,MIT,2026-11-15,0.0,low
+musfira-ai-github-enterprise-server-support-in-the-github-copilot-app,https://github.com/musman550/musfira-ai-github-enterprise-server-support-in-the-github-copilot-app,0,0,0,0,0,0,0,HTML,MIT,2026-11-15,0.0,low
+musfira-ai-hot-take-frontier-models-havent-actually-become-much-smarter,https://github.com/musman550/musfira-ai-hot-take-frontier-models-havent-actually-become-much-smarter,0,0,0,0,0,0,0,HTML,MIT,2026-11-15,0.0,low
+talashly,https://github.com/musman550/talashly,0,0,0,0,0,0,0,Python,MIT,2026-11-16,0.0,low
+talashly-monitor,https://github.com/musman550/talashly-monitor,0,0,0,0,0,0,0,Shell,,2026-11-16,0.0,low
