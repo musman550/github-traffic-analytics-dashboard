@@ -1,0 +1,19 @@
+{
+ "ai_calls": 1,
+ "api_calls": 22,
+ "counts": {
+  "ai": 0,
+  "applied": 0,
+  "checked": 8,
+  "prs": 0,
+  "rules": 8,
+  "skipped": 0
+ },
+ "enabled": true,
+ "last_run": "2026-11-17T10:27:59+00:00",
+ "mode": "dry",
+ "notes": [],
+ "providers_configured": [
+  "github-models"
+ ]
+}

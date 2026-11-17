@@ -1,0 +1,232 @@
+{
+ "discovered": {},
+ "providers": {
+  "cerebras": {
+   "bad": 0,
+   "cool": 0,
+   "day": {
+    "d": "",
+    "n": 0
+   },
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "lat": 0,
+   "ok": 0,
+   "streak": 0
+  },
+  "cloudflare": {
+   "bad": 0,
+   "cool": 0,
+   "day": {
+    "d": "",
+    "n": 0
+   },
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "lat": 0,
+   "ok": 0,
+   "streak": 0
+  },
+  "gemini": {
+   "bad": 0,
+   "cool": 0,
+   "day": {
+    "d": "",
+    "n": 0
+   },
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "lat": 0,
+   "ok": 0,
+   "streak": 0
+  },
+  "github-models": {
+   "bad": 0,
+   "cool": 1794911318.0587635,
+   "day": {
+    "d": "2026-11-17",
+    "n": 1
+   },
+   "fail": 1,
+   "last_error": "http 200",
+   "last_ok": "",
+   "lat": 0,
+   "ok": 0,
+   "streak": 1
+  },
+  "groq": {
+   "bad": 0,
+   "cool": 0,
+   "day": {
+    "d": "",
+    "n": 0
+   },
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "lat": 0,
+   "ok": 0,
+   "streak": 0
+  },
+  "huggingface": {
+   "bad": 0,
+   "cool": 0,
+   "day": {
+    "d": "",
+    "n": 0
+   },
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "lat": 0,
+   "ok": 0,
+   "streak": 0
+  },
+  "mistral": {
+   "bad": 0,
+   "cool": 0,
+   "day": {
+    "d": "",
+    "n": 0
+   },
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "lat": 0,
+   "ok": 0,
+   "streak": 0
+  },
+  "openrouter": {
+   "bad": 0,
+   "cool": 0,
+   "day": {
+    "d": "",
+    "n": 0
+   },
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "lat": 0,
+   "ok": 0,
+   "streak": 0
+  }
+ },
+ "status": [
+  {
+   "avg_ms": 0,
+   "bad": 0,
+   "configured": false,
+   "cooldown": false,
+   "daily_cap": 800,
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "name": "groq",
+   "ok": 0,
+   "open_weight": true,
+   "today": 0
+  },
+  {
+   "avg_ms": 0,
+   "bad": 0,
+   "configured": false,
+   "cooldown": false,
+   "daily_cap": 800,
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "name": "cerebras",
+   "ok": 0,
+   "open_weight": true,
+   "today": 0
+  },
+  {
+   "avg_ms": 0,
+   "bad": 0,
+   "configured": true,
+   "cooldown": true,
+   "daily_cap": 100,
+   "fail": 1,
+   "last_error": "http 200",
+   "last_ok": "",
+   "name": "github-models",
+   "ok": 0,
+   "open_weight": true,
+   "today": 1
+  },
+  {
+   "avg_ms": 0,
+   "bad": 0,
+   "configured": false,
+   "cooldown": false,
+   "daily_cap": 40,
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "name": "openrouter",
+   "ok": 0,
+   "open_weight": true,
+   "today": 0
+  },
+  {
+   "avg_ms": 0,
+   "bad": 0,
+   "configured": false,
+   "cooldown": false,
+   "daily_cap": 100,
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "name": "huggingface",
+   "ok": 0,
+   "open_weight": true,
+   "today": 0
+  },
+  {
+   "avg_ms": 0,
+   "bad": 0,
+   "configured": false,
+   "cooldown": false,
+   "daily_cap": 200,
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "name": "mistral",
+   "ok": 0,
+   "open_weight": true,
+   "today": 0
+  },
+  {
+   "avg_ms": 0,
+   "bad": 0,
+   "configured": false,
+   "cooldown": false,
+   "daily_cap": 150,
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "name": "cloudflare",
+   "ok": 0,
+   "open_weight": true,
+   "today": 0
+  },
+  {
+   "avg_ms": 0,
+   "bad": 0,
+   "configured": false,
+   "cooldown": false,
+   "daily_cap": 200,
+   "fail": 0,
+   "last_error": "",
+   "last_ok": "",
+   "name": "gemini",
+   "ok": 0,
+   "open_weight": false,
+   "today": 0
+  }
+ ],
+ "updated": "2026-11-17T10:27:59+00:00"
+}
