@@ -206,3 +206,17 @@ class Alerts(unittest.TestCase):
                 self.assertEqual(sent, ["A", "B", "C"])
             finally:
                 os.chdir(cwd)
+
+
+class RateBuckets(unittest.TestCase):
+    def test_search_bucket_does_not_trip_core_guard(self):
+        from ghintel.github_client import GH
+        import requests
+        g = GH(token="t", min_remaining=400, sleep=0)
+        r = requests.Response()
+        r.headers.update({"x-ratelimit-remaining": "29", "x-ratelimit-resource": "search", "x-ratelimit-reset": "0"})
+        g._note(r)
+        self.assertIsNone(g.remaining)
+        r.headers.update({"x-ratelimit-remaining": "4500", "x-ratelimit-resource": "core"})
+        g._note(r)
+        self.assertEqual(g.remaining, 4500)

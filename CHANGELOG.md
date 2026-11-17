@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.0.0 - 2026-11-15
+- AI optimizer: improves repository descriptions and topics and proposes README summaries by pull request
+- Multi-provider router for open-weight models (Groq, Cerebras, GitHub Models, OpenRouter, Hugging Face, Mistral, Cloudflare) with cooldowns, daily budgets, caching and automatic fallback to rules
+- Safety: grounded topics, no links or hype, number checks, independent fact-check, junk-topic cleanup, README pull requests with auto-merge window and automatic rollback after a traffic drop
+- Public optimizer page and dashboard tab with provider health and a full change log; fixed a rate-limit bug where the search budget was mistaken for the core budget
+
 ## 4.0.0 - 2026-11-15
 - Faster first paint: scripts load deferred and static assets are versioned, so updates never serve stale files
 - Installable web app with offline cache for the last loaded data

@@ -24,6 +24,18 @@ class GH:
         self.sleep = sleep
         self.calls = 0
 
+    def _note(self, r):
+        """Track the budget of the bucket the response belongs to (core vs search vs graphql)."""
+        h = r.headers
+        if "x-ratelimit-remaining" not in h:
+            return
+        rem, res = int(h["x-ratelimit-remaining"]), h.get("x-ratelimit-resource", "core")
+        if res == "core":
+            self.remaining = rem
+        elif res == "search" and rem <= 1:
+            wait = max(0, int(h.get("x-ratelimit-reset", 0)) - int(time.time())) + 1
+            time.sleep(min(wait, 65))
+
     def get(self, path, params=None, retries=3):
         """Return (json|None, response). None for 403/404 that are not rate limits."""
         url = path if path.startswith("http") else API + path
@@ -38,8 +50,7 @@ class GH:
                 time.sleep(2 ** attempt)
                 continue
             self.calls += 1
-            if "x-ratelimit-remaining" in r.headers:
-                self.remaining = int(r.headers["x-ratelimit-remaining"])
+            self._note(r)
             time.sleep(self.sleep)
             if r.status_code == 200:
                 return r.json(), r
@@ -65,14 +76,41 @@ class GH:
             raise last
         return None, None
 
+    def send(self, method, path, body=None, retries=2):
+        """Mutating request (PATCH/PUT/POST). Returns (status, json|text). Spaced >= 1 s as GitHub advises."""
+        url = API + path
+        status, data = 0, None
+        for attempt in range(retries + 1):
+            if self.remaining is not None and self.remaining < self.min_remaining:
+                raise RateGuard(f"remaining={self.remaining}")
+            try:
+                r = self.s.request(method, url, json=body, timeout=30)
+            except requests.RequestException as e:
+                time.sleep(2 ** attempt)
+                status, data = 0, str(e)
+                continue
+            self.calls += 1
+            self._note(r)
+            time.sleep(max(self.sleep, 1.1))
+            ctype = r.headers.get("content-type", "")
+            data = r.json() if r.content and ctype.startswith("application/json") else r.text
+            status = r.status_code
+            if status in (403, 429) and ("rate limit" in r.text.lower() or r.headers.get("retry-after")):
+                time.sleep(min(int(r.headers.get("retry-after", 60)), 120))
+                continue
+            if status >= 500:
+                time.sleep(2 ** attempt)
+                continue
+            return status, data
+        return status, data
+
     def text(self, path, accept="application/vnd.github.raw+json"):
         """GET raw text (e.g. README). Returns None on 404/403."""
         if self.remaining is not None and self.remaining < self.min_remaining:
             raise RateGuard(f"remaining={self.remaining}")
         r = self.s.get(API + path, headers={"Accept": accept}, timeout=30)
         self.calls += 1
-        if "x-ratelimit-remaining" in r.headers:
-            self.remaining = int(r.headers["x-ratelimit-remaining"])
+        self._note(r)
         time.sleep(self.sleep)
         return r.text if r.status_code == 200 else None
 

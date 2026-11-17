@@ -1,5 +1,5 @@
-const V='gtad-466dd45199';
-const SHELL=["https://musman550.github.io/github-traffic-analytics-dashboard/assets/style.css?v=d05fddd0", "https://musman550.github.io/github-traffic-analytics-dashboard/assets/app.js?v=704c9b5f", "https://musman550.github.io/github-traffic-analytics-dashboard/assets/boot.js?v=252ecd8b", "https://musman550.github.io/github-traffic-analytics-dashboard/assets/page.js?v=13ba3e9b", "https://musman550.github.io/github-traffic-analytics-dashboard/assets/vendor/chart.umd.js?v=3402f6de"];
+const V='gtad-a95d4371e9';
+const SHELL=["https://musman550.github.io/github-traffic-analytics-dashboard/assets/style.css?v=d05fddd0", "https://musman550.github.io/github-traffic-analytics-dashboard/assets/app.js?v=b8aa8fec", "https://musman550.github.io/github-traffic-analytics-dashboard/assets/boot.js?v=252ecd8b", "https://musman550.github.io/github-traffic-analytics-dashboard/assets/page.js?v=13ba3e9b", "https://musman550.github.io/github-traffic-analytics-dashboard/assets/vendor/chart.umd.js?v=3402f6de"];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('gtad-')&&k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',e=>{

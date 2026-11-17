@@ -6,7 +6,7 @@ from . import content as C
 from .store import load
 
 NAV = [("overview", "Overview"), ("trends", "Trends"), ("sources", "Sources"),
-       ("repos", "Repositories"), ("insights", "Insights"), ("about", "About &amp; links"),
+       ("repos", "Repositories"), ("insights", "Insights"), ("optimizer", "Optimizer"), ("about", "About &amp; links"),
        ("comments", "Comments")]
 CSP = ("default-src 'none'; script-src 'self' https://giscus.app; style-src 'self' 'unsafe-inline' https://giscus.app; "
        "img-src 'self' data: https://avatars.githubusercontent.com; font-src 'self'; connect-src 'self'; "
@@ -199,7 +199,7 @@ def footer(cfg, prof, s):
 <div><h3>Resources</h3><ul>
 <li><a href="{base}about/">About</a></li><li><a href="{base}methodology/">Methodology</a></li>
 <li><a href="{base}faq/">FAQ</a></li><li><a href="{base}guides/">Guides</a></li><li><a href="{base}reports/">Weekly reports</a></li>
-<li><a href="{base}repositories/">All repositories</a></li><li><a href="{base}status/">Status</a></li><li><a href="{base}changelog/">Changelog</a></li>
+<li><a href="{base}repositories/">All repositories</a></li><li><a href="{base}status/">Status</a></li><li><a href="{base}optimizer/">Optimizer</a></li><li><a href="{base}changelog/">Changelog</a></li>
 <li><a href="{base}data/">Open data</a></li><li><a href="{base}privacy/">Privacy</a></li>
 <li><a href="{base}feed.xml">Atom feed</a></li><li><a href="{base}llms.txt">llms.txt</a></li><li><a href="{base}sitemap.xml">Sitemap</a></li>
 <li><a href="https://github.com/{cfg['repo_full_name']}" rel="noopener">Source code</a></li>
@@ -334,6 +334,12 @@ def build_index(cfg, prof, s):
 <div class="wrapx"><table id="t-audit"></table></div></div>
 </section>
 
+<section class="tab" id="tab-optimizer" data-title="Optimizer">
+<div class="grid kpis" id="opt-kpis" aria-live="polite"></div>
+<div class="card"><h2>AI providers</h2><p class="note">Open-weight models only, with automatic fallback. A provider is used when its key is configured; GitHub Models needs none inside Actions.</p><div class="wrapx"><table id="t-prov"></table></div></div>
+<div class="card"><h2>Recent changes</h2><div class="wrapx"><table id="t-optlog"></table></div><p class="note">Metadata changes are logged with before and after values and rolled back automatically after a clear traffic drop. <a href="{base}optimizer/">How the optimizer works</a>.</p></div>
+</section>
+
 <section class="tab" id="tab-about" data-title="About &amp; links">
 <div class="grid two">
 <div class="card"><h2>About the publisher</h2>{profile_card(prof)}<p class="note">Profile and links are fetched automatically from the public GitHub profile and its README every day.</p></div>
@@ -418,6 +424,8 @@ def page_methodology(cfg, s):
 <li>Referrer data is a rolling top-10 snapshot, so source totals are not exact lifetime sums.</li>
 <li>New repositories appear after the next daily run.</li>
 <li>Clones are not used to decide how often a repository is fetched, because automation clones almost every repository.</li></ul>
+<h2>Optimizer</h2>
+<p>An automatic optimizer improves repository metadata. It is described on the <a href="{cfg['site_url']}optimizer/">optimizer page</a>: what it may change, how AI output is validated and fact-checked, and how changes are rolled back.</p>
 <h2>Monitoring</h2>
 <p>Every run is logged on the <a href="{cfg['site_url']}status/">status page</a>. A failed or partial run, a large traffic spike and each finished weekly report create an alert issue in the repository, and a daily watchdog checks that the published data is fresh.</p>
 <h2>Integrity and changes</h2>
@@ -434,6 +442,8 @@ def page_privacy(cfg, s):
 <p>Only your light or dark theme choice, saved locally in your browser. It is never sent anywhere.</p>
 <h2>Published data</h2>
 <p>The dashboard publishes public information about public repositories (names, descriptions, topics, stars, forks) together with the owner's traffic statistics, and the links found on the owner's public GitHub profile.</p>
+<h2>AI optimizer</h2>
+<p>The optimizer sends the public README, description, topics and top-level file names of a public repository to AI providers that serve open-weight models (for example Groq, Cerebras, GitHub Models, OpenRouter, Hugging Face, Mistral and Cloudflare Workers AI). Private repositories are never read. Providers apply their own terms and may log requests; free tiers may use inputs for training, which is another reason only public text is sent.</p>
 <h2>Hosting</h2>
 <p>The site is served by GitHub Pages. GitHub may process technical request data such as IP addresses under the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub General Privacy Statement</a>.</p>
 <h2>Comments</h2>
@@ -546,6 +556,10 @@ def build_all(cfg):
          f"All {t['repos']} public repositories with description, language, stars and 30-day views. Search and compare in the dashboard.",
          "All repositories", C.repositories_body(cfg, s, base), "repositories", freq="daily",
          extra_ld=C.repositories_itemlist(cfg, s, base))
+    ost, ai_state, olog = load("docs/data/optimizer_state.json"), load("docs/data/ai_state.json", {}), load("docs/data/optimizer_log.json", [])
+    page("optimizer/", "Optimizer: how AI improves repository metadata, with a public log",
+         "How the AI optimizer improves repository descriptions, topics and README summaries, its safety checks, rollback rules and change log.",
+         "Optimizer", C.optimizer_body(cfg, ai_state, ost, olog, base), "optimizer", freq="weekly")
     page("status/", "Status: data freshness and collection run history",
          "When the dashboard data last updated, how many GitHub API calls each run used and whether anything failed.",
          "Status", C.status_body(cfg, s, runs, base), "status", freq="daily")
@@ -589,6 +603,7 @@ def build_all(cfg):
         ("reports/", "Weekly reports", f"{len(reports)} completed weeks"),
         ("repositories/", "All repositories", "descriptions, languages, stars, traffic"),
         ("status/", "Status", "data freshness and collection run history"),
+        ("optimizer/", "Optimizer", "AI metadata optimizer: rules, safety checks, change log"),
         ("changelog/", "Changelog", "release notes"),
         ("data/", "Open data", "JSON, CSV and badge files"),
         ("about/", "About", "maintainer, purpose, editorial policy"),

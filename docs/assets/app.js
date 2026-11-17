@@ -6,7 +6,7 @@ var esc = function (v) { return String(v == null ? '' : v).replace(/[&<>"']/g, f
 var fmt = function (n) { return n == null ? '–' : Number(n).toLocaleString('en-US'); };
 var safeUrl = function (u) { return /^https?:\/\//i.test(u || '') ? u : ''; };
 var css = function (n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); };
-var TABS = ['overview', 'trends', 'sources', 'repos', 'insights', 'about', 'comments'];
+var TABS = ['overview', 'trends', 'sources', 'repos', 'insights', 'optimizer', 'about', 'comments'];
 var S, SER, charts = {}, state = { period: 'daily', range: 90, sortK: 'score', sortD: -1, page: 1, sel: [], tab: 'overview', lastTab: 'overview' };
 var PAL = ['#0b5fff', '#12a150', '#e5484d', '#f5a524', '#8e4ec6', '#0aa5a5'];
 var DEF = { theme: 'system', tab: 'overview', rows: 25, compact: false, hideForks: false, motion: false };
@@ -260,9 +260,42 @@ function openCompare() {
 }
 function closeDialog() { var d = $('#repo-dialog'); if (d.open) d.close(); }
 
+/* ---------- Optimizer ---------- */
+var OPT;
+function loadOpt() {
+  if (OPT) return Promise.resolve(OPT);
+  var get = function (u) { return fetch(u, { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); };
+  return Promise.all([get('data/optimizer_state.json'), get('data/ai_state.json'), get('data/optimizer_log.json')]).then(function (a) { OPT = { st: a[0], ai: a[1], log: a[2] || [] }; return OPT; });
+}
+var OPT_LABEL = { applied: 'applied', kept: 'kept after review', reverted: 'rolled back', pending_pr: 'README PR open', dry_run: 'proposal (dry run)', skipped: 'no change needed' };
+function optimizer() {
+  loadOpt().then(function (o) {
+    var live = o.log.filter(function (e) { return e.mode === 'live'; }), n = function (s) { return live.filter(function (e) { return e.status === s; }).length; };
+    var prs = { merged: 0, pending: 0, declined: 0 };
+    live.forEach(function (e) { if (e.readme && prs[e.readme.status] != null) prs[e.readme.status]++; });
+    var st = o.st, k = [['Last run', st ? st.last_run.slice(0, 10) : 'not yet', st ? '<div class="d mut">' + esc(st.mode) + ' mode</div>' : ''],
+      ['Repositories changed', n('applied') + n('kept') + n('reverted'), '<div class="d mut">' + n('reverted') + ' rolled back</div>'],
+      ['README pull requests', prs.merged + prs.pending + prs.declined, '<div class="d mut">' + prs.merged + ' merged · ' + prs.pending + ' open · ' + prs.declined + ' declined</div>'],
+      ['Providers ready', st ? st.providers_configured.length : 0, '<div class="d mut">open-weight models only</div>']];
+    $('#opt-kpis').innerHTML = k.map(function (x) { return '<div class="card kpi"><div class="l">' + esc(x[0]) + '</div><div class="v">' + (typeof x[1] === 'number' ? fmt(x[1]) : esc(x[1])) + '</div>' + x[2] + '</div>'; }).join('');
+    var ps = (o.ai && o.ai.status) || [];
+    $('#t-prov').innerHTML = ps.length ? '<thead><tr><th>Provider</th><th>Configured</th><th>OK</th><th>Failed</th><th>Avg latency</th><th>Today</th><th>State</th></tr></thead><tbody>' + ps.map(function (p) {
+      return '<tr><td>' + esc(p.name) + (p.open_weight ? '' : ' <span class="tag">closed, off</span>') + '</td><td>' + (p.configured ? 'yes' : 'no key') + '</td><td>' + p.ok + '</td><td>' + (p.fail + p.bad) + '</td><td>' + p.avg_ms + ' ms</td><td>' + p.today + '/' + p.daily_cap + '</td><td style="text-align:left;white-space:normal">' + esc(p.cooldown ? 'cooling down' : p.configured ? 'ready' : '–') + (p.last_error ? ' <span class="mut">(' + esc(p.last_error) + ')</span>' : '') + '</td></tr>'; }).join('') + '</tbody>' : '<tr><td class="empty">No run recorded yet.</td></tr>';
+    var rows = o.log.slice().reverse().slice(0, 40);
+    $('#t-optlog').innerHTML = rows.length ? '<thead><tr><th>Date</th><th>Repository</th><th>Type</th><th>Changed</th><th>Source</th><th>Status</th></tr></thead><tbody>' + rows.map(function (e) {
+      var ch = e.changes || {}, what = [], det = '';
+      if (ch.description) { what.push('description'); det += '<div><b>Description</b><br>' + esc(ch.description.before || '(empty)') + '<br>→ ' + esc(ch.description.after) + '</div>'; }
+      if (ch.topics) { var add = ch.topics.after.filter(function (x) { return ch.topics.before.indexOf(x) < 0; }); what.push('+' + add.length + ' topics' + (ch.topics.removed && ch.topics.removed.length ? ', −' + ch.topics.removed.length + ' junk' : '')); det += '<div><b>Topics added</b>: ' + esc(add.join(', ') || 'none') + (ch.topics.removed && ch.topics.removed.length ? '<br><b>Removed</b>: ' + esc(ch.topics.removed.join(', ')) : '') + '</div>'; }
+      var pr = e.readme && /^https:\/\/github\.com\//.test(e.readme.url || '') ? ' <a href="' + esc(e.readme.url) + '" rel="noopener">PR</a>' : '';
+      if (e.readme) what.push('README ' + esc(e.readme.status));
+      var imp = e.impact ? ' (' + e.impact.before + ' → ' + e.impact.after + ' views)' : '';
+      return '<tr><td>' + esc(e.date) + '</td><td style="white-space:normal"><a href="https://github.com/' + encodeURIComponent(e.owner) + '/' + encodeURIComponent(e.repo) + '" rel="noopener">' + esc(e.repo) + '</a>' + (det ? '<details class="dt"><summary>details</summary>' + det + '</details>' : '') + '</td><td>' + esc(e['class']) + '</td><td style="text-align:left;white-space:normal">' + (what.join(', ') || 'none') + pr + '</td><td>' + esc(String(e.source || '').replace('ai:', '')) + '</td><td style="text-align:left;white-space:normal">' + esc(OPT_LABEL[e.status] || e.status) + esc(imp) + '</td></tr>'; }).join('') + '</tbody>' : '<tr><td class="empty">No optimizer run yet.</td></tr>';
+  });
+}
+
 /* ---------- Command palette ---------- */
-var PAGES = [['Overview', '#overview'], ['Trends', '#trends'], ['Sources', '#sources'], ['Repositories (interactive)', '#repos'], ['Insights', '#insights'], ['About & links', '#about'], ['Comments', '#comments'],
-  ['FAQ', 'faq/'], ['Guides', 'guides/'], ['Weekly reports', 'reports/'], ['All repositories (list)', 'repositories/'], ['Open data', 'data/'], ['Status', 'status/'], ['Methodology', 'methodology/'], ['Changelog', 'changelog/'], ['About', 'about/'], ['Privacy', 'privacy/']];
+var PAGES = [['Overview', '#overview'], ['Trends', '#trends'], ['Sources', '#sources'], ['Repositories (interactive)', '#repos'], ['Insights', '#insights'], ['Optimizer (live log)', '#optimizer'], ['About & links', '#about'], ['Comments', '#comments'],
+  ['Optimizer (how it works)', 'optimizer/'], ['FAQ', 'faq/'], ['Guides', 'guides/'], ['Weekly reports', 'reports/'], ['All repositories (list)', 'repositories/'], ['Open data', 'data/'], ['Status', 'status/'], ['Methodology', 'methodology/'], ['Changelog', 'changelog/'], ['About', 'about/'], ['Privacy', 'privacy/']];
 var palIdx = 0, palItems = [];
 function palRender() {
   var q = $('#pal-q').value.trim().toLowerCase();
@@ -320,7 +353,7 @@ function route() {
 }
 var rendered = {};
 function renderTab(t) {
-  var fn = { overview: overview, trends: trends, sources: sources, repos: repoTable, insights: insights, comments: loadComments }[t];
+  var fn = { overview: overview, trends: trends, sources: sources, repos: repoTable, insights: insights, optimizer: optimizer, comments: loadComments }[t];
   if (fn && (t !== 'comments' || !rendered[t])) fn();
   rendered[t] = true;
 }

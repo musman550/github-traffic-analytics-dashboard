@@ -23,5 +23,47 @@
     "issues": true,
     "telegram": true
   },
-  "version": "4.0.0"
+  "version": "5.0.0",
+  "optimizer": {
+    "enabled": true,
+    "max_repos_per_run": 10,
+    "cooldown_days": 21,
+    "evaluate_after_days": 14,
+    "min_baseline_views": 20,
+    "drop_threshold": 0.3,
+    "auto_merge_days": 3,
+    "readme_declined_cooldown_days": 90,
+    "exclude": [
+      "musman550",
+      "github-traffic-analytics-dashboard",
+      "musfira-ai-repo-bot"
+    ],
+    "generated_prefixes": [
+      "musfira-ai-"
+    ],
+    "generated_readme": false,
+    "description_policy": "improve_if_weak",
+    "max_topics": 12,
+    "branch_prefix": "auto-seo/",
+    "block_start": "<!-- AUTO-SEO:START -->",
+    "block_end": "<!-- AUTO-SEO:END -->",
+    "use_judge": true,
+    "remove_junk_topics": true,
+    "generated_max_new_topics": 3
+  },
+  "ai": {
+    "allow_closed_models": false,
+    "timeout": 45,
+    "order": [
+      "groq",
+      "cerebras",
+      "github-models",
+      "openrouter",
+      "huggingface",
+      "mistral",
+      "cloudflare",
+      "gemini"
+    ],
+    "providers": {}
+  }
 }

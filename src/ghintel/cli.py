@@ -8,6 +8,9 @@ def main():
     if cmd in ("collect", "all"):
         from .collector import collect
         collect(cfg)
+    if cmd == "optimize":
+        from .optimizer.run import run as optimize
+        optimize(cfg)
     if cmd == "alerts":
         from .alerts import run
         run(cfg)

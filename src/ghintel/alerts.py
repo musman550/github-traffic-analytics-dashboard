@@ -7,7 +7,7 @@ from .store import load, save
 SENT = "docs/data/alerts_sent.json"
 
 
-def compute(s, health, reports, base):
+def compute(s, health, reports, base, opt=None, log=None):
     out = []
     day = (health.get("last_run") or "")[:10]
     if health.get("partial") or health.get("errors"):
@@ -30,6 +30,16 @@ def compute(s, health, reports, base):
         end = (w["start"] + dt.timedelta(days=6)).isoformat()
         out.append((f"Weekly report: {w['start'].isoformat()} to {end}",
                     f"{C.report_summary(w)}\n\nFull report: {base}reports/{C.report_slug(w)}/"))
+    if opt and opt.get("mode") == "live" and (opt["counts"].get("applied") or opt["counts"].get("prs")):
+        day = opt["last_run"][:10]
+        rows = [e for e in (log or []) if e.get("date") == day and e.get("mode") == "live" and e.get("status") in ("applied", "pending_pr")]
+        lines = []
+        for e in rows[:15]:
+            what = ", ".join(k for k in ("description", "topics") if k in e.get("changes", {})) or "README proposal"
+            pr = (e.get("readme") or {}).get("url")
+            lines.append(f"- {e['repo']}: {what}" + (f" (PR: {pr})" if pr else ""))
+        out.append((f"Optimizer run {day}: {opt['counts'].get('applied', 0)} repositories updated, {opt['counts'].get('prs', 0)} README pull requests",
+                    "\n".join(lines) + f"\n\nDetails and rollback rules: {base}optimizer/"))
     return out
 
 
@@ -54,5 +64,6 @@ def deliver(cfg, items):
 def run(cfg):
     s = load("docs/data/summary.json")
     from .content import weekly_reports
-    items = compute(s, load("docs/data/health.json", {}), weekly_reports(s), cfg["site_url"])
+    items = compute(s, load("docs/data/health.json", {}), weekly_reports(s), cfg["site_url"],
+                    load("docs/data/optimizer_state.json"), load("docs/data/optimizer_log.json", []))
     print(f"alerts: {len(items)} candidate(s), {deliver(cfg, items)} sent")

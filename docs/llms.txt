@@ -1,6 +1,6 @@
 # GitHub Traffic Analytics Dashboard
 
-> Free, open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently, beyond GitHub's 14-day limit. Public repositories only, no login. Data through 2026-11-14, updated 2026-11-16.
+> Free, open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently, beyond GitHub's 14-day limit. Public repositories only, no login. Data through 2026-11-14, updated 2026-11-17.
 
 ## Pages
 - [Dashboard](https://musman550.github.io/github-traffic-analytics-dashboard/): overview, trends, sources, repositories, insights, links, comments
@@ -11,6 +11,7 @@
 - [Weekly reports](https://musman550.github.io/github-traffic-analytics-dashboard/reports/): 1 completed weeks
 - [All repositories](https://musman550.github.io/github-traffic-analytics-dashboard/repositories/): descriptions, languages, stars, traffic
 - [Status](https://musman550.github.io/github-traffic-analytics-dashboard/status/): data freshness and collection run history
+- [Optimizer](https://musman550.github.io/github-traffic-analytics-dashboard/optimizer/): AI metadata optimizer: rules, safety checks, change log
 - [Changelog](https://musman550.github.io/github-traffic-analytics-dashboard/changelog/): release notes
 - [Open data](https://musman550.github.io/github-traffic-analytics-dashboard/data/): JSON, CSV and badge files
 - [About](https://musman550.github.io/github-traffic-analytics-dashboard/about/): maintainer, purpose, editorial policy

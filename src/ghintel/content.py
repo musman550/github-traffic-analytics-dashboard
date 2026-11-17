@@ -144,6 +144,9 @@ def faq_extra():
          "checks that the published data is fresh. Because each GitHub call returns 14 days, a missed day is recovered by the next run."),
         ("Can I install the dashboard as an app?",
          "Yes. Browsers that support installable web apps offer an install option, and the last loaded data stays available offline."),
+        ("Does AI change my repositories?",
+         "An optimizer proposes better descriptions, topics and a README summary for the owner's public tool repositories. "
+         "Topics are only added, README changes arrive as pull requests, every change is logged on the optimizer page and a traffic drop triggers a rollback."),
         ("Is this affiliated with GitHub?",
          "No. It is an independent open-source project that uses the public GitHub REST API."),
     ]
@@ -272,6 +275,12 @@ print(s["totals"]["views_30d"], "views in the last 30 days")</code></pre>
 
 # ---------------------------------------------------------------- changelog
 CHANGELOG = [
+    ("5.0.0", "2026-11-15", [
+        "AI optimizer: improves repository descriptions and topics and proposes README summaries by pull request",
+        "Multi-provider router for open-weight models (Groq, Cerebras, GitHub Models, OpenRouter, Hugging Face, Mistral, Cloudflare) with cooldowns, daily budgets, caching and automatic fallback to rules",
+        "Safety: grounded topics, no links or hype, number checks, independent fact-check, junk-topic cleanup, README pull requests with auto-merge window and automatic rollback after a traffic drop",
+        "Public optimizer page and dashboard tab with provider health and a full change log; fixed a rate-limit bug where the search budget was mistaken for the core budget",
+    ]),
     ("4.0.0", "2026-11-15", [
         "Faster first paint: scripts load deferred and static assets are versioned, so updates never serve stale files",
         "Installable web app with offline cache for the last loaded data",
@@ -353,6 +362,50 @@ def repositories_itemlist(cfg, s, base):
     items = [{"@type": "ListItem", "position": i + 1, "url": r["url"], "name": r["name"]} for i, r in enumerate(s["repos"][:100])]
     return json.dumps({"@context": "https://schema.org", "@type": "ItemList", "name": "Public repositories by score",
                        "numberOfItems": len(s["repos"]), "itemListElement": items}, ensure_ascii=False)
+
+
+# ---------------------------------------------------------------- optimizer transparency page
+def _status_label(e):
+    return {"applied": "applied", "kept": "kept after review", "reverted": "rolled back", "pending_pr": "README pull request open",
+            "dry_run": "proposal (dry run)", "skipped": "no change needed"}.get(e.get("status"), e.get("status", ""))
+
+
+def optimizer_body(cfg, state, ost, log, base):
+    o = cfg["optimizer"]
+    prov = "".join(
+        f'<tr><td>{e(p["name"])}</td><td>{"open-weight" if p["open_weight"] else "closed (disabled)"}</td>'
+        f'<td>{"yes" if p["configured"] else "no key"}</td><td>{p["ok"]}</td><td>{p["fail"] + p["bad"]}</td><td>{p["avg_ms"]} ms</td>'
+        f'<td>{p["today"]}/{p["daily_cap"]}</td></tr>' for p in (state or {}).get("status", []))
+    rows = ""
+    for en in [x for x in log if x.get("mode") == "live"][::-1][:30]:
+        ch = en.get("changes", {})
+        what = []
+        if "description" in ch:
+            what.append("description")
+        if "topics" in ch:
+            add = len(ch["topics"]["after"]) - len(ch["topics"]["before"]) + len(ch["topics"].get("removed", []))
+            what.append(f"+{max(add, 0)} topics" + (f", -{len(ch['topics']['removed'])} junk" if ch["topics"].get("removed") else ""))
+        if en.get("readme"):
+            what.append("README " + e(en["readme"].get("status", "")))
+        imp = en.get("impact")
+        rows += (f'<tr><td>{e(en["date"])}</td><td style="white-space:normal"><a href="https://github.com/{e(en["owner"])}/{e(en["repo"])}" rel="noopener">{e(en["repo"])}</a></td>'
+                 f'<td>{e(en["class"])}</td><td>{e(", ".join(what) or "none")}</td><td>{e(en["source"].replace("ai:", ""))}</td>'
+                 f'<td>{e(_status_label(en))}{f" ({imp['before']} to {imp['after']} views)" if imp else ""}</td></tr>')
+    last = (ost or {}).get("last_run", "")[:16].replace("T", " ")
+    return (f'<p class="lead">An automatic, auditable process improves GitHub metadata of the owner\'s public repositories. This page shows exactly how it works and what it has changed.</p>'
+            f'<h2>What it does</h2><ul>'
+            f'<li>Runs twice a week and picks up to {o["max_repos_per_run"]} public repositories, prioritising weak metadata, then traffic. A repository is revisited at most every {o["cooldown_days"]} days.</li>'
+            f'<li><b>Descriptions</b> are replaced only when the current one is empty, too short or cut off.</li>'
+            f'<li><b>Topics</b> are only added (up to {o["max_topics"]}) when the README supports them; only clear junk such as one-letter words is removed.</li>'
+            f'<li><b>README</b> text changes happen only for hand-built tool repositories, as a pull request that edits one marked block. It is merged automatically after {o["auto_merge_days"]} days unless the owner closes it; closing it stops further proposals for {o["readme_declined_cooldown_days"]} days.</li>'
+            f'<li>Never touched: private repositories, forks, archived repositories, the owner\'s profile repository and repositories that generate their own README.</li></ul>'
+            f'<h2>How AI is used</h2><p>Text is drafted by open-weight models through free tiers of several providers with automatic fallback (see below). Only the public README, description, topics and file names of a repository are sent. Every answer must pass strict checks: topics must be grounded in the README, descriptions may not contain links or hype, FAQ answers may not contain numbers missing from the README, and a second model fact-checks the result. If no model is available or a check fails, a conservative rule-based fallback is used instead.</p>'
+            f'<h2>Safety net</h2><p>Metadata changes are logged with before and after values. After {o["evaluate_after_days"]} days the dashboard compares views before and after; if views fell by more than {int(o["drop_threshold"] * 100)}% and the repository had at least {o["min_baseline_views"]} views, the change is rolled back automatically. With less traffic the change is kept because there is not enough data to judge.</p>'
+            f'<h2>AI providers</h2><p class="note">Last run: {e(last or "none yet")} UTC.</p>'
+            + (f'<div class="wrapx"><table><thead><tr><th>Provider</th><th>Models</th><th>Configured</th><th>Successful</th><th>Failed</th><th>Avg latency</th><th>Today</th></tr></thead><tbody>{prov}</tbody></table></div>' if prov else '<p>No run recorded yet.</p>')
+            + f'<h2>Recent changes</h2>'
+            + (f'<div class="wrapx"><table><thead><tr><th>Date</th><th>Repository</th><th>Type</th><th>Changed</th><th>Source</th><th>Status</th></tr></thead><tbody>{rows}</tbody></table></div>' if rows else '<p>No changes have been applied yet.</p>')
+            + f'<p class="note">See also the <a href="{base}methodology/">methodology</a> and <a href="{base}status/">status page</a>.</p>')
 
 
 # ---------------------------------------------------------------- citation block
