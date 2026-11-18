@@ -311,3 +311,44 @@ class RunIntegration(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RouterRobustness(unittest.TestCase):
+    def test_empty_200_reply_tries_next_model_instead_of_benching_provider(self):
+        calls = []
+
+        def groq(body):
+            calls.append(body["model"])
+            if body["model"] == "openai/gpt-oss-120b":
+                return 200, {}, {"choices": [{"message": {"content": None}, "finish_reason": "length"}]}
+            return resp(GOOD)
+        h = FakeHTTP({"api.groq.com": groq})
+        r = Router(CFG, {}, {}, http=h, env={"GROQ_API_KEY": "k"}, sleep=lambda s: None)
+        _, meta = r.chat_json("t", "s", "u")
+        self.assertEqual(meta["provider"], "groq")
+        self.assertEqual(calls[:2], ["openai/gpt-oss-120b", "llama-3.3-70b-versatile"])
+        self.assertFalse(r.status()[0]["cooldown"])
+
+    def test_error_body_snippet_is_kept_for_diagnosis(self):
+        h = FakeHTTP({"api.groq.com": (500, {}, {"error": "upstream exploded"})})
+        r = Router(CFG, {}, {}, http=h, env={"GROQ_API_KEY": "k"}, sleep=lambda s: None)
+        with self.assertRaises(AllFailed):
+            r.chat_json("t", "s", "u")
+        self.assertIn("upstream exploded", r.status()[0]["last_error"])
+
+    def test_probe_reports_each_provider(self):
+        from ghintel.ai import probe as P
+        cwd = os.getcwd()
+        with tempfile.TemporaryDirectory() as tmp:
+            os.chdir(tmp)
+            try:
+                os.makedirs("docs/data")
+                os.environ["GROQ_API_KEY"] = "k"
+                with mock.patch("ghintel.ai.router.http_json", FakeHTTP({"api.groq.com": resp({"ok": True})})):
+                    out = P.probe({**CFG, "ai": {**CFG["ai"], "order": ["groq", "cerebras"]}})
+            finally:
+                os.environ.pop("GROQ_API_KEY", None)
+                os.chdir(cwd)
+        by = {p["name"]: p for p in out["providers"]}
+        self.assertEqual(by["groq"]["tests"][0]["status"], 200)
+        self.assertEqual(by["cerebras"]["skipped"], "no key configured")

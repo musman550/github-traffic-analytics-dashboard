@@ -8,6 +8,9 @@ def main():
     if cmd in ("collect", "all"):
         from .collector import collect
         collect(cfg)
+    if cmd == "probe":
+        from .ai.probe import probe
+        probe(cfg)
     if cmd == "optimize":
         from .optimizer.run import run as optimize
         optimize(cfg)

@@ -140,7 +140,8 @@ class Router:
             out.append({"name": p["name"], "open_weight": p.get("open", True), "configured": key,
                         "ok": st["ok"], "fail": st["fail"], "bad": st["bad"], "avg_ms": st["lat"],
                         "cooldown": st["cool"] > self.now(), "last_error": st["last_error"], "last_ok": st["last_ok"],
-                        "today": st["day"]["n"] if st["day"]["d"] == self._today() else 0, "daily_cap": p.get("daily", 100)})
+                        "today": st["day"]["n"] if st["day"]["d"] == self._today() else 0, "daily_cap": p.get("daily", 100),
+                        "discover_error": self.state.get("discover_error", {}).get(p["name"], "")})
         return out
 
     # ------------------------------------------------------------ models
@@ -169,12 +170,14 @@ class Router:
             st, _h, body = self.http("GET", "https://models.github.ai/catalog/models",
                                      {"Authorization": f"Bearer {keyv[0]}", **p.get("headers", {})}, None, self.timeout)
             if st != 200 or not isinstance(body, list):
+                self.state.setdefault("discover_error", {})[p["name"]] = f"catalog {st}: {str(body)[:120]}"
                 return []
             ids = [m.get("id", "") for m in body if isinstance(m, dict) and OPEN_RE.search(m.get("id", ""))
                    and "embed" not in m.get("id", "").lower()]
         elif kind == "openrouter":
             st, _h, body = self.http("GET", p["base"] + "/models", {"Accept": "application/json"}, None, self.timeout)
             if st != 200 or not isinstance(body, dict):
+                self.state.setdefault("discover_error", {})[p["name"]] = f"models {st}: {str(body)[:120]}"
                 return []
             ids = [m["id"] for m in body.get("data", []) if str(m.get("pricing", {}).get("prompt", "1")) in ("0", "0.0")
                    and str(m.get("pricing", {}).get("completion", "1")) in ("0", "0.0") and OPEN_RE.search(m["id"])]
@@ -255,6 +258,12 @@ class Router:
                         text = data["choices"][0]["message"]["content"] or ""
                     except Exception:
                         text = ""
+                if status == 200 and not text:
+                    snip = (data if isinstance(data, str) else json.dumps(data))[:200]
+                    st["bad"] += 1
+                    st["last_error"] = f"{model}: empty reply {snip}"[:240]
+                    errors.append(f"{p['name']}/{model}: empty reply")
+                    continue
                 if status == 200 and text:
                     obj = extract_json(text)
                     problem = None
@@ -319,10 +328,10 @@ class Router:
                                 errors.append(f"{p['name']}/{model}: rejected: {e}")
                                 continue
                 if status in (400, 404, 422):
-                    self._fail(p, f"{status} {model}")
+                    self._fail(p, f"{status} {model}: {msg[:120]}")
                     errors.append(f"{p['name']}/{model}: {status}")
                     continue
-                self._fail(p, f"http {status}", 60)
+                self._fail(p, f"http {status}: {msg[:140]}", 60)
                 errors.append(f"{p['name']}: http {status}")
                 break
         raise AllFailed("; ".join(errors[-6:]) or "no provider available")
