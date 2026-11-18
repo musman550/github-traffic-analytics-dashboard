@@ -11,8 +11,9 @@ def live_entries(log, repo=None):
 
 
 def last_touch(log, repo):
-    ds = [e["date"] for e in live_entries(log, repo)]
-    return max(ds) if ds else None
+    """(date, source) of the latest live touch."""
+    es = sorted(live_entries(log, repo), key=lambda e: e["date"])
+    return (es[-1]["date"], es[-1].get("source", "")) if es else (None, "")
 
 
 def readme_declined(log, repo, today, days):
@@ -44,8 +45,9 @@ def select(cfg, repos, log, today, limit=None, only=None):
             continue
         if n in o["exclude"] or r["fork"] or r["archived"]:
             continue
-        lt = last_touch(log, n)
-        if lt and not only and (today - dt.date.fromisoformat(lt)).days < o["cooldown_days"]:
+        lt, src = last_touch(log, n)
+        wait = o.get("rules_cooldown_days", 3) if src == "rules" else o["cooldown_days"]  # let AI redo rule-only work soon
+        if lt and not only and (today - dt.date.fromisoformat(lt)).days < wait:
             continue
         cls = classify(n, o)
         out.append((priority(r, cls), n, cls, r))

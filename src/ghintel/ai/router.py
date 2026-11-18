@@ -23,6 +23,11 @@ DEFAULT_PROVIDERS = [
      "models": ["meta/Llama-3.3-70B-Instruct", "meta/Llama-4-Scout-17B-16E-Instruct", "deepseek/DeepSeek-V3-0324", "mistral-ai/Mistral-Small-2503"],
      "discover": "github-models", "rpm": 10, "daily": 100, "json": True,
      "headers": {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}},
+    {"name": "ovhcloud", "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1", "keys": [], "anon": True, "open": True,
+     "models": ["Meta-Llama-3_3-70B-Instruct", "Mistral-7B-Instruct-v0.3", "Qwen2.5-Coder-32B-Instruct"], "discover": "openai-models",
+     "rpm": 2, "daily": 40, "json": False},
+    {"name": "pollinations", "base": "https://text.pollinations.ai/openai", "path": "", "keys": [], "anon": True, "open": True,
+     "models": ["mistral", "llama"], "discover": "pollinations", "rpm": 4, "daily": 60, "json": False},
     {"name": "openrouter", "base": "https://openrouter.ai/api/v1", "keys": ["OPENROUTER_API_KEY"], "open": True,
      "models": ["meta-llama/llama-3.3-70b-instruct:free"], "discover": "openrouter", "rpm": 12, "daily": 40, "json": False,
      "headers": {"HTTP-Referer": "https://github.com/musman550/github-traffic-analytics-dashboard", "X-Title": "Traffic dashboard optimizer"}},
@@ -104,6 +109,8 @@ class Router:
 
     # ------------------------------------------------------------ availability
     def _key(self, p):
+        if p.get("anon"):  # keyless public tier (can be switched off with ai.anon_enabled=false)
+            return [""] if self.cfg.get("anon_enabled", True) else None
         vals = [self.env.get(k, "") for k in p.get("keys", [])]
         return vals if vals and all(vals) else None
 
@@ -174,6 +181,21 @@ class Router:
                 return []
             ids = [m.get("id", "") for m in body if isinstance(m, dict) and OPEN_RE.search(m.get("id", ""))
                    and "embed" not in m.get("id", "").lower()]
+        elif kind == "openai-models":
+            st, _h, body = self.http("GET", p["base"].rstrip("/") + "/models", {"Accept": "application/json"}, None, self.timeout)
+            if st != 200 or not isinstance(body, dict):
+                self.state.setdefault("discover_error", {})[p["name"]] = f"models {st}: {str(body)[:120]}"
+                return []
+            ids = [m["id"] for m in body.get("data", []) if isinstance(m, dict) and OPEN_RE.search(m.get("id", ""))
+                   and not re.search(r"embed|whisper|tts|speech|bge|image|vision|vl", m.get("id", ""), re.I)]
+        elif kind == "pollinations":
+            st, _h, body = self.http("GET", "https://text.pollinations.ai/models", {"Accept": "application/json"}, None, self.timeout)
+            if st != 200 or not isinstance(body, list):
+                self.state.setdefault("discover_error", {})[p["name"]] = f"models {st}: {str(body)[:120]}"
+                return []
+            ids = [m["name"] for m in body if isinstance(m, dict) and m.get("name")
+                   and OPEN_RE.search(m.get("name", "") + " " + m.get("description", "")) and not m.get("audio") and not m.get("tools") is False and "vision" not in str(m.get("description", "")).lower()][:6]
+            ids = ids or [m["name"] for m in body if isinstance(m, dict) and OPEN_RE.search(m.get("name", "") + " " + m.get("description", ""))][:6]
         elif kind == "openrouter":
             st, _h, body = self.http("GET", p["base"] + "/models", {"Accept": "application/json"}, None, self.timeout)
             if st != 200 or not isinstance(body, dict):
@@ -196,12 +218,13 @@ class Router:
         base = p["base"]
         for k in p.get("keys", []):
             base = base.replace("{" + k + "}", self.env.get(k, ""))
-        return base.rstrip("/") + "/chat/completions"
+        return base.rstrip("/") + p.get("path", "/chat/completions")
 
     def _headers(self, p):
-        keyv = self._key(p)
-        tok = self.env.get(p.get("token_env", p["keys"][0]), "")
-        return {"Authorization": f"Bearer {tok}", "Content-Type": "application/json", **p.get("headers", {})}
+        h = {"Content-Type": "application/json", **p.get("headers", {})}
+        if p.get("keys"):
+            h["Authorization"] = "Bearer " + self.env.get(p.get("token_env", p["keys"][0]), "")
+        return h
 
     def _throttle(self, p):
         if self.cfg.get("no_throttle"):

@@ -8,7 +8,7 @@ OCFG = {"enabled": True, "max_repos_per_run": 10, "cooldown_days": 21, "evaluate
         "exclude": ["profile-repo"], "generated_prefixes": ["bot-"], "generated_readme": False,
         "description_policy": "improve_if_weak", "max_topics": 12, "branch_prefix": "auto-seo/",
         "block_start": "<!-- AUTO-SEO:START -->", "block_end": "<!-- AUTO-SEO:END -->", "use_judge": True}
-CFG = {"optimizer": OCFG, "ai": {"no_throttle": True, "order": ["groq", "cerebras", "mistral", "gemini"]}, "min_rate_remaining": 10,
+CFG = {"optimizer": OCFG, "ai": {"no_throttle": True, "anon_enabled": False, "order": ["groq", "cerebras", "mistral", "gemini"]}, "min_rate_remaining": 10,
        "site_url": "https://x.test/", "repo_full_name": "o/r"}
 README = ("# Weather Bot\n\nA small Python service that posts daily weather summaries to Telegram using the OpenWeather API. "
           "It runs with Docker and supports 3 cities.\n\n## Usage\n\nSet your Telegram bot token first, then run `docker compose up`.\n")
@@ -190,6 +190,14 @@ class SelectEvaluateTests(unittest.TestCase):
         self.assertLess(names.index("tool-a"), names.index("bot-news"))  # product outranks generated
         self.assertEqual(S.classify("bot-news", OCFG), "generated")
 
+    def test_rule_only_work_is_revisited_sooner_than_ai_work(self):
+        today = dt.date(2026, 11, 20)
+        repos = [self.repo("tool-a", 10), self.repo("tool-b", 10)]
+        log = [{"repo": "tool-a", "mode": "live", "date": "2026-11-15", "source": "rules"},
+               {"repo": "tool-b", "mode": "live", "date": "2026-11-15", "source": "ai:groq:x"}]
+        names = [n for _, n, _, _ in S.select({"optimizer": {**OCFG, "rules_cooldown_days": 3}}, repos, log, today)]
+        self.assertEqual(names, ["tool-a"])
+
     def test_rollback_only_with_clear_drop_and_enough_traffic(self):
         class GW:
             def __init__(s): s.sent = []
@@ -311,6 +319,23 @@ class RunIntegration(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AnonProviders(unittest.TestCase):
+    def test_keyless_provider_works_without_authorization_header_and_with_discovery(self):
+        seen = []
+
+        def http(method, url, headers, body=None, timeout=45):
+            seen.append((method, url, "Authorization" in headers))
+            if url.endswith("/models"):
+                return 200, {}, {"data": [{"id": "Meta-Llama-3_3-70B-Instruct"}, {"id": "bge-multilingual-gemma2"}, {"id": "gpt-4o"}]}
+            return resp(GOOD)
+        cfg = {**CFG, "ai": {**CFG["ai"], "order": ["ovhcloud"], "anon_enabled": True}}
+        r = Router(cfg, {}, {}, http=http, env={}, sleep=lambda s: None)
+        _, meta = r.chat_json("t", "s", "u")
+        self.assertEqual(meta["provider"], "ovhcloud")
+        self.assertEqual(meta["model"], "Meta-Llama-3_3-70B-Instruct")
+        self.assertFalse(any(a for _, _, a in seen))
 
 
 class RouterRobustness(unittest.TestCase):
