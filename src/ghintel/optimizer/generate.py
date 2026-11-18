@@ -144,6 +144,45 @@ def validate(obj, ctx):
     return obj
 
 
+def sanitize(obj, ctx):
+    """Keep every valid part of a proposal and drop invalid parts (instead of rejecting everything).
+    Returns (clean, dropped_reasons)."""
+    clean, dropped = {"description": None, "topics": [], "summary": "", "faq": []}, []
+    d = obj.get("description")
+    if d:
+        try:
+            validate({"description": d, "topics": []}, ctx)
+            clean["description"] = d.strip()
+        except ValueError as e:
+            dropped.append(f"description: {e}")
+    sw = source_words(ctx)
+    for tpc in obj.get("topics") or []:
+        if isinstance(tpc, str) and topic_ok(tpc, sw):
+            if tpc not in clean["topics"]:
+                clean["topics"].append(tpc)
+        else:
+            dropped.append(f"topic {tpc!r}")
+    s = obj.get("summary") or ""
+    if s:
+        try:
+            validate({"topics": [], "summary": s}, ctx)
+            clean["summary"] = s
+        except ValueError as e:
+            dropped.append(f"summary: {e}")
+    for f in (obj.get("faq") or [])[:3]:
+        try:
+            validate({"topics": [], "faq": [f]}, ctx)
+            clean["faq"].append(f)
+        except ValueError as e:
+            dropped.append(f"faq: {e}")
+    return clean, dropped
+
+
+def require_value(clean):
+    if not (clean["description"] or clean["topics"] or clean["summary"] or clean["faq"]):
+        raise ValueError("nothing usable after validation")
+
+
 SYSTEM = ("You are a careful technical writer who improves GitHub repository metadata. Use ONLY facts stated in the "
           "repository content you are given. Never invent features, numbers, benchmarks, integrations, customers or claims. "
           "No marketing hype. Plain text, no markdown, no emoji. Reply with exactly one JSON object and nothing else.")
@@ -192,42 +231,57 @@ def rule_proposal(ctx):
     return prop
 
 
-def judge(router, ctx, prop, avoid=None):
-    """Independent fact-check by a different model/provider when one is available."""
+def judge(router, ctx, prop, avoid_model=None):
+    """Fact-check by the strongest available model that is not the generator. Returns a 1-5 support score."""
     claim = {k: prop.get(k) for k in ("description", "topics", "summary", "faq") if prop.get(k)}
     system = ("You verify claims about a GitHub repository against its README. Reply with one JSON object: "
-              '{"faithful": true|false, "unsupported": ["short list of claims not supported by the README"]}. '
-              "Be strict: a claim is unsupported if the README does not state or clearly imply it.")
+              '{"score": 1-5, "unsupported": ["claims that are clearly NOT in the README"]}. '
+              "5 = every claim is stated or clearly implied by the README; 3 = some claims are stretched; "
+              "1 = the proposal contradicts or invents things. List only claims that are really absent or contradicted; "
+              "paraphrases and reasonable summaries of README content are supported.")
     user = f"README excerpt:\n---\n{ctx.get('readme', '')}\n---\nRepository name: {ctx['name']}\nProposed metadata (JSON): {claim}"
-    for av in (avoid, None):  # prefer an independent provider; fall back to a self-check
+    for am in (avoid_model, None):
         try:
-            out, meta = router.chat_json("judge" + ("" if av else "-self"), system, user, required=("faithful",), max_tokens=250, temperature=0, avoid=av)
-            return {"faithful": bool(out.get("faithful")), "unsupported": out.get("unsupported", [])[:5],
-                    "by": meta.get("source", "") + ("" if av else " (same provider)")}
+            out, meta = router.chat_json("judge" + ("" if am else "-any"), system, user, required=("score",), max_tokens=300,
+                                         temperature=0, avoid_model=am)
+            try:
+                score = int(out.get("score"))
+            except (TypeError, ValueError):
+                score = 3
+            return {"score": score, "faithful": score >= 3, "unsupported": [str(x)[:120] for x in (out.get("unsupported") or [])[:5]],
+                    "by": meta.get("source", "")}
         except AllFailed:
-            if av is None:
+            if am is None:
                 break
-    return {"faithful": None, "unsupported": [], "by": "unavailable"}
+    return {"score": None, "faithful": None, "unsupported": [], "by": "unavailable"}
 
 
 def propose(router, ctx, full, use_judge=True, rules_only=False):
-    """Returns (proposal, notes). AI output must pass validation and the judge; otherwise rules are used."""
+    """Returns (proposal, notes). AI output is sanitized (invalid parts dropped), fact-checked, and replaced by
+    deterministic rules when nothing usable remains."""
     notes = []
     if not rules_only:
+        def check(o):
+            clean, _ = sanitize(_normalize(o, full), ctx)
+            require_value(clean)
         try:
-            obj, meta = router.chat_json("metadata", SYSTEM, prompt(ctx, full), required=("description", "topics"),
-                                         validate=lambda o: validate(_normalize(o, full), ctx), max_tokens=700)
-            obj = _normalize(obj, full)
-            obj["source"] = f"ai:{meta.get('source') or meta.get('provider')}"
-            if use_judge:
-                j = judge(router, ctx, obj, avoid=meta.get("provider") if meta.get("provider") != "cache" else None)
-                obj["judge"] = j
-                if j["faithful"] is False:
-                    notes.append("judge rejected: " + "; ".join(map(str, j["unsupported"]))[:200])
+            raw, meta = router.chat_json("metadata", SYSTEM, prompt(ctx, full), required=("description", "topics"), validate=check, max_tokens=900)
+            clean, dropped = sanitize(_normalize(raw, full), ctx)
+            clean["source"] = f"ai:{meta.get('source') or meta.get('provider')}"
+            if dropped:
+                notes.append("dropped: " + "; ".join(dropped)[:240])
+            if use_judge and (clean["summary"] or clean["faq"] or clean["description"]):
+                j = judge(router, ctx, clean, avoid_model=meta.get("model"))
+                clean["judge"] = j
+                if j["score"] is not None and j["score"] <= 2:
+                    notes.append(f"judge score {j['score']}: " + "; ".join(j["unsupported"])[:200])
                     return _rules(ctx, notes), notes
-            return obj, notes
+                if j["score"] == 3:  # stretched claims: keep the safe parts, drop the riskiest
+                    clean["faq"], clean["summary"] = [], ""
+                    notes.append("judge score 3: dropped summary and FAQ")
+            return clean, notes
         except AllFailed as e:
-            notes.append(f"no AI provider produced a valid answer ({str(e)[:120]})")
+            notes.append(f"no AI provider produced a valid answer ({str(e)[:140]})")
     return _rules(ctx, notes), notes
 
 

@@ -113,15 +113,46 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(p.get("description", "").startswith("A small Python service"))
         self.assertNotIn("python", p["topics"])  # already present
 
+    def test_sanitize_keeps_valid_parts_and_drops_invalid_ones(self):
+        mixed = {**GOOD, "topics": ["telegram-bot", "blockchain", "docker"], "summary": "The best ultimate bot ever, guaranteed",
+                 "faq": [GOOD["faq"][0], {"q": "How many cities?", "a": "It supports 250 cities worldwide."}]}
+        clean, dropped = G.sanitize(mixed, CTX)
+        self.assertEqual(clean["topics"], ["telegram-bot", "docker"])
+        self.assertEqual(clean["summary"], "")
+        self.assertEqual(len(clean["faq"]), 1)
+        self.assertEqual(clean["description"], GOOD["description"])
+        self.assertGreaterEqual(len(dropped), 3)
+        with self.assertRaises(ValueError):
+            G.require_value(G.sanitize({"description": "x", "topics": ["blockchain"]}, CTX)[0])
+
     def test_propose_uses_rules_when_ai_unavailable_and_when_judge_rejects(self):
         r = Router(CFG, {}, {}, http=FakeHTTP({}), env={}, sleep=lambda s: None)
         p, notes = G.propose(r, CTX, True)
         self.assertEqual(p["source"], "rules")
-        h = FakeHTTP({"api.groq.com": [resp(GOOD), resp({"faithful": False, "unsupported": ["claims Telegram"]})]})
+        h = FakeHTTP({"api.groq.com": [resp(GOOD), resp({"score": 1, "unsupported": ["claims Telegram"]})]})
         r2 = Router(CFG, {}, {}, http=h, env={"GROQ_API_KEY": "k"}, sleep=lambda s: None)
         p2, n2 = G.propose(r2, CTX, True)
         self.assertEqual(p2["source"], "rules")
-        self.assertTrue(any("judge rejected" in n for n in n2))
+        self.assertTrue(any("judge score 1" in n for n in n2))
+
+    def test_judge_score_three_keeps_description_but_drops_summary_and_faq(self):
+        h = FakeHTTP({"api.groq.com": [resp(GOOD), resp({"score": 3, "unsupported": []})]})
+        r = Router(CFG, {}, {}, http=h, env={"GROQ_API_KEY": "k"}, sleep=lambda s: None)
+        p, n = G.propose(r, CTX, True)
+        self.assertTrue(p["source"].startswith("ai:"))
+        self.assertEqual((p["summary"], p["faq"]), ("", []))
+        self.assertTrue(p["description"])
+
+    def test_judge_prefers_a_different_model_on_the_same_provider(self):
+        used = []
+
+        def groq(body):
+            used.append(body["model"])
+            return resp(GOOD) if len(used) == 1 else resp({"score": 5, "unsupported": []})
+        r = Router(CFG, {}, {}, http=FakeHTTP({"api.groq.com": groq}), env={"GROQ_API_KEY": "k"}, sleep=lambda s: None)
+        G.propose(r, CTX, True)
+        self.assertEqual(used[0], "openai/gpt-oss-120b")
+        self.assertNotEqual(used[1], used[0])
 
 
 class RuleQualityTests(unittest.TestCase):
@@ -287,7 +318,7 @@ class RunIntegration(unittest.TestCase):
 
     def run_opt(self, dry):
         from ghintel.optimizer import run as R
-        h = FakeHTTP({"api.groq.com": [resp(GOOD), resp({"faithful": True, "unsupported": []})]})
+        h = FakeHTTP({"api.groq.com": [resp(GOOD), resp({"score": 5, "unsupported": []})]})
         cfg = json.loads(json.dumps(CFG)); cfg["ai"]["order"] = ["groq"]
         with mock.patch.object(R, "GH", FakeGH), mock.patch("ghintel.ai.router.http_json", h), mock.patch("time.sleep", lambda s: None):
             return R.run(cfg, dry=dry), h
@@ -339,6 +370,19 @@ class AnonProviders(unittest.TestCase):
 
 
 class RouterRobustness(unittest.TestCase):
+    def test_plain_text_ok_stub_benches_provider_immediately(self):
+        calls = []
+
+        def stub(body):
+            calls.append(body["model"])
+            return 200, {}, "OK\r\n"
+        r = Router(CFG, {}, {}, http=FakeHTTP({"api.groq.com": stub, "api.cerebras.ai": resp(GOOD)}),
+                   env={"GROQ_API_KEY": "k", "CEREBRAS_API_KEY": "k"}, sleep=lambda s: None)
+        _, meta = r.chat_json("t", "s", "u")
+        self.assertEqual(meta["provider"], "cerebras")
+        self.assertEqual(len(calls), 1)  # did not waste a second call on the stub
+        self.assertTrue(next(p for p in r.status() if p["name"] == "groq")["cooldown"])
+
     def test_empty_200_reply_tries_next_model_instead_of_benching_provider(self):
         calls = []
 

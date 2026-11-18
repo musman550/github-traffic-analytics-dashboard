@@ -24,8 +24,8 @@ DEFAULT_PROVIDERS = [
      "discover": "github-models", "rpm": 10, "daily": 100, "json": True,
      "headers": {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}},
     {"name": "ovhcloud", "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1", "keys": [], "anon": True, "open": True,
-     "models": ["Meta-Llama-3_3-70B-Instruct", "Mistral-7B-Instruct-v0.3", "Qwen2.5-Coder-32B-Instruct"], "discover": "openai-models",
-     "rpm": 2, "daily": 40, "json": False},
+     "models": ["gpt-oss-120b", "Mistral-Small-3.2-24B-Instruct-2506", "Meta-Llama-3_3-70B-Instruct"], "discover": "openai-models",
+     "rpm": 4, "daily": 80, "json": False},
     {"name": "pollinations", "base": "https://text.pollinations.ai/openai", "path": "", "keys": [], "anon": True, "open": True,
      "models": ["openai-fast"], "discover": "pollinations", "rpm": 1, "daily": 40, "json": False},
     {"name": "openrouter", "base": "https://openrouter.ai/api/v1", "keys": ["OPENROUTER_API_KEY"], "open": True,
@@ -262,7 +262,7 @@ class Router:
         n = dt.datetime.fromtimestamp(self.now(), dt.timezone.utc)
         return int((n.replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(days=1) - n).total_seconds()) + 60
 
-    def chat_json(self, task, system, user, required=(), validate=None, max_tokens=700, temperature=0.2, prefer=None, avoid=None):
+    def chat_json(self, task, system, user, required=(), validate=None, max_tokens=700, temperature=0.2, prefer=None, avoid=None, avoid_model=None):
         key = hashlib.sha256(json.dumps([task, system, user], ensure_ascii=False).encode()).hexdigest()[:24]
         if key in self.cache:
             return self.cache[key]["out"], {"provider": "cache", "model": self.cache[key].get("model", ""), "cached": True,
@@ -271,7 +271,10 @@ class Router:
         for p in self.ordered(prefer, avoid):
             st = self._st(p["name"])
             json_mode = bool(p.get("json")) and st.get("json_ok", True)
-            for model in self.models_for(p)[:2]:
+            models = self.models_for(p)
+            if avoid_model and any(m != avoid_model for m in models):
+                models = [m for m in models if m != avoid_model]
+            for model in models[:2]:
                 if not self.usable(p):
                     break
                 status, headers, data, ms = self._call(p, model, system, user, max_tokens, temperature, json_mode)
@@ -286,6 +289,9 @@ class Router:
                     st["bad"] += 1
                     st["last_error"] = f"{model}: empty reply {snip}"[:240]
                     errors.append(f"{p['name']}/{model}: empty reply")
+                    if isinstance(data, str):  # plain text instead of an API reply = stub or proxy, not a model
+                        self._fail(p, f"not an API reply: {snip}", 1800)
+                        break
                     continue
                 if status == 200 and text:
                     obj = extract_json(text)

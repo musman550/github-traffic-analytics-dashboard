@@ -59,7 +59,7 @@ def build_block(ctx, prop, all_topics, rel, website, ocfg, base):
             lines.append(f"**{f['q']}**  \n{f['a']}")
     links = []
     if rel:
-        links += [f"- [{r['name']}]({r['url']})" + (f": {r['desc'][:120]}" if r.get("desc") else "") for r in rel]
+        links += [f"- [{r['name']}]({r['url']})" + (f": {r['desc'][:120]}" if r.get("desc") and not weak_description(r["desc"]) else "") for r in rel]
     if website:
         links.append(f"- [Website]({website})")
     if links and (prop.get("summary") or faq):
