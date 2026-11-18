@@ -1,6 +1,6 @@
 # GitHub Traffic Analytics Dashboard
 
-> Free, open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently, beyond GitHub's 14-day limit. Public repositories only, no login. Data through 2026-11-16, updated 2026-11-18.
+> Free, open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently, beyond GitHub's 14-day limit. Public repositories only, no login. Data through 2026-11-17, updated 2026-11-18.
 
 ## Pages
 - [Dashboard](https://musman550.github.io/github-traffic-analytics-dashboard/): overview, trends, sources, repositories, insights, links, comments
@@ -26,21 +26,21 @@
 
 ## Key facts
 - Tracked public repositories: 275
-- Last 30 days: 292 views, 7889 clones. Stars: 2. Forks: 0.
+- Last 30 days: 317 views, 8756 clones. Stars: 2. Forks: 0.
 - Source of data: GitHub REST API traffic endpoints (https://docs.github.com/rest/metrics/traffic)
 - GitHub keeps only 14 days of traffic and the top 10 referrers/paths; this project stores every day.
 
 ## Top repositories by score
-- musfiraai-mcp-server: 1 views, 757 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-mcp-server
+- musfiraai-mcp-server: 2 views, 775 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-mcp-server
 - musfira-ai-repo-bot: 7 views, 432 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-repo-bot
-- musfiraai-free-tools: 0 views, 238 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-free-tools
-- musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs: 13 views, 72 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs
-- musfira-ai-copilot-code-review-api-management-and-review-overview-updat: 0 views, 129 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-copilot-code-review-api-management-and-review-overview-updat
-- musfira-ai-github-in-slack-and-teams-is-generally-available-and-more: 6 views, 91 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-github-in-slack-and-teams-is-generally-available-and-more
-- musfira-ai-github-copilot-weekly-releases-november-2: 0 views, 122 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-github-copilot-weekly-releases-november-2
-- musfira-ai-fable-5gguf-when: 11 views, 84 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-fable-5gguf-when
-- musfira-ai-granite-switch-411-update-models-like-you-update-software: 0 views, 113 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-granite-switch-411-update-models-like-you-update-software
-- musfira-ai-meituan-longcatlongcat-25-hugging-face: 0 views, 111 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-meituan-longcatlongcat-25-hugging-face
+- musfiraai-free-tools: 2 views, 275 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-free-tools
+- github-traffic-analytics-dashboard: 0 views, 197 clones, 0 stars (30 days) - https://github.com/musman550/github-traffic-analytics-dashboard
+- talashly: 7 views, 141 clones, 0 stars (30 days) - https://github.com/musman550/talashly
+- musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs: 13 views, 73 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs
+- musfira-ai-copilot-code-review-api-management-and-review-overview-updat: 0 views, 132 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-copilot-code-review-api-management-and-review-overview-updat
+- musfira-ai-github-in-slack-and-teams-is-generally-available-and-more: 6 views, 92 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-github-in-slack-and-teams-is-generally-available-and-more
+- musfira-ai-github-copilot-weekly-releases-november-2: 0 views, 125 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-github-copilot-weekly-releases-november-2
+- musfira-ai-release-ista-deepseek-v41-flash-1017-gsq-rco-coder-a-763b-mo: 1 views, 118 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-release-ista-deepseek-v41-flash-1017-gsq-rco-coder-a-763b-mo
 
 ## FAQ
 
@@ -72,7 +72,7 @@ Yes. It is open source under the MIT license: fork github.com/musman550/github-t
 Only the repository owner can change the code and data. The main branch is protected, forks cannot write to it, and the site runs under a strict content-security policy.
 
 ### How many repositories are tracked right now?
-275 public repositories, with data through 2026-11-16.
+275 public repositories, with data through 2026-11-17.
 
 ### Can I see who visited my GitHub repository?
 No. GitHub's traffic data is aggregate only: counts of views and clones, unique-visitor estimates and referrer sites. It does not identify individual visitors.
