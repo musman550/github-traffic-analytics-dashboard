@@ -1,19 +1,21 @@
 {
- "ai_calls": 1,
- "api_calls": 22,
+ "ai_calls": 39,
+ "api_calls": 17,
  "counts": {
-  "ai": 0,
+  "ai": 1,
   "applied": 0,
-  "checked": 8,
+  "checked": 5,
   "prs": 0,
-  "rules": 8,
+  "rules": 4,
   "skipped": 0
  },
  "enabled": true,
- "last_run": "2026-11-17T10:27:59+00:00",
+ "last_run": "2026-11-18T01:23:13+00:00",
  "mode": "dry",
  "notes": [],
  "providers_configured": [
-  "github-models"
+  "github-models",
+  "ovhcloud",
+  "pollinations"
  ]
 }

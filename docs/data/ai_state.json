@@ -1,5 +1,26 @@
 {
- "discovered": {},
+ "discover_error": {
+  "github-models": "catalog 200: OK\r\n"
+ },
+ "discovered": {
+  "ovhcloud": {
+   "d": "2026-11-18",
+   "models": [
+    "gpt-oss-120b",
+    "Mistral-Small-3.2-24B-Instruct-2506",
+    "Qwen3.5-9B",
+    "Qwen3.6-27B",
+    "Meta-Llama-3_3-70B-Instruct",
+    "Mistral-7B-Instruct-v0.3"
+   ]
+  },
+  "pollinations": {
+   "d": "2026-11-18",
+   "models": [
+    "openai-fast"
+   ]
+  }
+ },
  "providers": {
   "cerebras": {
    "bad": 0,
@@ -44,14 +65,14 @@
    "streak": 0
   },
   "github-models": {
-   "bad": 0,
+   "bad": 18,
    "cool": 1794911318.0587635,
    "day": {
-    "d": "2026-11-17",
-    "n": 1
+    "d": "2026-11-18",
+    "n": 18
    },
    "fail": 1,
-   "last_error": "http 200",
+   "last_error": "meta/Llama-4-Scout-17B-16E-Instruct: empty reply OK\r\n",
    "last_ok": "",
    "lat": 0,
    "ok": 0,
@@ -112,6 +133,34 @@
    "lat": 0,
    "ok": 0,
    "streak": 0
+  },
+  "ovhcloud": {
+   "bad": 12,
+   "cool": 0,
+   "day": {
+    "d": "2026-11-18",
+    "n": 16
+   },
+   "fail": 0,
+   "last_error": "Mistral-Small-3.2-24B-Instruct-2506: rejected: topics not grounded in the repository: ['content-generation']",
+   "last_ok": "2026-11-18T01:21:54+00:00",
+   "lat": 2715,
+   "ok": 4,
+   "streak": 0
+  },
+  "pollinations": {
+   "bad": 1,
+   "cool": 0,
+   "day": {
+    "d": "2026-11-18",
+    "n": 5
+   },
+   "fail": 0,
+   "last_error": "openai-fast: rejected: topics not grounded in the repository: ['gguf']",
+   "last_ok": "2026-11-18T01:21:00+00:00",
+   "lat": 10648,
+   "ok": 4,
+   "streak": 0
   }
  },
  "status": [
@@ -121,6 +170,7 @@
    "configured": false,
    "cooldown": false,
    "daily_cap": 800,
+   "discover_error": "",
    "fail": 0,
    "last_error": "",
    "last_ok": "",
@@ -135,6 +185,7 @@
    "configured": false,
    "cooldown": false,
    "daily_cap": 800,
+   "discover_error": "",
    "fail": 0,
    "last_error": "",
    "last_ok": "",
@@ -145,17 +196,48 @@
   },
   {
    "avg_ms": 0,
-   "bad": 0,
+   "bad": 18,
    "configured": true,
-   "cooldown": true,
+   "cooldown": false,
    "daily_cap": 100,
+   "discover_error": "catalog 200: OK\r\n",
    "fail": 1,
-   "last_error": "http 200",
+   "last_error": "meta/Llama-4-Scout-17B-16E-Instruct: empty reply OK\r\n",
    "last_ok": "",
    "name": "github-models",
    "ok": 0,
    "open_weight": true,
-   "today": 1
+   "today": 18
+  },
+  {
+   "avg_ms": 2715,
+   "bad": 12,
+   "configured": true,
+   "cooldown": false,
+   "daily_cap": 40,
+   "discover_error": "",
+   "fail": 0,
+   "last_error": "Mistral-Small-3.2-24B-Instruct-2506: rejected: topics not grounded in the repository: ['content-generation']",
+   "last_ok": "2026-11-18T01:21:54+00:00",
+   "name": "ovhcloud",
+   "ok": 4,
+   "open_weight": true,
+   "today": 16
+  },
+  {
+   "avg_ms": 10648,
+   "bad": 1,
+   "configured": true,
+   "cooldown": false,
+   "daily_cap": 40,
+   "discover_error": "",
+   "fail": 0,
+   "last_error": "openai-fast: rejected: topics not grounded in the repository: ['gguf']",
+   "last_ok": "2026-11-18T01:21:00+00:00",
+   "name": "pollinations",
+   "ok": 4,
+   "open_weight": true,
+   "today": 5
   },
   {
    "avg_ms": 0,
@@ -163,6 +245,7 @@
    "configured": false,
    "cooldown": false,
    "daily_cap": 40,
+   "discover_error": "",
    "fail": 0,
    "last_error": "",
    "last_ok": "",
@@ -177,6 +260,7 @@
    "configured": false,
    "cooldown": false,
    "daily_cap": 100,
+   "discover_error": "",
    "fail": 0,
    "last_error": "",
    "last_ok": "",
@@ -191,6 +275,7 @@
    "configured": false,
    "cooldown": false,
    "daily_cap": 200,
+   "discover_error": "",
    "fail": 0,
    "last_error": "",
    "last_ok": "",
@@ -205,6 +290,7 @@
    "configured": false,
    "cooldown": false,
    "daily_cap": 150,
+   "discover_error": "",
    "fail": 0,
    "last_error": "",
    "last_ok": "",
@@ -219,6 +305,7 @@
    "configured": false,
    "cooldown": false,
    "daily_cap": 200,
+   "discover_error": "",
    "fail": 0,
    "last_error": "",
    "last_ok": "",
@@ -228,5 +315,5 @@
    "today": 0
   }
  ],
- "updated": "2026-11-17T10:27:59+00:00"
+ "updated": "2026-11-18T01:23:13+00:00"
 }
