@@ -27,7 +27,7 @@ DEFAULT_PROVIDERS = [
      "models": ["Meta-Llama-3_3-70B-Instruct", "Mistral-7B-Instruct-v0.3", "Qwen2.5-Coder-32B-Instruct"], "discover": "openai-models",
      "rpm": 2, "daily": 40, "json": False},
     {"name": "pollinations", "base": "https://text.pollinations.ai/openai", "path": "", "keys": [], "anon": True, "open": True,
-     "models": ["mistral", "llama"], "discover": "pollinations", "rpm": 4, "daily": 60, "json": False},
+     "models": ["openai-fast"], "discover": "pollinations", "rpm": 1, "daily": 40, "json": False},
     {"name": "openrouter", "base": "https://openrouter.ai/api/v1", "keys": ["OPENROUTER_API_KEY"], "open": True,
      "models": ["meta-llama/llama-3.3-70b-instruct:free"], "discover": "openrouter", "rpm": 12, "daily": 40, "json": False,
      "headers": {"HTTP-Referer": "https://github.com/musman550/github-traffic-analytics-dashboard", "X-Title": "Traffic dashboard optimizer"}},
