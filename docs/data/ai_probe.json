@@ -1,5 +1,5 @@
 {
- "date": "2026-11-18T01:07:36+00:00",
+ "date": "2026-11-18T01:09:27+00:00",
  "providers": [
   {
    "name": "groq",
@@ -21,7 +21,7 @@
      "content": "",
      "json_mode": true,
      "model": "meta/Llama-3.3-70B-Instruct",
-     "ms": 27,
+     "ms": 81,
      "raw": "OK\r\n",
      "status": 200
     },
@@ -29,7 +29,7 @@
      "content": "",
      "json_mode": false,
      "model": "meta/Llama-3.3-70B-Instruct",
-     "ms": 42,
+     "ms": 80,
      "raw": "OK\r\n",
      "status": 200
     },
@@ -37,7 +37,7 @@
      "content": "",
      "json_mode": true,
      "model": "meta/Llama-4-Scout-17B-16E-Instruct",
-     "ms": 28,
+     "ms": 100,
      "raw": "OK\r\n",
      "status": 200
     },
@@ -45,7 +45,7 @@
      "content": "",
      "json_mode": false,
      "model": "meta/Llama-4-Scout-17B-16E-Instruct",
-     "ms": 29,
+     "ms": 104,
      "raw": "OK\r\n",
      "status": 200
     },
@@ -53,7 +53,7 @@
      "content": "",
      "json_mode": true,
      "model": "deepseek/DeepSeek-V3-0324",
-     "ms": 28,
+     "ms": 86,
      "raw": "OK\r\n",
      "status": 200
     },
@@ -61,9 +61,104 @@
      "content": "",
      "json_mode": false,
      "model": "deepseek/DeepSeek-V3-0324",
-     "ms": 33,
+     "ms": 106,
      "raw": "OK\r\n",
      "status": 200
+    }
+   ]
+  },
+  {
+   "discover_error": "",
+   "discovered": [
+    "gpt-oss-120b",
+    "Mistral-Small-3.2-24B-Instruct-2506",
+    "Qwen3.5-9B",
+    "Qwen3.6-27B"
+   ],
+   "name": "ovhcloud",
+   "open_weight": true,
+   "tests": [
+    {
+     "content": "{\"ok\": true}",
+     "json_mode": true,
+     "model": "gpt-oss-120b",
+     "ms": 1526,
+     "raw": "",
+     "status": 200
+    },
+    {
+     "content": "{\"ok\": true}",
+     "json_mode": true,
+     "model": "Mistral-Small-3.2-24B-Instruct-2506",
+     "ms": 1155,
+     "raw": "",
+     "status": 200
+    },
+    {
+     "content": "",
+     "json_mode": true,
+     "model": "Qwen3.5-9B",
+     "ms": 2823,
+     "raw": "{\"id\": \"chatcmpl-90efee5eb94ed7ca\", \"choices\": [{\"index\": 0, \"message\": {\"role\": \"assistant\", \"reasoning\": \"Thinking Process:\\n\\n1.  **Analyze the Request:**\\n    *   Input: \\\"Return exactly {\\\"ok\\\": true}\\\"\\n    *   Constraint: \\\"You reply with JSON only.\\\"\\n",
+     "status": 200
+    },
+    {
+     "content": "",
+     "json_mode": false,
+     "model": "Qwen3.5-9B",
+     "ms": 2897,
+     "raw": "{\"id\": \"chatcmpl-a921259adffcd6db\", \"choices\": [{\"index\": 0, \"message\": {\"role\": \"assistant\", \"reasoning\": \"Thinking Process:\\n\\n1.  **Analyze the Request:**\\n    *   Input: \\\"Return exactly {\\\"ok\\\": true}\\\"\\n    *   Constraint: \\\"You reply with JSON only.\\\"\\n",
+     "status": 200
+    }
+   ]
+  },
+  {
+   "discover_error": "",
+   "discovered": [
+    "openai-fast"
+   ],
+   "name": "pollinations",
+   "open_weight": true,
+   "tests": [
+    {
+     "content": "{\"ok\": true}",
+     "json_mode": true,
+     "model": "openai-fast",
+     "ms": 5093,
+     "raw": "",
+     "status": 200
+    },
+    {
+     "content": "",
+     "json_mode": true,
+     "model": "mistral",
+     "ms": 305,
+     "raw": "{\"status\": 402, \"success\": false, \"error\": {\"code\": \"FREE_LIMIT\", \"message\": \"Free limit reached: 1 reply every 45 seconds per IP. Retry after 26s, or get unlimited replies with a pollen key at https://enter.pollinations.ai/?ref=classic\", \"timestamp\": \"2026-11",
+     "status": 402
+    },
+    {
+     "content": "",
+     "json_mode": false,
+     "model": "mistral",
+     "ms": 247,
+     "raw": "{\"status\": 402, \"success\": false, \"error\": {\"code\": \"FREE_LIMIT\", \"message\": \"Free limit reached: 1 reply every 45 seconds per IP. Retry after 10s, or get unlimited replies with a pollen key at https://enter.pollinations.ai/?ref=classic\", \"timestamp\": \"2026-11",
+     "status": 402
+    },
+    {
+     "content": "",
+     "json_mode": true,
+     "model": "llama",
+     "ms": 334,
+     "raw": "{\"status\": 404, \"success\": false, \"error\": {\"code\": \"NOT_FOUND\", \"message\": \"Model \\\"llama\\\" isn't on the Classic API. Free models: https://text.pollinations.ai/models. Every model we offer is on https://enter.pollinations.ai/?ref=classic\", \"timestamp\": \"2026-",
+     "status": 404
+    },
+    {
+     "content": "",
+     "json_mode": false,
+     "model": "llama",
+     "ms": 263,
+     "raw": "{\"status\": 402, \"success\": false, \"error\": {\"code\": \"FREE_LIMIT\", \"message\": \"Free limit reached: 1 reply every 45 seconds per IP. Retry after 30s, or get unlimited replies with a pollen key at https://enter.pollinations.ai/?ref=classic\", \"timestamp\": \"2026-11",
+     "status": 402
     }
    ]
   },
