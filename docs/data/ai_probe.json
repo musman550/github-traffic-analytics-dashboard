@@ -1,0 +1,96 @@
+{
+ "date": "2026-11-18T01:07:36+00:00",
+ "providers": [
+  {
+   "name": "groq",
+   "open_weight": true,
+   "skipped": "no key configured"
+  },
+  {
+   "name": "cerebras",
+   "open_weight": true,
+   "skipped": "no key configured"
+  },
+  {
+   "discover_error": "catalog 200: OK\r\n",
+   "discovered": [],
+   "name": "github-models",
+   "open_weight": true,
+   "tests": [
+    {
+     "content": "",
+     "json_mode": true,
+     "model": "meta/Llama-3.3-70B-Instruct",
+     "ms": 27,
+     "raw": "OK\r\n",
+     "status": 200
+    },
+    {
+     "content": "",
+     "json_mode": false,
+     "model": "meta/Llama-3.3-70B-Instruct",
+     "ms": 42,
+     "raw": "OK\r\n",
+     "status": 200
+    },
+    {
+     "content": "",
+     "json_mode": true,
+     "model": "meta/Llama-4-Scout-17B-16E-Instruct",
+     "ms": 28,
+     "raw": "OK\r\n",
+     "status": 200
+    },
+    {
+     "content": "",
+     "json_mode": false,
+     "model": "meta/Llama-4-Scout-17B-16E-Instruct",
+     "ms": 29,
+     "raw": "OK\r\n",
+     "status": 200
+    },
+    {
+     "content": "",
+     "json_mode": true,
+     "model": "deepseek/DeepSeek-V3-0324",
+     "ms": 28,
+     "raw": "OK\r\n",
+     "status": 200
+    },
+    {
+     "content": "",
+     "json_mode": false,
+     "model": "deepseek/DeepSeek-V3-0324",
+     "ms": 33,
+     "raw": "OK\r\n",
+     "status": 200
+    }
+   ]
+  },
+  {
+   "name": "openrouter",
+   "open_weight": true,
+   "skipped": "no key configured"
+  },
+  {
+   "name": "huggingface",
+   "open_weight": true,
+   "skipped": "no key configured"
+  },
+  {
+   "name": "mistral",
+   "open_weight": true,
+   "skipped": "no key configured"
+  },
+  {
+   "name": "cloudflare",
+   "open_weight": true,
+   "skipped": "no key configured"
+  },
+  {
+   "name": "gemini",
+   "open_weight": false,
+   "skipped": "no key configured"
+  }
+ ]
+}
