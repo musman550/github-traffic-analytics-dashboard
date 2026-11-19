@@ -25,7 +25,7 @@ DEFAULT_PROVIDERS = [
      "headers": {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}},
     {"name": "ovhcloud", "base": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1", "keys": [], "anon": True, "open": True,
      "models": ["gpt-oss-120b", "Mistral-Small-3.2-24B-Instruct-2506", "Meta-Llama-3_3-70B-Instruct"], "discover": "openai-models",
-     "rpm": 4, "daily": 80, "json": False},
+     "rpm": 4, "daily": 80, "json": True},
     {"name": "pollinations", "base": "https://text.pollinations.ai/openai", "path": "", "keys": [], "anon": True, "open": True,
      "models": ["openai-fast"], "discover": "pollinations", "rpm": 1, "daily": 40, "json": False},
     {"name": "openrouter", "base": "https://openrouter.ai/api/v1", "keys": ["OPENROUTER_API_KEY"], "open": True,

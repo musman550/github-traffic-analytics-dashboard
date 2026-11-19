@@ -53,8 +53,11 @@ def run(cfg, dry=None, limit=None, only=None, rules_only=None):
                 full = cls == "product" or o.get("generated_readme")
                 prop, notes = G.propose(router, ctx, full, o.get("use_judge", True), rules_only)
                 counts["ai" if prop["source"].startswith("ai:") else "rules"] += 1
-                if cls == "generated":  # near-identical generated repos: clean up, never mass-add topics
-                    prop["topics"] = prop["topics"][:o.get("generated_max_new_topics", 3)] if prop["source"].startswith("ai:") else []
+                if cls == "generated":  # near-identical generated repos: quote the README, never mass-add topics
+                    rd = G.rule_proposal(ctx).get("description")
+                    if rd:
+                        prop["description"] = rd
+                    prop["topics"] = prop["topics"][:o.get("generated_max_new_topics", 0)] if prop["source"].startswith("ai:") else []
                 ranked = X.rank_topics(gh, [t for t in prop.get("topics", []) if t not in ctx["topics"]], topic_stats, today)
                 ch = A.metadata_changes(ctx, prop, ranked, o)
                 entry = {"id": f"{today}:{name}", "repo": name, "owner": owner, "date": today.isoformat(), "class": cls,

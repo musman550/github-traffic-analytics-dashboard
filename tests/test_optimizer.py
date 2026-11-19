@@ -165,6 +165,11 @@ class RuleQualityTests(unittest.TestCase):
         self.assertNotIn("Curated", d)
         self.assertLessEqual(len(d), 160)
 
+    def test_normalize_unescapes_quotes_from_model_output(self):
+        out = G._normalize({"description": "x", "topics": [], "summary": "Use TARGET=\\\"a\\\"", "faq": [{"q": "Q?", "a": "Set X=\\\"b\\\"."}]}, True)
+        self.assertEqual(out["summary"], 'Use TARGET="a"')
+        self.assertEqual(out["faq"][0]["a"], 'Set X="b".')
+
     def test_cut_happens_at_natural_boundary(self):
         s = "MCP server for Musfiraai, request free custom tools, automations, AI agents, and n8n workflows directly from Claude Desktop, Claude Code, or any compatible client"
         out = G.smart_cut(s, 160)

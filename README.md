@@ -56,8 +56,8 @@ An automatic, auditable optimizer (`optimize.yml`, Monday and Thursday) improves
 - Picks up to 10 repositories (weak metadata first), skips forks, archived, excluded and generated-README repositories
 - Descriptions are replaced only when weak; topics are only added when grounded in the README; clear junk topics are removed
 - README summary, FAQ and related projects go in a marked block through a pull request (auto-merge after 3 days unless closed)
-- Open-weight models through a fallback chain: Groq, Cerebras, GitHub Models (no key needed in Actions), OpenRouter, Hugging Face, Mistral, Cloudflare; cooldowns, daily budgets, caching; rule-based fallback when no model is available
-- Output is validated (no links or hype, numbers must appear in the README) and fact-checked by a second model call
+- Open-weight models through a fallback chain: keyless OVHcloud and Pollinations tiers work out of the box; Groq, Cerebras, GitHub Models, OpenRouter, Hugging Face, Mistral and Cloudflare are used when their keys exist; cooldowns, daily budgets, caching and stub detection; rule-based fallback when no model is available. `python -m ghintel.cli probe` (workflow *AI provider probe*) tests every provider live
+- Output is sanitized (invalid parts are dropped: no links or hype, topics and numbers must be grounded in the README) and scored by a fact-check call on a different model
 - Metadata changes are rolled back automatically after a clear traffic drop; everything is logged on the public [optimizer page](https://musman550.github.io/github-traffic-analytics-dashboard/optimizer/)
 
 Optional provider keys (repository secrets): `GROQ_API_KEY`, `CEREBRAS_API_KEY`, `OPENROUTER_API_KEY`, `HF_TOKEN`, `MISTRAL_API_KEY`, `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`. Manual runs default to a dry run.

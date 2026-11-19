@@ -443,7 +443,7 @@ def page_privacy(cfg, s):
 <h2>Published data</h2>
 <p>The dashboard publishes public information about public repositories (names, descriptions, topics, stars, forks) together with the owner's traffic statistics, and the links found on the owner's public GitHub profile.</p>
 <h2>AI optimizer</h2>
-<p>The optimizer sends the public README, description, topics and top-level file names of a public repository to AI providers that serve open-weight models (for example Groq, Cerebras, GitHub Models, OpenRouter, Hugging Face, Mistral and Cloudflare Workers AI). Private repositories are never read. Providers apply their own terms and may log requests; free tiers may use inputs for training, which is another reason only public text is sent.</p>
+<p>The optimizer sends the public README, description, topics and top-level file names of a public repository to AI providers that serve open-weight models (for example Groq, Cerebras, OVHcloud AI Endpoints and Pollinations in their anonymous free tiers, GitHub Models, OpenRouter, Hugging Face, Mistral and Cloudflare Workers AI). Private repositories are never read. Providers apply their own terms and may log requests; free tiers may use inputs for training, which is another reason only public text is sent.</p>
 <h2>Hosting</h2>
 <p>The site is served by GitHub Pages. GitHub may process technical request data such as IP addresses under the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub General Privacy Statement</a>.</p>
 <h2>Comments</h2>

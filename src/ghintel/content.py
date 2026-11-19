@@ -277,8 +277,8 @@ print(s["totals"]["views_30d"], "views in the last 30 days")</code></pre>
 CHANGELOG = [
     ("5.0.0", "2026-11-15", [
         "AI optimizer: improves repository descriptions and topics and proposes README summaries by pull request",
-        "Multi-provider router for open-weight models (Groq, Cerebras, GitHub Models, OpenRouter, Hugging Face, Mistral, Cloudflare) with cooldowns, daily budgets, caching and automatic fallback to rules",
-        "Safety: grounded topics, no links or hype, number checks, independent fact-check, junk-topic cleanup, README pull requests with auto-merge window and automatic rollback after a traffic drop",
+        "Multi-provider router for open-weight models (keyless OVHcloud and Pollinations tiers, plus Groq, Cerebras, GitHub Models, OpenRouter, Hugging Face, Mistral, Cloudflare when keys exist) with cooldowns, daily budgets, caching, stub detection and automatic fallback to rules",
+        "Safety: invalid parts are dropped, grounded topics, no links or hype, number checks, scored fact-check by a different model, junk-topic cleanup, README pull requests with auto-merge window and automatic rollback after a traffic drop",
         "Public optimizer page and dashboard tab with provider health and a full change log; fixed a rate-limit bug where the search budget was mistaken for the core budget",
     ]),
     ("4.0.0", "2026-11-15", [

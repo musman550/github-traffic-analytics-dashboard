@@ -49,7 +49,7 @@
     "block_end": "<!-- AUTO-SEO:END -->",
     "use_judge": true,
     "remove_junk_topics": true,
-    "generated_max_new_topics": 3,
+    "generated_max_new_topics": 0,
     "rules_cooldown_days": 3
   },
   "ai": {

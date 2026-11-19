@@ -265,7 +265,7 @@ def propose(router, ctx, full, use_judge=True, rules_only=False):
             clean, _ = sanitize(_normalize(o, full), ctx)
             require_value(clean)
         try:
-            raw, meta = router.chat_json("metadata", SYSTEM, prompt(ctx, full), required=("description", "topics"), validate=check, max_tokens=900)
+            raw, meta = router.chat_json("metadata", SYSTEM, prompt(ctx, full), required=("description", "topics"), validate=check, max_tokens=1500)
             clean, dropped = sanitize(_normalize(raw, full), ctx)
             clean["source"] = f"ai:{meta.get('source') or meta.get('provider')}"
             if dropped:
@@ -286,11 +286,12 @@ def propose(router, ctx, full, use_judge=True, rules_only=False):
 
 
 def _normalize(o, full):
-    out = {"description": (o.get("description") or "").strip() or None,
+    fix = lambda s: str(s).replace('\\"', '"').strip()
+    out = {"description": fix(o.get("description") or "") or None,
            "topics": [str(t).strip().lower().replace("_", "-").replace(" ", "-") for t in (o.get("topics") or [])][:15]}
     if full:
-        out["summary"] = (o.get("summary") or "").strip()
-        out["faq"] = [{"q": str(f.get("q", "")).strip(), "a": str(f.get("a", "")).strip()} for f in (o.get("faq") or []) if isinstance(f, dict)][:3]
+        out["summary"] = fix(o.get("summary") or "")
+        out["faq"] = [{"q": fix(f.get("q", "")), "a": fix(f.get("a", ""))} for f in (o.get("faq") or []) if isinstance(f, dict)][:3]
     else:
         out["summary"], out["faq"] = "", []
     return out
