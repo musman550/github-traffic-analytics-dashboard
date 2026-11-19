@@ -1,7 +1,7 @@
 name,url,views_7d,views_30d,views_since_tracking,clones_30d,unique_visitors_14d,stars,forks,language,license,last_push,score,tier
 musfiraai-mcp-server,https://github.com/musman550/musfiraai-mcp-server,1,2,2,775,2,0,0,Python,,2026-11-19,393.5,top
 musfira-ai-repo-bot,https://github.com/musman550/musfira-ai-repo-bot,0,7,7,432,1,0,0,Python,MIT,2026-11-18,225.0,top
-musfiraai-free-tools,https://github.com/musman550/musfiraai-free-tools,2,2,2,275,1,0,0,HTML,MIT,2026-11-17,141.5,top
+musfiraai-free-tools,https://github.com/musman550/musfiraai-free-tools,2,2,2,275,1,0,0,HTML,MIT,2026-11-19,141.5,top
 github-traffic-analytics-dashboard,https://github.com/musman550/github-traffic-analytics-dashboard,0,0,0,197,0,0,0,Python,MIT,2026-11-19,98.5,top
 talashly,https://github.com/musman550/talashly,7,7,7,141,1,0,0,Python,MIT,2026-11-19,79.5,top
 musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs,https://github.com/musman550/musfira-ai-not-another-toks-post-local-quants-vs-claude-on-9-real-bugs,1,13,13,73,11,0,0,HTML,MIT,2026-11-02,71.5,top
@@ -252,6 +252,7 @@ musfira-ai-mtp-released-for-qwen38-flash-next-gguf,https://github.com/musman550/
 musfira-ai-opentelemetry-in-the-github-copilot-app,https://github.com/musman550/musfira-ai-opentelemetry-in-the-github-copilot-app,0,0,0,6,0,0,0,HTML,MIT,2026-10-04,3.0,low
 musfira-ai-private-saved-views-for-repository-issues-and-relates-to-iss,https://github.com/musman550/musfira-ai-private-saved-views-for-repository-issues-and-relates-to-iss,0,0,0,6,0,0,0,HTML,MIT,2026-10-04,3.0,low
 musfira-ai-qwenqwen-drive-10-4b-hugging-face,https://github.com/musman550/musfira-ai-qwenqwen-drive-10-4b-hugging-face,0,0,0,6,0,0,0,HTML,MIT,2026-10-04,3.0,low
+musfira-ai-rumble-2-flash-an-open-05b-speech-model-for-40-languages,https://github.com/musman550/musfira-ai-rumble-2-flash-an-open-05b-speech-model-for-40-languages,0,0,0,0,0,1,0,HTML,MIT,2026-11-18,3.0,low
 musfira-ai-tencentevie-8b-and-evie-45b-high-capacity-visual-document-re,https://github.com/musman550/musfira-ai-tencentevie-8b-and-evie-45b-high-capacity-visual-document-re,0,1,1,4,0,0,0,HTML,MIT,2026-10-04,3.0,low
 musfira-ai-wire-it-run-it-deploy-it-ai-workflows-in-gradio,https://github.com/musman550/musfira-ai-wire-it-run-it-deploy-it-ai-workflows-in-gradio,0,0,0,6,0,0,0,HTML,MIT,2026-10-04,3.0,low
 musfira-ai-zai-orgglm-53-hugging-face,https://github.com/musman550/musfira-ai-zai-orgglm-53-hugging-face,0,0,0,6,0,0,0,HTML,MIT,2026-10-04,3.0,low
@@ -274,4 +275,3 @@ musfira-ai-profiles-now-show-your-highest-achievement-badge-tier,https://github.
 musfira-ai-best-local-vision-language-models---august-2026,https://github.com/musman550/musfira-ai-best-local-vision-language-models---august-2026,0,0,0,2,0,0,0,HTML,MIT,2026-10-04,1.0,low
 musfira-ai-the-new-github-copilot-experience-in-slack,https://github.com/musman550/musfira-ai-the-new-github-copilot-experience-in-slack,0,0,0,2,0,0,0,HTML,MIT,2026-10-04,1.0,low
 musman550,https://github.com/musman550/musman550,0,0,0,2,0,0,0,,,2026-08-23,1.0,low
-musfira-ai-rumble-2-flash-an-open-05b-speech-model-for-40-languages,https://github.com/musman550/musfira-ai-rumble-2-flash-an-open-05b-speech-model-for-40-languages,0,0,0,0,0,0,0,HTML,MIT,2026-11-18,0.0,low
