@@ -1,16 +1,16 @@
 {
- "ai_calls": 3,
- "api_calls": 15,
+ "ai_calls": 21,
+ "api_calls": 58,
  "counts": {
-  "ai": 1,
-  "applied": 1,
-  "checked": 1,
-  "prs": 0,
-  "rules": 0,
-  "skipped": 0
+  "ai": 9,
+  "applied": 7,
+  "checked": 10,
+  "prs": 2,
+  "rules": 1,
+  "skipped": 3
  },
  "enabled": true,
- "last_run": "2026-11-19T03:49:55+00:00",
+ "last_run": "2026-11-19T13:44:50+00:00",
  "mode": "live",
  "notes": [],
  "providers_configured": [
