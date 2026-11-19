@@ -80,9 +80,9 @@ jobs:
         run: |
           git config user.name "traffic-bot"
           git config user.email "traffic-bot@users.noreply.github.com"
-          git add -A docs
+          git add -A docs CHANGELOG.md
           git diff --cached --quiet || git commit -m "optimizer: $(date -u +%F)"
-          git pull --rebase -q
+          git pull --rebase --autostash -q
           git push
       - name: Open an alert issue if this workflow failed
         if: failure()

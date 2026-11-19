@@ -2,17 +2,19 @@
  "ai_calls": 13,
  "api_calls": 26,
  "counts": {
-  "ai": 4,
-  "applied": 0,
-  "checked": 5,
-  "prs": 0,
-  "rules": 1,
+  "ai": 6,
+  "applied": 6,
+  "checked": 6,
+  "prs": 4,
+  "rules": 0,
   "skipped": 0
  },
  "enabled": true,
- "last_run": "2026-11-18T01:28:39+00:00",
- "mode": "dry",
- "notes": [],
+ "last_run": "2026-11-19T03:43:00+00:00",
+ "mode": "live",
+ "notes": [
+  "reconstructed after a failed commit step"
+ ],
  "providers_configured": [
   "github-models",
   "ovhcloud",
