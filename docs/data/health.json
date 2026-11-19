@@ -1,11 +1,11 @@
 {
- "api_calls": 658,
+ "api_calls": 272,
  "errors": [],
- "last_run": "2026-11-18T10:18:07+00:00",
+ "last_run": "2026-11-19T03:46:08+00:00",
  "partial": false,
- "rate_remaining": 4992,
- "repos_seen": 275,
- "seconds": 135,
- "skipped_by_cadence": 12,
- "traffic_fetched": 263
+ "rate_remaining": 4929,
+ "repos_seen": 276,
+ "seconds": 61,
+ "skipped_by_cadence": 207,
+ "traffic_fetched": 69
 }
