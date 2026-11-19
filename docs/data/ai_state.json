@@ -4,14 +4,13 @@
  },
  "discovered": {
   "ovhcloud": {
-   "d": "2026-11-18",
+   "d": "2026-11-19",
    "models": [
     "gpt-oss-120b",
     "Mistral-Small-3.2-24B-Instruct-2506",
-    "Qwen3.5-9B",
+    "qwen3.6-35b-a3b",
     "Qwen3.6-27B",
-    "Meta-Llama-3_3-70B-Instruct",
-    "Mistral-7B-Instruct-v0.3"
+    "Meta-Llama-3_3-70B-Instruct"
    ]
   },
   "pollinations": {
@@ -65,18 +64,18 @@
    "streak": 0
   },
   "github-models": {
-   "bad": 19,
-   "cool": 1794966887.5255384,
+   "bad": 20,
+   "cool": 1795061941.1515307,
    "day": {
-    "d": "2026-11-18",
-    "n": 19
+    "d": "2026-11-19",
+    "n": 1
    },
-   "fail": 2,
+   "fail": 3,
    "last_error": "not an API reply: OK\r\n",
    "last_ok": "",
    "lat": 0,
    "ok": 0,
-   "streak": 2
+   "streak": 3
   },
   "groq": {
    "bad": 0,
@@ -138,14 +137,14 @@
    "bad": 18,
    "cool": 0,
    "day": {
-    "d": "2026-11-18",
-    "n": 27
+    "d": "2026-11-19",
+    "n": 2
    },
    "fail": 0,
    "last_error": "gpt-oss-120b: reply was not valid JSON",
-   "last_ok": "2026-11-18T01:28:30+00:00",
-   "lat": 2838,
-   "ok": 9,
+   "last_ok": "2026-11-19T03:49:31+00:00",
+   "lat": 3668,
+   "ok": 11,
    "streak": 0
   },
   "pollinations": {
@@ -196,21 +195,21 @@
   },
   {
    "avg_ms": 0,
-   "bad": 19,
+   "bad": 20,
    "configured": true,
    "cooldown": true,
    "daily_cap": 100,
    "discover_error": "catalog 200: OK\r\n",
-   "fail": 2,
+   "fail": 3,
    "last_error": "not an API reply: OK\r\n",
    "last_ok": "",
    "name": "github-models",
    "ok": 0,
    "open_weight": true,
-   "today": 19
+   "today": 1
   },
   {
-   "avg_ms": 2838,
+   "avg_ms": 3668,
    "bad": 18,
    "configured": true,
    "cooldown": false,
@@ -218,11 +217,11 @@
    "discover_error": "",
    "fail": 0,
    "last_error": "gpt-oss-120b: reply was not valid JSON",
-   "last_ok": "2026-11-18T01:28:30+00:00",
+   "last_ok": "2026-11-19T03:49:31+00:00",
    "name": "ovhcloud",
-   "ok": 9,
+   "ok": 11,
    "open_weight": true,
-   "today": 27
+   "today": 2
   },
   {
    "avg_ms": 11330,
@@ -237,7 +236,7 @@
    "name": "pollinations",
    "ok": 5,
    "open_weight": true,
-   "today": 6
+   "today": 0
   },
   {
    "avg_ms": 0,
@@ -315,5 +314,5 @@
    "today": 0
   }
  ],
- "updated": "2026-11-18T01:28:39+00:00"
+ "updated": "2026-11-19T03:49:55+00:00"
 }
