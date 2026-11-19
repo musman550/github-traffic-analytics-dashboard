@@ -194,10 +194,16 @@ class ApplyTests(unittest.TestCase):
         once = A.upsert_block(README, block, OCFG["block_start"], OCFG["block_end"])
         twice = A.upsert_block(once, block, OCFG["block_start"], OCFG["block_end"])
         self.assertEqual(once, twice)
-        self.assertTrue(once.startswith("# Weather Bot\n\n" + OCFG["block_start"]))
+        self.assertTrue(once.index("A small Python service") < once.index(OCFG["block_start"]) < once.index("## Usage"))  # after the intro, before the first section
+        self.assertTrue(once.startswith("# Weather Bot\n\nA small Python service"))
         self.assertIn("then run `docker compose up`.", once)
         newer = block.replace("x", "y")
         self.assertEqual(A.upsert_block(once, newer, OCFG["block_start"], OCFG["block_end"]).count(OCFG["block_start"]), 1)
+
+    def test_block_goes_last_when_there_are_no_sections(self):
+        flat = "# Tiny\n\nOne paragraph only.\n"
+        out = A.upsert_block(flat, "<!-- AUTO-SEO:START -->\nx\n<!-- AUTO-SEO:END -->", OCFG["block_start"], OCFG["block_end"])
+        self.assertTrue(out.startswith("# Tiny\n\nOne paragraph only.") and out.rstrip().endswith("<!-- AUTO-SEO:END -->"))
 
     def test_topics_are_only_added_never_removed_and_capped(self):
         self.assertEqual(A.merge_topics(["a", "b"], ["b", "c"], 12), ["a", "b", "c"])

@@ -268,6 +268,8 @@ def propose(router, ctx, full, use_judge=True, rules_only=False):
             raw, meta = router.chat_json("metadata", SYSTEM, prompt(ctx, full), required=("description", "topics"), validate=check, max_tokens=1500)
             clean, dropped = sanitize(_normalize(raw, full), ctx)
             clean["source"] = f"ai:{meta.get('source') or meta.get('provider')}"
+            # evidence-based topics from the README first, then the model's semantic ones
+            clean["topics"] = list(dict.fromkeys(rule_proposal(ctx)["topics"] + clean["topics"]))[:12]
             if dropped:
                 notes.append("dropped: " + "; ".join(dropped)[:240])
             if use_judge and (clean["summary"] or clean["faq"] or clean["description"]):

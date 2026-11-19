@@ -71,15 +71,19 @@ def build_block(ctx, prop, all_topics, rel, website, ocfg, base):
 
 
 def upsert_block(readme, block, start, end):
+    """Insert or replace the managed block. A new block goes after the introduction (before the first
+    second-level heading) so the title and tagline stay together; with no such heading it goes last."""
     if not block:
         return readme
     if start in readme and end in readme:
         return re.sub(re.escape(start) + r".*?" + re.escape(end), lambda _: block, readme, count=1, flags=re.S)
-    m = re.search(r"^# .+$", readme, flags=re.M)
-    if m:
-        i = m.end()
-        return readme[:i] + "\n\n" + block + "\n" + readme[i:]
-    return block + "\n\n" + readme
+    h1 = re.search(r"^# .+$", readme, flags=re.M)
+    pos = h1.end() if h1 else 0
+    h2 = re.search(r"^## .+$", readme[pos:], flags=re.M)
+    if h2:
+        i = pos + h2.start()
+        return readme[:i].rstrip("\n") + "\n\n" + block + "\n\n" + readme[i:]
+    return readme.rstrip("\n") + "\n\n" + block + "\n"
 
 
 def open_readme_pr(gw, ctx, new_text, ocfg, today, why):
