@@ -148,6 +148,7 @@ def head(cfg, title, desc, path, ld, extra="", author="", modified="", og=None):
 <link rel="manifest" href="{base}manifest.webmanifest">
 <link rel="alternate" type="text/plain" href="{base}llms.txt" title="llms.txt">
 <link rel="alternate" type="application/atom+xml" href="{base}feed.xml" title="Weekly traffic reports">
+<link rel="sitemap" type="application/xml" href="{base}sitemap.xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="{e(cfg['site_name'])}">
 <meta property="og:title" content="{e(title)}">

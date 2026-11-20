@@ -23,7 +23,7 @@
     "issues": true,
     "telegram": true
   },
-  "version": "5.0.0",
+  "version": "5.1.0",
   "optimizer": {
     "enabled": true,
     "max_repos_per_run": 10,
@@ -69,5 +69,6 @@
     ],
     "providers": {},
     "anon_enabled": true
-  }
+  },
+  "root_site": true
 }

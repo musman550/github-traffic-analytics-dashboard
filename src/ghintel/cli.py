@@ -8,6 +8,9 @@ def main():
     if cmd in ("collect", "all"):
         from .collector import collect
         collect(cfg)
+    if cmd == "rootsite":
+        from .rootsite import run as rootsite
+        rootsite(cfg)
     if cmd == "probe":
         from .ai.probe import probe
         probe(cfg)

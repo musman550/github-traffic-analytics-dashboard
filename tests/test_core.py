@@ -220,3 +220,36 @@ class RateBuckets(unittest.TestCase):
         r.headers.update({"x-ratelimit-remaining": "4500", "x-ratelimit-resource": "core"})
         g._note(r)
         self.assertEqual(g.remaining, 4500)
+
+
+class RootSite(unittest.TestCase):
+    CFG = {"site_url": "https://u.github.io/dash/", "repo_full_name": "u/dash", "optimizer": {"generated_prefixes": ["bot-"], "exclude": ["u"]}}
+    PROF = {"login": "u", "name": "Acme <AI>", "tagline": "We build tools.", "url": "https://github.com/u", "avatar": "https://a/x.png",
+            "links": [{"label": "Site", "url": "https://acme.example", "kind": "website"}]}
+    SUM = {"repos": [
+        {"name": "tool-a", "url": "https://github.com/u/tool-a", "desc": "<script>alert(1)</script> A genuinely useful tool for testing", "fork": False, "archived": False},
+        {"name": "bot-news-1", "url": "https://github.com/u/bot-news-1", "desc": "generated", "fork": False, "archived": False},
+        {"name": "forked", "url": "https://github.com/u/forked", "desc": "x" * 50, "fork": True, "archived": False},
+        {"name": "u", "url": "https://github.com/u/u", "desc": "profile repository description here", "fork": False, "archived": False}]}
+
+    def test_files_are_valid_safe_and_scoped(self):
+        import xml.etree.ElementTree as ET
+        from ghintel.rootsite import build_files
+        f = build_files(self.CFG, self.SUM, self.PROF, "2026-11-20")
+        self.assertIn("Sitemap: https://u.github.io/sitemap.xml", f["robots.txt"])
+        self.assertIn("Sitemap: https://u.github.io/dash/sitemap.xml", f["robots.txt"])
+        self.assertIn("User-agent: GPTBot", f["robots.txt"])
+        idx = ET.fromstring(f["sitemap.xml"].encode())
+        self.assertTrue(idx.tag.endswith("sitemapindex"))
+        ET.fromstring(f["sitemap-root.xml"].encode())
+        self.assertNotIn("bot-news-1", f["index.html"] + f["llms.txt"])  # generated repos are not advertised
+        self.assertNotIn("forked", f["index.html"])
+        self.assertNotIn("<script>alert", f["index.html"])             # descriptions are escaped
+        self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", f["index.html"])
+        self.assertNotIn("github.com/u/u\"", f["index.html"].split("Tools and projects")[1].split("Find us")[0])  # profile repo excluded
+        try:
+            import html5lib
+            html5lib.HTMLParser(strict=True).parse(f["index.html"])
+        except ImportError:
+            pass
+        json.loads(f["index.html"].split('application/ld+json">')[1].split("</script>")[0])

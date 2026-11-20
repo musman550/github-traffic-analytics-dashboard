@@ -41,6 +41,11 @@ jobs:
           PYTHONPATH: src
           FORCE_FULL: ${{ github.event.schedule == '47 3 * * 0' || inputs.force_full }}
         run: python -m ghintel.cli all
+      - name: Host-root files (robots.txt, llms.txt, sitemap) for the github.io domain
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          PYTHONPATH: src
+        run: python -m ghintel.cli rootsite || true
       - name: Alerts (failed runs, spikes, finished weekly reports)
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
