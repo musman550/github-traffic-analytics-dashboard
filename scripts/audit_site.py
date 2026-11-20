@@ -32,6 +32,8 @@ pages = [os.path.join(d, f) for d, _, fs in os.walk(ROOT) for f in fs if f.endsw
 for p in pages:
     rel = os.path.relpath(p, ROOT)
     txt = open(p, encoding="utf-8").read()
+    if txt.lstrip().startswith("google-site-verification:"):  # Search Console ownership file, not a page
+        continue
     try:
         html5lib.HTMLParser(strict=True).parse(txt)
     except Exception as e:
