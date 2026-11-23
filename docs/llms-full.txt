@@ -1,6 +1,6 @@
 # GitHub Traffic Analytics Dashboard
 
-> Free, open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently, beyond GitHub's 14-day limit. Public repositories only, no login. Data through 2026-11-21, updated 2026-11-22.
+> Free, open-source dashboard that stores GitHub repository traffic (views, clones, referrers, stars) permanently, beyond GitHub's 14-day limit. Public repositories only, no login. Data through 2026-11-22, updated 2026-11-23.
 
 ## Pages
 - [Dashboard](https://musman550.github.io/github-traffic-analytics-dashboard/): overview, trends, sources, repositories, insights, links, comments
@@ -8,7 +8,7 @@
 - [FAQ](https://musman550.github.io/github-traffic-analytics-dashboard/faq/): answers about GitHub traffic data, clones, unique visitors, limits
 - [Guide: keep GitHub traffic beyond 14 days](https://musman550.github.io/github-traffic-analytics-dashboard/guides/keep-github-traffic-history/): step-by-step with code
 - [Guide: GitHub traffic API reference](https://musman550.github.io/github-traffic-analytics-dashboard/guides/github-traffic-api-reference/): endpoints, fields, limits
-- [Weekly reports](https://musman550.github.io/github-traffic-analytics-dashboard/reports/): 2 completed weeks
+- [Weekly reports](https://musman550.github.io/github-traffic-analytics-dashboard/reports/): 3 completed weeks
 - [All repositories](https://musman550.github.io/github-traffic-analytics-dashboard/repositories/): descriptions, languages, stars, traffic
 - [Status](https://musman550.github.io/github-traffic-analytics-dashboard/status/): data freshness and collection run history
 - [Optimizer](https://musman550.github.io/github-traffic-analytics-dashboard/optimizer/): AI metadata optimizer: rules, safety checks, change log
@@ -25,22 +25,22 @@
 - [Atom feed](https://musman550.github.io/github-traffic-analytics-dashboard/feed.xml): weekly reports
 
 ## Key facts
-- Tracked public repositories: 284
-- Last 30 days: 502 views, 10966 clones. Stars: 3. Forks: 0.
+- Tracked public repositories: 285
+- Last 30 days: 527 views, 11326 clones. Stars: 3. Forks: 0.
 - Source of data: GitHub REST API traffic endpoints (https://docs.github.com/rest/metrics/traffic)
 - GitHub keeps only 14 days of traffic and the top 10 referrers/paths; this project stores every day.
 
 ## Top repositories by score
-- musfiraai-mcp-server: 2 views, 867 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-mcp-server
-- talashly: 76 views, 511 clones, 0 stars (30 days) - https://github.com/musman550/talashly
-- musfira-ai-repo-bot: 9 views, 502 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-repo-bot
-- github-traffic-analytics-dashboard: 1 views, 481 clones, 0 stars (30 days) - https://github.com/musman550/github-traffic-analytics-dashboard
-- musfiraai-free-tools: 4 views, 310 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-free-tools
-- talashly-monitor: 36 views, 88 clones, 0 stars (30 days) - https://github.com/musman550/talashly-monitor
+- musfiraai-mcp-server: 2 views, 878 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-mcp-server
+- talashly: 98 views, 676 clones, 0 stars (30 days) - https://github.com/musman550/talashly
+- musfira-ai-repo-bot: 9 views, 531 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-repo-bot
+- github-traffic-analytics-dashboard: 2 views, 517 clones, 0 stars (30 days) - https://github.com/musman550/github-traffic-analytics-dashboard
+- musfiraai-free-tools: 4 views, 313 clones, 0 stars (30 days) - https://github.com/musman550/musfiraai-free-tools
+- talashly-monitor: 36 views, 93 clones, 0 stars (30 days) - https://github.com/musman550/talashly-monitor
 - musfira-ai-copilot-code-review-api-management-and-review-overview-updat: 0 views, 133 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-copilot-code-review-api-management-and-review-overview-updat
 - musfira-ai-github-in-slack-and-teams-is-generally-available-and-more: 6 views, 97 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-github-in-slack-and-teams-is-generally-available-and-more
+- musfira-ai-where-is-qwen-4-27b: 2 views, 116 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-where-is-qwen-4-27b
 - musfira-ai-github-copilot-weekly-releases-november-2: 0 views, 127 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-github-copilot-weekly-releases-november-2
-- musfira-ai-release-ista-deepseek-v41-flash-1017-gsq-rco-coder-a-763b-mo: 1 views, 122 clones, 0 stars (30 days) - https://github.com/musman550/musfira-ai-release-ista-deepseek-v41-flash-1017-gsq-rco-coder-a-763b-mo
 
 ## FAQ
 
@@ -72,7 +72,7 @@ Yes. It is open source under the MIT license: fork github.com/musman550/github-t
 Only the repository owner can change the code and data. The main branch is protected, forks cannot write to it, and the site runs under a strict content-security policy.
 
 ### How many repositories are tracked right now?
-284 public repositories, with data through 2026-11-21.
+285 public repositories, with data through 2026-11-22.
 
 ### Can I see who visited my GitHub repository?
 No. GitHub's traffic data is aggregate only: counts of views and clones, unique-visitor estimates and referrer sites. It does not identify individual visitors.
