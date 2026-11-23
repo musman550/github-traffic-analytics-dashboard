@@ -4,17 +4,17 @@
  },
  "discovered": {
   "ovhcloud": {
-   "d": "2026-11-19",
+   "d": "2026-11-23",
    "models": [
     "gpt-oss-120b",
     "Mistral-Small-3.2-24B-Instruct-2506",
-    "qwen3.6-35b-a3b",
+    "nemotron3-nano-30b",
     "Qwen3.6-27B",
     "Meta-Llama-3_3-70B-Instruct"
    ]
   },
   "pollinations": {
-   "d": "2026-11-19",
+   "d": "2026-11-23",
    "models": [
     "openai-fast"
    ]
@@ -135,30 +135,30 @@
   },
   "ovhcloud": {
    "bad": 19,
-   "cool": 1795095879.6344657,
+   "cool": 1798761600.1045816,
    "day": {
-    "d": "2026-11-19",
-    "n": 19
+    "d": "2026-11-23",
+    "n": 3
    },
-   "fail": 2,
-   "last_error": "http 0: {\"error\": \"timeouterror: the read operation timed out\"}",
-   "last_ok": "2026-11-19T13:42:38+00:00",
-   "lat": 10939,
-   "ok": 25,
+   "fail": 3,
+   "last_error": "rate limited",
+   "last_ok": "2026-11-23T14:59:00+00:00",
+   "lat": 10746,
+   "ok": 27,
    "streak": 1
   },
   "pollinations": {
    "bad": 1,
    "cool": 0,
    "day": {
-    "d": "2026-11-19",
-    "n": 4
+    "d": "2026-11-23",
+    "n": 18
    },
    "fail": 0,
    "last_error": "openai-fast: rejected: topics not grounded in the repository: ['gguf']",
-   "last_ok": "2026-11-19T13:44:48+00:00",
-   "lat": 8678,
-   "ok": 9,
+   "last_ok": "2026-11-23T15:18:19+00:00",
+   "lat": 7290,
+   "ok": 27,
    "streak": 0
   }
  },
@@ -206,25 +206,25 @@
    "name": "github-models",
    "ok": 0,
    "open_weight": true,
-   "today": 1
+   "today": 0
   },
   {
-   "avg_ms": 10939,
+   "avg_ms": 10746,
    "bad": 19,
    "configured": true,
-   "cooldown": false,
+   "cooldown": true,
    "daily_cap": 80,
    "discover_error": "",
-   "fail": 2,
-   "last_error": "http 0: {\"error\": \"timeouterror: the read operation timed out\"}",
-   "last_ok": "2026-11-19T13:42:38+00:00",
+   "fail": 3,
+   "last_error": "rate limited",
+   "last_ok": "2026-11-23T14:59:00+00:00",
    "name": "ovhcloud",
-   "ok": 25,
+   "ok": 27,
    "open_weight": true,
-   "today": 19
+   "today": 3
   },
   {
-   "avg_ms": 8678,
+   "avg_ms": 7290,
    "bad": 1,
    "configured": true,
    "cooldown": false,
@@ -232,11 +232,11 @@
    "discover_error": "",
    "fail": 0,
    "last_error": "openai-fast: rejected: topics not grounded in the repository: ['gguf']",
-   "last_ok": "2026-11-19T13:44:48+00:00",
+   "last_ok": "2026-11-23T15:18:19+00:00",
    "name": "pollinations",
-   "ok": 9,
+   "ok": 27,
    "open_weight": true,
-   "today": 4
+   "today": 18
   },
   {
    "avg_ms": 0,
@@ -314,5 +314,5 @@
    "today": 0
   }
  ],
- "updated": "2026-11-19T13:44:50+00:00"
+ "updated": "2026-11-23T15:18:22+00:00"
 }
