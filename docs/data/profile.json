@@ -9,7 +9,7 @@
    "repo": "musfira-ai-repo-bot"
   }
  ],
- "followers": 0,
+ "followers": 1,
  "links": [
   {
    "kind": "website",
@@ -43,7 +43,7 @@
  "location": null,
  "login": "musman550",
  "name": "MUSFIRAAI",
- "public_repos": 301,
+ "public_repos": 307,
  "tagline": "Building AI automation systems — YouTube automation, LinkedIn automation, and daily open-source tooling.",
  "url": "https://github.com/musman550"
 }
