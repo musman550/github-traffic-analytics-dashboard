@@ -14,7 +14,7 @@
    ]
   },
   "pollinations": {
-   "d": "2026-11-23",
+   "d": "2026-11-26",
    "models": [
     "openai-fast"
    ]
@@ -151,14 +151,14 @@
    "bad": 1,
    "cool": 0,
    "day": {
-    "d": "2026-11-23",
-    "n": 18
+    "d": "2026-11-26",
+    "n": 20
    },
    "fail": 0,
    "last_error": "openai-fast: rejected: topics not grounded in the repository: ['gguf']",
-   "last_ok": "2026-11-23T15:18:19+00:00",
-   "lat": 7290,
-   "ok": 27,
+   "last_ok": "2026-11-26T14:23:17+00:00",
+   "lat": 6477,
+   "ok": 47,
    "streak": 0
   }
  },
@@ -221,10 +221,10 @@
    "name": "ovhcloud",
    "ok": 27,
    "open_weight": true,
-   "today": 3
+   "today": 0
   },
   {
-   "avg_ms": 7290,
+   "avg_ms": 6477,
    "bad": 1,
    "configured": true,
    "cooldown": false,
@@ -232,11 +232,11 @@
    "discover_error": "",
    "fail": 0,
    "last_error": "openai-fast: rejected: topics not grounded in the repository: ['gguf']",
-   "last_ok": "2026-11-23T15:18:19+00:00",
+   "last_ok": "2026-11-26T14:23:17+00:00",
    "name": "pollinations",
-   "ok": 27,
+   "ok": 47,
    "open_weight": true,
-   "today": 18
+   "today": 20
   },
   {
    "avg_ms": 0,
@@ -314,5 +314,5 @@
    "today": 0
   }
  ],
- "updated": "2026-11-23T15:18:22+00:00"
+ "updated": "2026-11-26T14:23:20+00:00"
 }

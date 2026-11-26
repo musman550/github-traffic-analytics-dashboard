@@ -1,21 +1,20 @@
 {
- "ai_calls": 21,
- "api_calls": 69,
+ "ai_calls": 20,
+ "api_calls": 44,
  "counts": {
   "ai": 10,
   "applied": 9,
   "checked": 10,
-  "prs": 2,
+  "prs": 0,
   "rules": 0,
   "skipped": 1
  },
  "enabled": true,
- "last_run": "2026-11-23T15:18:22+00:00",
+ "last_run": "2026-11-26T14:23:20+00:00",
  "mode": "live",
  "notes": [
-  "auto-merged musman550/musfiraai-mcp#11",
-  "auto-merged musman550/talashly-monitor#4",
-  "auto-merged musman550/musfiraai-cli#6"
+  "auto-merged musman550/musfiraai-tool-assets#1",
+  "auto-merged musman550/musfiraai-tools-site#1"
  ],
  "providers_configured": [
   "github-models",
